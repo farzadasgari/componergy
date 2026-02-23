@@ -25,3 +25,6 @@ outputs/
 
 # notebooks
 .ipynb_checkpoints/
+
+# structure of project
+structure.txt
