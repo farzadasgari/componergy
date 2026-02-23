@@ -1,3 +1,27 @@
+# python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# environments
 venv/
-dataset/
+.venv/
+.env
+
+# IDE
 .idea/
+
+# data and outputs
+dataset/
+data/raw/
+data/interim/
+data/processed/
+outputs/
+*.log
+
+# notebooks
+.ipynb_checkpoints/
