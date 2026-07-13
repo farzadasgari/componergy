@@ -1,12 +1,17 @@
 import requests
-from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from tqdm import tqdm
 import time
 
+from pathlib import Path
+import sys
+
 ROOT = Path(__file__).resolve().parents[2]
-RAW_DATA = ROOT / "data" / "raw" / "noaa-nclimgrid"
-RAW_DATA.mkdir(parents=True, exist_ok=True)
+sys.path.insert(0, str(ROOT / "src"))
+
+from componergy.paths import NOAA_RAW_DIR
+
+NOAA_RAW_DIR.mkdir(parents=True, exist_ok=True)
 
 BASE_URL = "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/"
 YEARS = range(1951, 2026)
@@ -18,7 +23,7 @@ DELAY = 0.1
 def download_file(year, month):
     fname = f"ncdd-{year}{month:02d}-grd-scaled.nc"
     url = f"{BASE_URL}/{year}/{fname}"
-    path = RAW_DATA / fname
+    path = NOAA_RAW_DIR / fname
     if path.exists():
         print(f"Skipping {fname} (already exists)")
         return fname, True

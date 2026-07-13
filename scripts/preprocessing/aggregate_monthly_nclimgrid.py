@@ -1,28 +1,25 @@
-import xarray as xr
-import pandas as pd
-from pathlib import Path
+import sys
 import warnings
+from pathlib import Path
 
-warnings.filterwarnings('ignore')
+import pandas as pd
+import xarray as xr
+
+warnings.filterwarnings("ignore")
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "src"))
 
-DATA_DIR = ROOT / "data"
+from componergy.paths import (
+    NOAA_CA_DIR,
+    NOAA_MONTHLY_FILE,
+)
 
-RAW_DIR = DATA_DIR / "raw"
-PROCESSED_DIR = DATA_DIR / "processed"
-
-NOAA_RAW_DIR = RAW_DIR / "noaa-nclimgrid"
-NOAA_CA_DIR = PROCESSED_DIR / "noaa-nclimgrid-ca"
-
-SRC_DIR = NOAA_CA_DIR
-OUT_FILE = PROCESSED_DIR / "monthly_ca_1951_2025.nc"
-
-OUT_FILE.parent.mkdir(parents=True, exist_ok=True)
+NOAA_MONTHLY_FILE.parent.mkdir(parents=True, exist_ok=True)
 
 monthly_list = []
 
-for nc_file in sorted(SRC_DIR.glob("ca-*.nc")):
+for nc_file in sorted(NOAA_CA_DIR.glob("ca-*.nc")):
     parts = nc_file.name.split('-')
     if len(parts) < 3:
         continue
@@ -56,4 +53,4 @@ for nc_file in sorted(SRC_DIR.glob("ca-*.nc")):
 
 monthly_ds = xr.concat(monthly_list, dim='time')
 monthly_ds = monthly_ds.sortby('time').dropna(dim='time', how='all')
-monthly_ds.to_netcdf(OUT_FILE)
+monthly_ds.to_netcdf(NOAA_MONTHLY_FILE)
