@@ -1,5 +1,27 @@
+# Virtual environments
 venv/
-dataset/
-config.py
+
+# IDE
 .idea/
+.vscode/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Local configuration
+config.py
+.env
+
+# Large datasets
+data/raw/
+data/processed/
+
+# Generated outputs
+outputs/
 plots/
+figures/generated/
+
+# OS files
+.DS_Store
+Thumbs.db
