@@ -1,12 +1,6 @@
-import xarray as xr
 import numpy as np
 from scipy.stats import norm, rankdata
-from joblib import Parallel, delayed
-from tqdm import tqdm
-import warnings
-from math import sin, cos, radians, pi
-
-warnings.filterwarnings("ignore")
+from math import sin, radians, pi
 
 
 def hargreaves_pet(lat, doy, tmean, tmax, tmin):
