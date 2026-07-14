@@ -6,6 +6,7 @@ DATA_DIR = ROOT / "data"
 RAW_DIR = DATA_DIR / "raw"
 INTERMEDIATE_DIR = DATA_DIR / "intermediate"
 PROCESSED_DIR = DATA_DIR / "processed"
+INDICES_DIR = PROCESSED_DIR / "indices"
 
 SCRIPTS_DIR = ROOT / "scripts"
 
@@ -20,3 +21,5 @@ NOAA_MONTHLY_FILE = PROCESSED_DIR / "monthly-noaa-nclimgrid-ca-1951-2025.nc"
 
 CENSUS_DIR = RAW_DIR / "census-shape"
 STATE_SHAPEFILE = CENSUS_DIR / "tl_2025_us_state.shp"
+
+WARM_SEASON_FILE = PROCESSED_DIR / "warm-seasons-ca.nc"

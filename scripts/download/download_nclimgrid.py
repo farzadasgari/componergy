@@ -1,3 +1,4 @@
+from componergy.paths import NOAA_RAW_DIR
 import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from tqdm import tqdm
@@ -9,7 +10,6 @@ import sys
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "src"))
 
-from componergy.paths import NOAA_RAW_DIR
 
 NOAA_RAW_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -19,6 +19,7 @@ MONTHS = range(1, 13)
 MAX_WORKERS = 8
 TIMEOUT = 60
 DELAY = 0.1
+
 
 def download_file(year, month):
     fname = f"ncdd-{year}{month:02d}-grd-scaled.nc"

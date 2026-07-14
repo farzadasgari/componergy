@@ -1,3 +1,8 @@
+from componergy.paths import (
+    NOAA_RAW_DIR,
+    NOAA_CA_DIR,
+    STATE_SHAPEFILE,
+)
 import sys
 from pathlib import Path
 
@@ -7,11 +12,6 @@ import xarray as xr
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "src"))
 
-from componergy.paths import (
-    NOAA_RAW_DIR,
-    NOAA_CA_DIR,
-    STATE_SHAPEFILE,
-)
 
 NOAA_CA_DIR.mkdir(parents=True, exist_ok=True)
 

@@ -65,6 +65,7 @@ for c_idx in tqdm(range(n_cells), desc="Cells"):
         for year in years:
             ydata = cell.sel(time=cell['time.year'] == year)
             month_data = ydata.sel(time=ydata['time.month'] == m)
+
             if month_data.time.size == 0:
                 m_p.append(np.nan)
                 m_tmean.append(np.nan)

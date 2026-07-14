@@ -1,3 +1,7 @@
+from componergy.paths import (
+    NOAA_CA_DIR,
+    NOAA_MONTHLY_FILE,
+)
 import sys
 import warnings
 from pathlib import Path
@@ -10,10 +14,6 @@ warnings.filterwarnings("ignore")
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "src"))
 
-from componergy.paths import (
-    NOAA_CA_DIR,
-    NOAA_MONTHLY_FILE,
-)
 
 NOAA_MONTHLY_FILE.parent.mkdir(parents=True, exist_ok=True)
 
@@ -48,7 +48,8 @@ for nc_file in sorted(NOAA_CA_DIR.glob("ca-*.nc")):
         'tmax': tmax_monthly,
         'tmin': tmin_monthly,
     })
-    monthly_slice = monthly_slice.expand_dims(time=[pd.to_datetime(f"{year}-{month}-01")])
+    monthly_slice = monthly_slice.expand_dims(
+        time=[pd.to_datetime(f"{year}-{month}-01")])
     monthly_list.append(monthly_slice)
 
 monthly_ds = xr.concat(monthly_list, dim='time')
