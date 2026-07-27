@@ -23,3 +23,13 @@ CENSUS_DIR = RAW_DIR / "census-shape"
 STATE_SHAPEFILE = CENSUS_DIR / "tl_2025_us_state.shp"
 
 WARM_SEASON_FILE = PROCESSED_DIR / "warm-seasons-ca.nc"
+
+CEC_RAW_FILE = RAW_DIR / "county-level-electricity-consumption-2008-2024.xlsx"
+
+CEC_MONTHLY_LONG_FILE = (
+    PROCESSED_DIR / "cec-electricity-consumption-2008-2024-long.csv"
+)
+
+CEC_MONTHLY_WIDE_FILE = (
+    PROCESSED_DIR / "cec-electricity-consumption-2008-2024-wide.csv"
+)
