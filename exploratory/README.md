@@ -1,6 +1,6 @@
 # Exploratory / superseded analysis
 
-The 20 scripts in this folder were part of the working research process but are
+The scripts in this folder were part of the working research process but are
 **not** part of the pipeline that produced the figures and results in the
 manuscript. They are kept here for transparency and provenance only.
 
