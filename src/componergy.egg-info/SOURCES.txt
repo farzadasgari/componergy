@@ -1,0 +1,7 @@
+pyproject.toml
+src/componergy/__init__.py
+src/componergy.egg-info/PKG-INFO
+src/componergy.egg-info/SOURCES.txt
+src/componergy.egg-info/dependency_links.txt
+src/componergy.egg-info/requires.txt
+src/componergy.egg-info/top_level.txt
