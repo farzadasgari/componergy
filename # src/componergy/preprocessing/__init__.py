@@ -1,0 +1,1 @@
+"""Preprocessing pipeline: turning raw downloaded data into analysis-ready inputs."""
