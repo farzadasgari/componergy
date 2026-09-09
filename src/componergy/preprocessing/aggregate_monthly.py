@@ -18,6 +18,7 @@ import logging
 import xarray as xr
 from tqdm import tqdm
 
+from componergy.netcdf_io import atomic_to_netcdf
 from componergy.paths import NOAA_CA_DIR, NOAA_MONTHLY_FILE, ensure_dirs
 
 logger = logging.getLogger(__name__)
@@ -50,12 +51,12 @@ def main(force: bool = False) -> None:
         print(f"{NOAA_MONTHLY_FILE} already exists, skipping (pass force=True to rebuild).")
         return
 
-    raw_files = sorted(NOAA_CA_DIR.glob("*.nc"))
-    print(f"found {len(raw_files)} cropped daily files to aggregate")
+    cropped_files = sorted(NOAA_CA_DIR.glob("*.nc"))
+    print(f"found {len(cropped_files)} cropped daily files to aggregate")
 
     monthly_slices = []
     failed: list[str] = []
-    for nc_file in tqdm(raw_files, desc="aggregating to monthly", unit="file"):
+    for nc_file in tqdm(cropped_files, desc="aggregating to monthly", unit="file"):
         try:
             monthly_slices.append(aggregate_file(nc_file))
         except Exception:
@@ -67,7 +68,8 @@ def main(force: bool = False) -> None:
         return
 
     combined = xr.concat(monthly_slices, dim="time").sortby("time")
-    combined.to_netcdf(
+    atomic_to_netcdf(
+        combined,
         NOAA_MONTHLY_FILE,
         encoding={v: {"zlib": True, "complevel": 5} for v in combined.data_vars},
     )
