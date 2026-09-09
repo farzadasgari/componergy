@@ -15,6 +15,7 @@ dependencies = [
     "matplotlib",
     "geopandas",
     "requests",
+    "tqdm",
 ]
 
 [tool.setuptools.packages.find]
