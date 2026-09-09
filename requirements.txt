@@ -7,3 +7,5 @@ geopandas
 requests
 tqdm
 rioxarray
+netCDF4
+dask
