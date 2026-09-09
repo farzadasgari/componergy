@@ -22,8 +22,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--skip-noaa", action="store_true", help="Skip NOAA nClimGrid downloads."
     )
-    parser.add_argument("--noaa-start-year", type=int, default=1991)
-    parser.add_argument("--noaa-end-year", type=int, default=2025)
+    parser.add_argument("--noaa-start-year", type=int, default=1951)
+    parser.add_argument("--noaa-end-year", type=int, default=2026)
     parser.add_argument(
         "-v", "--verbose", action="store_true", help="Show INFO-level logs."
     )

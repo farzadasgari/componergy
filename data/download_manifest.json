@@ -1,0 +1,2963 @@
+[
+  {
+    "name": "Census Cartographic Boundary - States (1:500k)",
+    "url": "https://www2.census.gov/geo/tiger/GENZ2020/shp/cb_2020_us_state_500k.zip",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/boundaries/california/cb_2020_us_state_500k.zip",
+    "sha256": "dcc877984a3e4d59c1ee8d068b6681517c545e0c1827b7e78a7c2c7cbb167da6",
+    "downloaded_at": "2026-09-09T11:21:59.285706+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1991-02",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1991/ncdd-199102-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199102-grd-scaled.nc",
+    "sha256": "d4028f478a4afd4e521787ba60347142a338be6ced5181d159fef886c77cd234",
+    "downloaded_at": "2026-09-09T11:26:05.834102+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1991-04",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1991/ncdd-199104-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199104-grd-scaled.nc",
+    "sha256": "4080fcf93b6bcc197cf20bffb7906ba252f6b794e0a131f395ef07b17da114b9",
+    "downloaded_at": "2026-09-09T11:26:12.625268+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1991-04",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1991/ncdd-199104-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199104-grd-scaled.nc",
+    "sha256": "4080fcf93b6bcc197cf20bffb7906ba252f6b794e0a131f395ef07b17da114b9",
+    "downloaded_at": "2026-09-09T11:37:01.043274+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1991-03",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1991/ncdd-199103-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199103-grd-scaled.nc",
+    "sha256": "d3e43dd969beef3f410ba09c5d3bcc420dd298bf69acf7b7b2e0f1533d512cb9",
+    "downloaded_at": "2026-09-09T11:37:01.463784+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1991-06",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1991/ncdd-199106-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199106-grd-scaled.nc",
+    "sha256": "75d2dd281d17b1d8003cc2dde79d3b25497a1735d8beaaf05b9c164e2a512125",
+    "downloaded_at": "2026-09-09T11:37:02.038986+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1991-01",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1991/ncdd-199101-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199101-grd-scaled.nc",
+    "sha256": "556aff301af36da45cedb15de2444cb3a83c983575cc3460e114552a52bf9e83",
+    "downloaded_at": "2026-09-09T11:37:02.094147+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1991-05",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1991/ncdd-199105-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199105-grd-scaled.nc",
+    "sha256": "dd34d33b206460d91e115b2f1c095c1ca4a79313287894a9768fcf0ff814f8b8",
+    "downloaded_at": "2026-09-09T11:37:02.632636+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1991-08",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1991/ncdd-199108-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199108-grd-scaled.nc",
+    "sha256": "dd3dfda30cedb0c9c49c5c668dbbb17eb3e30a868c5065c3e4f3027668def481",
+    "downloaded_at": "2026-09-09T11:37:03.477198+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1991-02",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1991/ncdd-199102-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199102-grd-scaled.nc",
+    "sha256": "d4028f478a4afd4e521787ba60347142a338be6ced5181d159fef886c77cd234",
+    "downloaded_at": "2026-09-09T11:37:03.745968+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1991-10",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1991/ncdd-199110-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199110-grd-scaled.nc",
+    "sha256": "38cdfa489550d1cdb0e02c147404b8405c0b06f19dbdece8d1e98e69e8b28868",
+    "downloaded_at": "2026-09-09T11:37:04.093911+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1991-09",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1991/ncdd-199109-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199109-grd-scaled.nc",
+    "sha256": "c7304824e6c0ab8f2f880dfaa6cc9ad3121f56540963b937406461a38d8bac00",
+    "downloaded_at": "2026-09-09T11:37:04.203011+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1991-07",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1991/ncdd-199107-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199107-grd-scaled.nc",
+    "sha256": "82c0c11727a461c4c2aa179fe1d090fa8abf023526e39d8f3843245865cdd3a1",
+    "downloaded_at": "2026-09-09T11:37:04.594326+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1991-11",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1991/ncdd-199111-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199111-grd-scaled.nc",
+    "sha256": "bed99031f3dd35984e6e60e1aac3d014977ce7d9adc829b3f6e763163ad18b48",
+    "downloaded_at": "2026-09-09T11:37:05.327503+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1991-12",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1991/ncdd-199112-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199112-grd-scaled.nc",
+    "sha256": "4e73baadb2a75d25f7d20247d2d8b1e28df8d552512893422861eddb6243db04",
+    "downloaded_at": "2026-09-09T11:37:05.472731+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1992-03",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1992/ncdd-199203-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199203-grd-scaled.nc",
+    "sha256": "7dcd2b62f9c6ce683c3a65565425ea5d1da5bf02b414e69efa7fd07cc74053b8",
+    "downloaded_at": "2026-09-09T11:37:05.939156+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1992-04",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1992/ncdd-199204-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199204-grd-scaled.nc",
+    "sha256": "f8574fef6aebb586c014b83b936511406609f93d51d58faafc9f7a59014528da",
+    "downloaded_at": "2026-09-09T11:37:06.423668+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1992-06",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1992/ncdd-199206-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199206-grd-scaled.nc",
+    "sha256": "518a09fbddefec3cc78315c3ab2b6efaee63d1c9a4a6aa04a365820ca570f816",
+    "downloaded_at": "2026-09-09T11:37:06.854548+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1992-02",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1992/ncdd-199202-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199202-grd-scaled.nc",
+    "sha256": "24596d99ca5a8d1e3ba120376d1402cedfd60f93511e35cde2c6417e66b30ffa",
+    "downloaded_at": "2026-09-09T11:37:06.959050+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1992-08",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1992/ncdd-199208-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199208-grd-scaled.nc",
+    "sha256": "6bb877afe9a54a5af4e0b96968349c69ca2f4309b77f95dd4e4a1b805cb1ac94",
+    "downloaded_at": "2026-09-09T11:37:07.386198+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1992-05",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1992/ncdd-199205-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199205-grd-scaled.nc",
+    "sha256": "15af7de91e59598de207848493ffdd16945b61ee3ab6654b9be61e19112314ee",
+    "downloaded_at": "2026-09-09T11:37:07.858648+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1992-07",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1992/ncdd-199207-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199207-grd-scaled.nc",
+    "sha256": "6a6b0efc7a6327ca1b53ff7ecbb161a44c82c961a736f9efc5e7b6618c2a98c4",
+    "downloaded_at": "2026-09-09T11:37:07.863586+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1992-09",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1992/ncdd-199209-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199209-grd-scaled.nc",
+    "sha256": "0a6e75f894106245ed71c0180cbf281898198a46f20dedb3481344879edd5644",
+    "downloaded_at": "2026-09-09T11:37:08.475561+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1992-11",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1992/ncdd-199211-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199211-grd-scaled.nc",
+    "sha256": "831d1643fd73a0f7449db2c763d39dadcd279b336fa9f11afe4f2fef8d1f5dd5",
+    "downloaded_at": "2026-09-09T11:37:08.875051+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1992-10",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1992/ncdd-199210-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199210-grd-scaled.nc",
+    "sha256": "2a362aa39dfb3d2bdaa859eaa2955cf7090876fa5ed50e2b65a7f9589ec3cca7",
+    "downloaded_at": "2026-09-09T11:37:09.723928+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1993-01",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1993/ncdd-199301-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199301-grd-scaled.nc",
+    "sha256": "f51c7839a41c0c410fa7b56af9fcbd4697b4baf87d68555206ffd2c77ccbc8fe",
+    "downloaded_at": "2026-09-09T11:37:09.728081+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1992-12",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1992/ncdd-199212-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199212-grd-scaled.nc",
+    "sha256": "74f4998ade202f9c4fa90d1f118035b69521201da044ee108a363a73d437e444",
+    "downloaded_at": "2026-09-09T11:37:09.808969+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1992-01",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1992/ncdd-199201-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199201-grd-scaled.nc",
+    "sha256": "d50f9760742d2a878834f3952b71311e0e5c48cc76cc945a9ebf9da707df015c",
+    "downloaded_at": "2026-09-09T11:37:10.046755+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1993-05",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1993/ncdd-199305-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199305-grd-scaled.nc",
+    "sha256": "2968d14e1bd0055c545d8180f2da9a078fd389128746931835a980bffdf11c34",
+    "downloaded_at": "2026-09-09T11:37:10.568657+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1993-03",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1993/ncdd-199303-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199303-grd-scaled.nc",
+    "sha256": "6423ce9540ad347ae4fe9fcd30e140d448a59d460b2b4dc326609f783cb6c63a",
+    "downloaded_at": "2026-09-09T11:37:11.013525+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1993-06",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1993/ncdd-199306-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199306-grd-scaled.nc",
+    "sha256": "6835d153579043e7b2459fca9ae4da0d12d08045c461e54c24fe587c9d8fc62c",
+    "downloaded_at": "2026-09-09T11:37:11.821498+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1993-02",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1993/ncdd-199302-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199302-grd-scaled.nc",
+    "sha256": "b2115172104a9602b6ef774397a2e8d595db5d7d169d985b6cc505c9b4789984",
+    "downloaded_at": "2026-09-09T11:37:11.858958+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1993-04",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1993/ncdd-199304-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199304-grd-scaled.nc",
+    "sha256": "dd5f9e956c0369d2fc65b98e9543601f5365c6356dec1c5f2b21b1f88f0f218f",
+    "downloaded_at": "2026-09-09T11:37:12.036636+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1993-08",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1993/ncdd-199308-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199308-grd-scaled.nc",
+    "sha256": "cd12313fd59bf14f6340ef378f96a5ca3edb1245c09c065bf34413f2e27b108b",
+    "downloaded_at": "2026-09-09T11:37:12.697864+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1993-07",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1993/ncdd-199307-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199307-grd-scaled.nc",
+    "sha256": "be1f2cfa5a446b3cb5dbf85f7e59c57234ddefa3fcd4972a861e7255b14174c6",
+    "downloaded_at": "2026-09-09T11:37:12.773214+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1993-09",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1993/ncdd-199309-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199309-grd-scaled.nc",
+    "sha256": "1a790c29995c7bf0c8969e1c553521c249662ce63937d4b23264c98e617de582",
+    "downloaded_at": "2026-09-09T11:37:13.129793+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1993-12",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1993/ncdd-199312-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199312-grd-scaled.nc",
+    "sha256": "21027a7f8e349d14c0944620239fbfca2f17475d76bb00d1409906c420a6597b",
+    "downloaded_at": "2026-09-09T11:37:14.066915+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1994-01",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1994/ncdd-199401-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199401-grd-scaled.nc",
+    "sha256": "2cc0600a59491a8d63a4d8d9bb2e9eb59f44c247fa22d86f1486daa7d3d8ddd4",
+    "downloaded_at": "2026-09-09T11:37:14.089112+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1993-11",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1993/ncdd-199311-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199311-grd-scaled.nc",
+    "sha256": "cd61dc8c81d34756c78ac55a4fd55d70e36046b572e96ab54aac3ce1f9cf104e",
+    "downloaded_at": "2026-09-09T11:37:14.572518+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1994-04",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1994/ncdd-199404-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199404-grd-scaled.nc",
+    "sha256": "5905f8a75a1ff941f6a9cfb984c674832b4c7d126889032f13d49fd4a59b17b1",
+    "downloaded_at": "2026-09-09T11:37:15.098403+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1993-10",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1993/ncdd-199310-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199310-grd-scaled.nc",
+    "sha256": "bfe2ec36a7adbb1ee460d2b97a5a0e296c65aa545d27542ec99e7cf8612f6ba7",
+    "downloaded_at": "2026-09-09T11:37:15.461613+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1994-02",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1994/ncdd-199402-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199402-grd-scaled.nc",
+    "sha256": "c43bb0ed9d846b9097240072d43a1ad9b0e539837b4e24d78ce893da11aa215a",
+    "downloaded_at": "2026-09-09T11:37:15.505166+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1994-03",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1994/ncdd-199403-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199403-grd-scaled.nc",
+    "sha256": "fe0fcd82d9cf461f8a15420537c7b66e5a7a9b1c8959dfe84b56c547b0f529b6",
+    "downloaded_at": "2026-09-09T11:37:15.713323+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1994-07",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1994/ncdd-199407-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199407-grd-scaled.nc",
+    "sha256": "4acb515dd95c90f5442461138df04fd494dfeb9a68360c593dd72093e3bf8c6d",
+    "downloaded_at": "2026-09-09T11:37:16.841895+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1994-06",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1994/ncdd-199406-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199406-grd-scaled.nc",
+    "sha256": "f897a31b46cb9123787e4b3c6e78dfaadf11429fbe0fef3b7f9a328e5c01a603",
+    "downloaded_at": "2026-09-09T11:37:16.844423+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1994-08",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1994/ncdd-199408-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199408-grd-scaled.nc",
+    "sha256": "eae3915bb7f3748710f7e5eb1cda2ee572b50c369c05c3c646458944f6248c1c",
+    "downloaded_at": "2026-09-09T11:37:17.388571+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1994-09",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1994/ncdd-199409-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199409-grd-scaled.nc",
+    "sha256": "578f93f95c25986a99c909ba1b4ba6e4c624f1b5e242f8476104ad062d629180",
+    "downloaded_at": "2026-09-09T11:37:17.390718+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1994-11",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1994/ncdd-199411-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199411-grd-scaled.nc",
+    "sha256": "b88fb5382fbd86609499bd5c8b982feb1c05b13f331e7f359ea62b43d21e1c34",
+    "downloaded_at": "2026-09-09T11:37:18.010337+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1994-10",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1994/ncdd-199410-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199410-grd-scaled.nc",
+    "sha256": "7919104c4259babdbda1835854e667b1677dcc08ee2cb2078ca7eb73f6df5c6b",
+    "downloaded_at": "2026-09-09T11:37:18.601283+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1994-12",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1994/ncdd-199412-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199412-grd-scaled.nc",
+    "sha256": "c9d61b1d7c2a589473d2359e05b4d8d860ec16fd3ea4d22540db1756a1681515",
+    "downloaded_at": "2026-09-09T11:37:18.658846+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1995-03",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1995/ncdd-199503-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199503-grd-scaled.nc",
+    "sha256": "82febe3660e72b52eb7094e3ed1c0bb4641a7b0fd4c61ea56d1dbac065706b44",
+    "downloaded_at": "2026-09-09T11:37:19.257211+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1995-01",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1995/ncdd-199501-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199501-grd-scaled.nc",
+    "sha256": "a010471b5a570d645f7b000a49173c369d4fc40d554f89e8b9d5f7889ce1b11e",
+    "downloaded_at": "2026-09-09T11:37:19.529149+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1994-05",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1994/ncdd-199405-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199405-grd-scaled.nc",
+    "sha256": "1eda2d0c15594aa175d6c95c4598cc1114778351901e068facea3f882c668f03",
+    "downloaded_at": "2026-09-09T11:37:19.660128+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1995-05",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1995/ncdd-199505-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199505-grd-scaled.nc",
+    "sha256": "55e10f5d27bbd481b33d7fb5ad2f55c255db3f563eaac4acea37d7f3b84f1c5b",
+    "downloaded_at": "2026-09-09T11:37:20.179826+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1995-06",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1995/ncdd-199506-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199506-grd-scaled.nc",
+    "sha256": "c72b18062df07d959bceda6e9a5578c9004ce42286ee3636c7c90a2740e1581f",
+    "downloaded_at": "2026-09-09T11:37:21.034952+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1995-04",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1995/ncdd-199504-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199504-grd-scaled.nc",
+    "sha256": "72a941936dac1ba9d0744622b98f34c344166c405d30795096d031d505dfb5ee",
+    "downloaded_at": "2026-09-09T11:37:21.060307+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1995-02",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1995/ncdd-199502-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199502-grd-scaled.nc",
+    "sha256": "05dd38b800aaccb252a93080f50592e1b61ea76dbabfccbb4bfe42e5f6628da3",
+    "downloaded_at": "2026-09-09T11:37:21.160012+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1995-09",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1995/ncdd-199509-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199509-grd-scaled.nc",
+    "sha256": "e83dbb1f96fd763baf01cb5e7804cfded7a317b996a96078c3097779e1c722f7",
+    "downloaded_at": "2026-09-09T11:37:22.227671+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1995-10",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1995/ncdd-199510-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199510-grd-scaled.nc",
+    "sha256": "714c57d6b9722947f730ccb6a6fe9a30727a88af07954b104d1b18205a0285a8",
+    "downloaded_at": "2026-09-09T11:37:22.247584+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1995-07",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1995/ncdd-199507-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199507-grd-scaled.nc",
+    "sha256": "4334a530f72ee0699d587db9882723a1eaae93583635fdc74c4e695f000f46d4",
+    "downloaded_at": "2026-09-09T11:37:22.272399+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1995-08",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1995/ncdd-199508-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199508-grd-scaled.nc",
+    "sha256": "3fc68424fa0ec8a806490307bc5cd83ee323f48aff59ff15b7a5c67c6273ca9d",
+    "downloaded_at": "2026-09-09T11:37:22.991524+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1995-12",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1995/ncdd-199512-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199512-grd-scaled.nc",
+    "sha256": "b734f45c48e021e0d62ede68284af2c97dddceab555722e7acc34c4c2325631a",
+    "downloaded_at": "2026-09-09T11:37:23.085050+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1996-02",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1996/ncdd-199602-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199602-grd-scaled.nc",
+    "sha256": "74bd1705ee1af14d420d94d4654394eddb54a43828afc6849eb55881c3ce11c7",
+    "downloaded_at": "2026-09-09T11:37:24.112376+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1995-11",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1995/ncdd-199511-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199511-grd-scaled.nc",
+    "sha256": "00fc18f0c5c0addc205672eeccea59c629c0f19400e6a549543e96046b642bd9",
+    "downloaded_at": "2026-09-09T11:37:24.157522+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1996-01",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1996/ncdd-199601-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199601-grd-scaled.nc",
+    "sha256": "61d8576ece77e99726397d154c46dcbfad816af34e60e64593ca900dc9688dc4",
+    "downloaded_at": "2026-09-09T11:37:24.293307+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1996-06",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1996/ncdd-199606-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199606-grd-scaled.nc",
+    "sha256": "03a6a2af0866e45cc1dee7f4d9d5e93e8dc8d979a904d4c1e9a1713f081adb66",
+    "downloaded_at": "2026-09-09T11:37:25.003959+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1996-05",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1996/ncdd-199605-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199605-grd-scaled.nc",
+    "sha256": "cd35da64de47e721e3e8a60ae7baa5bcbee3ae09c92080e70687e383caefe8aa",
+    "downloaded_at": "2026-09-09T11:37:25.434803+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1996-04",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1996/ncdd-199604-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199604-grd-scaled.nc",
+    "sha256": "91a06a0bd7d12c8b95a4a0d88e1c70bbf8a67ec54a344f3fbfa4c6c0b20b51cb",
+    "downloaded_at": "2026-09-09T11:37:25.627559+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1996-03",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1996/ncdd-199603-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199603-grd-scaled.nc",
+    "sha256": "b9c5bde4b3e3cfe508f99743db29e62aa68c3261968e38a4831d1ac4dc475c63",
+    "downloaded_at": "2026-09-09T11:37:26.196514+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1996-08",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1996/ncdd-199608-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199608-grd-scaled.nc",
+    "sha256": "b7eb907a6782090beb2787607dc2ceb7d145ae99612daf68f3d528d5c9ab3448",
+    "downloaded_at": "2026-09-09T11:37:26.655037+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1996-09",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1996/ncdd-199609-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199609-grd-scaled.nc",
+    "sha256": "11d5f8f6682765a91926626f121c6de8c64db7245b7eb36d276b32c310572e3b",
+    "downloaded_at": "2026-09-09T11:37:26.760953+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1996-10",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1996/ncdd-199610-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199610-grd-scaled.nc",
+    "sha256": "99479f4ce3418ae05ad70deb70df37b83ca39890a8d63ca7ee2bc1a34f00e6d2",
+    "downloaded_at": "2026-09-09T11:37:27.300596+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1996-07",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1996/ncdd-199607-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199607-grd-scaled.nc",
+    "sha256": "1c6bfe31b0d06370cf6406f7f2fed673689dab02759596373732743d64951fc5",
+    "downloaded_at": "2026-09-09T11:37:27.325029+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1996-12",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1996/ncdd-199612-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199612-grd-scaled.nc",
+    "sha256": "074b0438da15ceeccea87648b1b430ec9ab6d320ed87fad16ff9ac6fc39a05b2",
+    "downloaded_at": "2026-09-09T11:37:28.065482+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1996-11",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1996/ncdd-199611-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199611-grd-scaled.nc",
+    "sha256": "665139c0af5a551157db3dab480d9ad495df5bff23012210467db75b58656c9a",
+    "downloaded_at": "2026-09-09T11:37:28.917886+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1997-02",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1997/ncdd-199702-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199702-grd-scaled.nc",
+    "sha256": "73d6e90d588bae1b324992d316713f06ac92aadacf3e9558c73a56a7585b6ebf",
+    "downloaded_at": "2026-09-09T11:37:29.007375+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1997-03",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1997/ncdd-199703-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199703-grd-scaled.nc",
+    "sha256": "781c205bd1be23b716a66994c30027ff15f1fab3bf21cf617d80f4620352a180",
+    "downloaded_at": "2026-09-09T11:37:29.010402+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1997-01",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1997/ncdd-199701-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199701-grd-scaled.nc",
+    "sha256": "4110a20ef06466940d2aff90d453f1ff6df383ac310da590a05f63778ba2347b",
+    "downloaded_at": "2026-09-09T11:37:29.859033+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1997-06",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1997/ncdd-199706-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199706-grd-scaled.nc",
+    "sha256": "7b5052536eb821493ae41a9295465cf5e84cefeee0ed66a819ab523a28d6eaad",
+    "downloaded_at": "2026-09-09T11:37:30.169528+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1997-05",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1997/ncdd-199705-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199705-grd-scaled.nc",
+    "sha256": "0b4190a57f8c4563fcc6ad9c4c252ea7d38dbf309f4320b2dc680063f2d196e5",
+    "downloaded_at": "2026-09-09T11:37:30.326128+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1997-09",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1997/ncdd-199709-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199709-grd-scaled.nc",
+    "sha256": "20a2c104e826a872fccbeb0801a1d5850d988ca66d8f37c44f79a2a60b79b8d8",
+    "downloaded_at": "2026-09-09T11:37:31.270133+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1997-07",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1997/ncdd-199707-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199707-grd-scaled.nc",
+    "sha256": "1042043d7ded45321797a6fc2b49dec26497015cd0495f14e2bb9327cf459b6e",
+    "downloaded_at": "2026-09-09T11:37:31.709083+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1997-08",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1997/ncdd-199708-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199708-grd-scaled.nc",
+    "sha256": "c7b3d3e06488025bf2c97e55e5545fcb3df8a87cd705c9fb4ce92604bc6f43ae",
+    "downloaded_at": "2026-09-09T11:37:31.719464+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1997-04",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1997/ncdd-199704-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199704-grd-scaled.nc",
+    "sha256": "6bf8091ee08fc1b8234173daae2c7f5d3b146e1a746159d3f00a55c21e2b6064",
+    "downloaded_at": "2026-09-09T11:37:31.872581+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1997-12",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1997/ncdd-199712-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199712-grd-scaled.nc",
+    "sha256": "44a74f5f7a6ba4ed4e1cc702d4b73f444dd1b004d03bc6a8bef33007f1d04b76",
+    "downloaded_at": "2026-09-09T11:37:33.041752+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1997-10",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1997/ncdd-199710-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199710-grd-scaled.nc",
+    "sha256": "6d055a3a246d9afd53451f00f9a3fd85118424dcf6cbd57c7665b6734c274af3",
+    "downloaded_at": "2026-09-09T11:37:33.120682+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1998-01",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1998/ncdd-199801-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199801-grd-scaled.nc",
+    "sha256": "7fb7343106be030cacd96be6693e66bb457dfa76ecf3622cd5428fcd1bd76964",
+    "downloaded_at": "2026-09-09T11:37:33.302683+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1998-04",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1998/ncdd-199804-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199804-grd-scaled.nc",
+    "sha256": "b97e775caa43fce516f0ea081cea02f50c6689d668bffc16762820d7e0046123",
+    "downloaded_at": "2026-09-09T11:37:33.888946+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1997-11",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1997/ncdd-199711-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199711-grd-scaled.nc",
+    "sha256": "4ffcfba25f55a76448038ce64d217d63a1c6e32982ef0fba4a453270f6eb8cb6",
+    "downloaded_at": "2026-09-09T11:37:34.048710+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1998-06",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1998/ncdd-199806-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199806-grd-scaled.nc",
+    "sha256": "d6b3bdd43b75455e3b961ad15936769d281b1e1320efc1237bc458ef5d09107c",
+    "downloaded_at": "2026-09-09T11:37:34.543854+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1998-02",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1998/ncdd-199802-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199802-grd-scaled.nc",
+    "sha256": "35a4ee80109fc433f536bcef23d9f79c00a17f9a0f8636a1d2fa8d0b75154e9e",
+    "downloaded_at": "2026-09-09T11:37:34.870770+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1998-07",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1998/ncdd-199807-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199807-grd-scaled.nc",
+    "sha256": "e3199cb51bb96daad30abe1e60bf5ecf9e185604848fa612abaa6286066dc146",
+    "downloaded_at": "2026-09-09T11:37:35.395437+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1998-09",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1998/ncdd-199809-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199809-grd-scaled.nc",
+    "sha256": "a5c7f232d9cc634137b9870d3bb6561c24ddb6c1d80dcc342a2f70a8c02c2bab",
+    "downloaded_at": "2026-09-09T11:37:36.097660+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1998-05",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1998/ncdd-199805-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199805-grd-scaled.nc",
+    "sha256": "3d36b25adaca2907d389a1ddd6d486e00ea30e91a4d9aa6bc1a7b334ad41b297",
+    "downloaded_at": "2026-09-09T11:37:36.208970+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1998-03",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1998/ncdd-199803-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199803-grd-scaled.nc",
+    "sha256": "51fb43d0140316d5abff9af155588a2667703f55cb04fdd9fe73db6390f160e6",
+    "downloaded_at": "2026-09-09T11:37:36.644494+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1998-10",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1998/ncdd-199810-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199810-grd-scaled.nc",
+    "sha256": "8d148690b00273228e788362fd04e9872f1cbfb1d04237b6c7404d5dcb79f03f",
+    "downloaded_at": "2026-09-09T11:37:37.037561+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1998-08",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1998/ncdd-199808-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199808-grd-scaled.nc",
+    "sha256": "406800a5feaf99ca8f362962917102ce1a4ef1501a802fe67b2d1d1309ef370b",
+    "downloaded_at": "2026-09-09T11:37:37.512306+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1998-12",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1998/ncdd-199812-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199812-grd-scaled.nc",
+    "sha256": "0e14c1bc7e61788ac9d8e2058c2ec68fedc23cc7340f7a506deeff7c94c10c76",
+    "downloaded_at": "2026-09-09T11:37:37.713604+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1998-11",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1998/ncdd-199811-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199811-grd-scaled.nc",
+    "sha256": "556a16f67754c93393a387d59e6a55f7d80264111e50dd82066103e1278d1db9",
+    "downloaded_at": "2026-09-09T11:37:38.411486+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1999-01",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1999/ncdd-199901-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199901-grd-scaled.nc",
+    "sha256": "548915bb4bf184fa90e41458735f7cd44a195e874163425a638420c8909288cf",
+    "downloaded_at": "2026-09-09T11:37:38.475878+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1999-02",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1999/ncdd-199902-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199902-grd-scaled.nc",
+    "sha256": "02fe2ac6dc0afc3ac7b000e978886732502e016e58ccabcbe1e614feb0441eca",
+    "downloaded_at": "2026-09-09T11:37:38.801880+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1999-03",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1999/ncdd-199903-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199903-grd-scaled.nc",
+    "sha256": "6185c68a8fc869a32cc52e6a2c7659d71089941a04c99bd3fa26bc11e46200da",
+    "downloaded_at": "2026-09-09T11:37:39.550638+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1999-06",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1999/ncdd-199906-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199906-grd-scaled.nc",
+    "sha256": "e9349fa31169a9481eb8fda35d29a48c3008b5fd2ce1581d497f011384f36ded",
+    "downloaded_at": "2026-09-09T11:37:40.060512+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1999-08",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1999/ncdd-199908-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199908-grd-scaled.nc",
+    "sha256": "12e3502ebd589570c22a13bd1d1300345441a1f4c9a44fd1e912320abeede4c7",
+    "downloaded_at": "2026-09-09T11:37:40.608545+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1999-04",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1999/ncdd-199904-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199904-grd-scaled.nc",
+    "sha256": "c22ac7d1cd7fa5e49504d2fa4c5049b8e8a896593a5325e675aadd9513be9523",
+    "downloaded_at": "2026-09-09T11:37:40.808958+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1999-05",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1999/ncdd-199905-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199905-grd-scaled.nc",
+    "sha256": "43c3497b35fce916e150610a49d072eca3570c2c29431bec7835675de760e271",
+    "downloaded_at": "2026-09-09T11:37:40.847262+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1999-07",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1999/ncdd-199907-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199907-grd-scaled.nc",
+    "sha256": "5e1d22f0a203505686e3764f68621dd93ab871b6a022ae862fca1c7320f1d763",
+    "downloaded_at": "2026-09-09T11:37:41.211489+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1999-09",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1999/ncdd-199909-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199909-grd-scaled.nc",
+    "sha256": "0de3877e2396050f41d09fb5c4c7e88938015b3a6ed17a242e11a6396bc1a642",
+    "downloaded_at": "2026-09-09T11:37:42.428501+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1999-10",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1999/ncdd-199910-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199910-grd-scaled.nc",
+    "sha256": "d9b7ca7eae72fce3550f04b0e4bc438b9d9e7cabdc7fa74c734d25a118acc8ed",
+    "downloaded_at": "2026-09-09T11:37:42.448464+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1999-11",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1999/ncdd-199911-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199911-grd-scaled.nc",
+    "sha256": "685e5e6cf1158585004093f46d20d90f594a2a96eb1e17474a684d563002ccc8",
+    "downloaded_at": "2026-09-09T11:37:42.552805+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 1999-12",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/1999/ncdd-199912-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-199912-grd-scaled.nc",
+    "sha256": "89b2cb6b893f248cfad347e23c08dbb43ba2a12d4ea3ffbc4ea7a1df9830026b",
+    "downloaded_at": "2026-09-09T11:37:42.596532+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2000-04",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2000/ncdd-200004-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200004-grd-scaled.nc",
+    "sha256": "1aa682737880658c3707ff52a54ac5e5f7b26c9a3c8d52fe6ccf0d7bc36e8b63",
+    "downloaded_at": "2026-09-09T11:37:43.343101+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2000-05",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2000/ncdd-200005-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200005-grd-scaled.nc",
+    "sha256": "4ea7220c3c3d5a00b345c409e6c81734e36d0eec100de4b9ce9fa5dc347510bf",
+    "downloaded_at": "2026-09-09T11:37:44.354621+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2000-02",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2000/ncdd-200002-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200002-grd-scaled.nc",
+    "sha256": "c96992673a417b1531820312ef6c7d02935227ee40af83bbdf877f492082732b",
+    "downloaded_at": "2026-09-09T11:37:44.396878+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2000-03",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2000/ncdd-200003-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200003-grd-scaled.nc",
+    "sha256": "06eb51570e494e2b4326037cb2c1b709f416175df5b5e4735619ab849266d485",
+    "downloaded_at": "2026-09-09T11:37:44.501752+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2000-07",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2000/ncdd-200007-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200007-grd-scaled.nc",
+    "sha256": "c886009a34529a2cf61b79b3fc759c5ebc960725dabb892e3e38996381c7590b",
+    "downloaded_at": "2026-09-09T11:37:45.452424+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2000-06",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2000/ncdd-200006-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200006-grd-scaled.nc",
+    "sha256": "aa4001abbadd400b81c871c5e062e20665d0a01ed416f5c118154a82ac6d0217",
+    "downloaded_at": "2026-09-09T11:37:45.667123+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2000-10",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2000/ncdd-200010-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200010-grd-scaled.nc",
+    "sha256": "66b9f754d946a91407bcf9179de8083e9aed4bf5c1d744d84db9b6e5232afa3b",
+    "downloaded_at": "2026-09-09T11:37:46.442025+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2000-08",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2000/ncdd-200008-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200008-grd-scaled.nc",
+    "sha256": "35e8c70b87ff70c2dad66a98c4e79ffe71049a27db8a1a89afdf6e2e01225e42",
+    "downloaded_at": "2026-09-09T11:37:46.547956+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2000-12",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2000/ncdd-200012-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200012-grd-scaled.nc",
+    "sha256": "ffb0b3e6df154e15c50d28cfaf40741eeb265d17a53e99c865d911c66e92b43e",
+    "downloaded_at": "2026-09-09T11:37:47.305824+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2000-09",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2000/ncdd-200009-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200009-grd-scaled.nc",
+    "sha256": "8ab70b34917f75671fa4f90b944899d2109cf5c700da2ad39e6ee50d24ac532f",
+    "downloaded_at": "2026-09-09T11:37:47.707551+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2000-11",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2000/ncdd-200011-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200011-grd-scaled.nc",
+    "sha256": "3b429a6ea9a06e2c971d6b84fe622612d6df7927ccf44fa8ea9d76e8a21328b6",
+    "downloaded_at": "2026-09-09T11:37:48.255170+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2001-01",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2001/ncdd-200101-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200101-grd-scaled.nc",
+    "sha256": "fd752721beff8c9ad33c98faeaadfba100d1a0f5b7e538e7cf37e38b857a652f",
+    "downloaded_at": "2026-09-09T11:37:48.591399+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2001-03",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2001/ncdd-200103-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200103-grd-scaled.nc",
+    "sha256": "54814a20bc3b666979cc85517fc2c265808159cbbca1ebd6863907aeb2575952",
+    "downloaded_at": "2026-09-09T11:37:49.052553+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2001-02",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2001/ncdd-200102-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200102-grd-scaled.nc",
+    "sha256": "d76f2c7536dac87922b8edae758f796e29e19c28fad1cf2da8fafcc4ff6654d7",
+    "downloaded_at": "2026-09-09T11:37:49.337473+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2001-05",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2001/ncdd-200105-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200105-grd-scaled.nc",
+    "sha256": "06b544efae8d8ecc15467d38beb6be88823c4154bccce3d51e351df1321ba22a",
+    "downloaded_at": "2026-09-09T11:37:49.697591+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2001-04",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2001/ncdd-200104-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200104-grd-scaled.nc",
+    "sha256": "d048ddb964180d949f12b1875504afb268adbcafeaec9dbf63551dd8eb9abe1a",
+    "downloaded_at": "2026-09-09T11:37:50.202274+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2001-07",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2001/ncdd-200107-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200107-grd-scaled.nc",
+    "sha256": "a4309295415546e517f3d1c6957827e424c1cb300634047b9c4ea078fdc15430",
+    "downloaded_at": "2026-09-09T11:37:51.098286+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2001-06",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2001/ncdd-200106-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200106-grd-scaled.nc",
+    "sha256": "1a8463afbcf47c993594a6c589ee478d833449ffc0573a32d41cb3ded79face0",
+    "downloaded_at": "2026-09-09T11:37:51.196494+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2001-08",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2001/ncdd-200108-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200108-grd-scaled.nc",
+    "sha256": "e962bdeeccf2776b7b31ea3c112a0feedd74904c1082567b98ced1e0535ef149",
+    "downloaded_at": "2026-09-09T11:37:51.204173+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2001-11",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2001/ncdd-200111-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200111-grd-scaled.nc",
+    "sha256": "92da8df9c64e130e5dcc0951c7a8b3f6a1624f77be45fa49dd743e458f351557",
+    "downloaded_at": "2026-09-09T11:37:51.877092+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2001-09",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2001/ncdd-200109-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200109-grd-scaled.nc",
+    "sha256": "882c2d84bba42d57f2bfd14108d77ef6c3406cfbd082d553541b37fdce3413b0",
+    "downloaded_at": "2026-09-09T11:37:52.532369+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2001-12",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2001/ncdd-200112-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200112-grd-scaled.nc",
+    "sha256": "4fd97367715ce4549b24360ca2f37fedd7301dd1df1973297f40e38e92037db6",
+    "downloaded_at": "2026-09-09T11:37:52.591796+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2002-02",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2002/ncdd-200202-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200202-grd-scaled.nc",
+    "sha256": "bd79af891a6bc9dc2756c1ca498cd45eca59caddf5bbacce31328cf913a16e76",
+    "downloaded_at": "2026-09-09T11:37:53.437792+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2002-01",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2002/ncdd-200201-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200201-grd-scaled.nc",
+    "sha256": "7254f36dda15c90d3e60124fc4ee902d1433575978619cc3e1a3c0a962686d21",
+    "downloaded_at": "2026-09-09T11:37:54.172549+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2001-10",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2001/ncdd-200110-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200110-grd-scaled.nc",
+    "sha256": "f5a71a86cea39371931557bc883a3c216afe5375f289bc30fa3bd7bb210e1ba2",
+    "downloaded_at": "2026-09-09T11:37:54.186443+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2002-03",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2002/ncdd-200203-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200203-grd-scaled.nc",
+    "sha256": "adb46315846cd732facab52b755d4673b126ee8a1b766a41cebb8f9150604641",
+    "downloaded_at": "2026-09-09T11:37:54.429217+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2000-01",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2000/ncdd-200001-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200001-grd-scaled.nc",
+    "sha256": "5538660707d4733bd0c9da064fa669a6ca3a808e74f0ff02458d1f6447b4e1b2",
+    "downloaded_at": "2026-09-09T11:37:54.926929+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2002-06",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2002/ncdd-200206-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200206-grd-scaled.nc",
+    "sha256": "72f7e7f344e60354b698207af7af0c1e746b706a9d96d9fb4171b8df2052cf45",
+    "downloaded_at": "2026-09-09T11:37:55.386099+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2002-04",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2002/ncdd-200204-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200204-grd-scaled.nc",
+    "sha256": "434cc1147e9cda312f1a05e2e313915b094e3b755eea548a3eb3b8f2fa52c6e7",
+    "downloaded_at": "2026-09-09T11:37:55.582282+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2002-07",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2002/ncdd-200207-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200207-grd-scaled.nc",
+    "sha256": "4e97e4f8edf6b87d508aa07b0d1d05c13d0e6048c86f7d53b56dbaa0d7560c85",
+    "downloaded_at": "2026-09-09T11:37:56.417536+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2002-05",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2002/ncdd-200205-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200205-grd-scaled.nc",
+    "sha256": "3ef3105bb62b26e6470613e43ad2b4fd0f8416a138d4cdc4c2702ab892dec196",
+    "downloaded_at": "2026-09-09T11:37:56.457146+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2002-11",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2002/ncdd-200211-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200211-grd-scaled.nc",
+    "sha256": "3eec07c088071000a0ea6e4c2a84888f7c755bdebeb9647b06bd98ee3d93db4a",
+    "downloaded_at": "2026-09-09T11:37:57.233590+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2002-09",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2002/ncdd-200209-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200209-grd-scaled.nc",
+    "sha256": "a2a5b62e65201cd8a2607bf0371bcd9a80734312dd7ac1b017a133f9dd556131",
+    "downloaded_at": "2026-09-09T11:37:57.411886+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2002-08",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2002/ncdd-200208-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200208-grd-scaled.nc",
+    "sha256": "3c23646ee5c05c389ed4f800d462f456cc3898ae1a153c245a1a06ceed66d38a",
+    "downloaded_at": "2026-09-09T11:37:57.418229+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2002-10",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2002/ncdd-200210-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200210-grd-scaled.nc",
+    "sha256": "1b9e836dd2163a07d666552a766319f49c20772830d31a533363bfa6629cad11",
+    "downloaded_at": "2026-09-09T11:37:57.995628+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2003-01",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2003/ncdd-200301-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200301-grd-scaled.nc",
+    "sha256": "dabf715aea46ff766114b7871ca3bf4ea0e6a273e5650671a9ec374fbc2274eb",
+    "downloaded_at": "2026-09-09T11:37:58.673962+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2003-02",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2003/ncdd-200302-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200302-grd-scaled.nc",
+    "sha256": "81d47e72b404d2df2f4290c40e2f92b0cbc7c9245d3d78e1d78151f1909b307a",
+    "downloaded_at": "2026-09-09T11:37:59.429019+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2003-03",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2003/ncdd-200303-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200303-grd-scaled.nc",
+    "sha256": "0f6c2cc9e12da73434c8b2c1ecd61afe16dbc2406fd014c9e08d855b46a669ce",
+    "downloaded_at": "2026-09-09T11:37:59.575756+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2003-04",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2003/ncdd-200304-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200304-grd-scaled.nc",
+    "sha256": "4f084f11e539c0629d19ace1a654c29542e2e8e24dc51b52a3a67c61a3dc8502",
+    "downloaded_at": "2026-09-09T11:37:59.937793+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2003-05",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2003/ncdd-200305-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200305-grd-scaled.nc",
+    "sha256": "b9b032dade041379b1c2ed3273420f3400edea0bd50cb05efe160b6be20a55bc",
+    "downloaded_at": "2026-09-09T11:38:00.448775+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2003-06",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2003/ncdd-200306-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200306-grd-scaled.nc",
+    "sha256": "e9e4e4abe07e90ced17959b98c8a64f85cdd1b1c3290a5c758d2404f4e8d0cbf",
+    "downloaded_at": "2026-09-09T11:38:00.678326+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2003-09",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2003/ncdd-200309-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200309-grd-scaled.nc",
+    "sha256": "6f7ad6b48b22eb6bcb1058d105deab941e567a39c24d3f93dbb1425670474fdd",
+    "downloaded_at": "2026-09-09T11:38:01.392684+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2003-07",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2003/ncdd-200307-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200307-grd-scaled.nc",
+    "sha256": "dfc7b556864379a4751c2eacc5d0ee9dcd52dc0087240779c4c936363d0664e6",
+    "downloaded_at": "2026-09-09T11:38:01.906866+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2003-10",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2003/ncdd-200310-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200310-grd-scaled.nc",
+    "sha256": "71d05fb615c53458d70f59f09017d1877a5bb423332b79bc1126d67c76916328",
+    "downloaded_at": "2026-09-09T11:38:02.577814+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2003-08",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2003/ncdd-200308-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200308-grd-scaled.nc",
+    "sha256": "d93798e8ccc7509819ce70adc17c250cc23b6ea57187fb026dd9bf371bae958d",
+    "downloaded_at": "2026-09-09T11:38:02.688719+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2003-11",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2003/ncdd-200311-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200311-grd-scaled.nc",
+    "sha256": "4e2f47f8e8b087153a53a1ca052cba70ad5414a956991af6bdde112748474a4a",
+    "downloaded_at": "2026-09-09T11:38:02.751756+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2004-02",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2004/ncdd-200402-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200402-grd-scaled.nc",
+    "sha256": "fe301ced1686d2e8e4e90963bb6460f4186c05fe2ee491ad4cdc24b094c2ff68",
+    "downloaded_at": "2026-09-09T11:38:03.490359+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2003-12",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2003/ncdd-200312-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200312-grd-scaled.nc",
+    "sha256": "e8dac0a6d57c971e265f4b2d42f9b164b865d7614f0095405806bd7ba917e233",
+    "downloaded_at": "2026-09-09T11:38:04.105166+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2004-01",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2004/ncdd-200401-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200401-grd-scaled.nc",
+    "sha256": "349044a28bd8db7f8c53531cc9cb1d8bb6c1a8a34f39440ea3f18bc0a8ea433c",
+    "downloaded_at": "2026-09-09T11:38:04.362156+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2004-03",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2004/ncdd-200403-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200403-grd-scaled.nc",
+    "sha256": "53e00691176b4728cd8e10c946fe241ca748a9b81280606a0a30bb08b02639c0",
+    "downloaded_at": "2026-09-09T11:38:04.377983+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2004-04",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2004/ncdd-200404-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200404-grd-scaled.nc",
+    "sha256": "a877a5db9ef62d09a0b587bc78222620a37aca345e2429f6b6a3608a84c86d4c",
+    "downloaded_at": "2026-09-09T11:38:05.048935+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2004-06",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2004/ncdd-200406-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200406-grd-scaled.nc",
+    "sha256": "764fdbf1976379708633ecabf55103159d4121aacf3e8ea43df2d74db00b26c5",
+    "downloaded_at": "2026-09-09T11:38:05.683476+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2004-07",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2004/ncdd-200407-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200407-grd-scaled.nc",
+    "sha256": "e6ad21f18268af4e1b72ddccf7e1631582b7d831dda7ec5981a101d813a57291",
+    "downloaded_at": "2026-09-09T11:38:06.023929+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2004-05",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2004/ncdd-200405-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200405-grd-scaled.nc",
+    "sha256": "3ac770210c0a9efd7aada2532ce4c5d302a87ab8269148e6d3d504eedf7c37ee",
+    "downloaded_at": "2026-09-09T11:38:06.505131+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2004-09",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2004/ncdd-200409-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200409-grd-scaled.nc",
+    "sha256": "a8b195cf367e8b24b3fa7d5ec14d8b10151d7aa9cb16562b8e9d63672d75dafa",
+    "downloaded_at": "2026-09-09T11:38:06.506791+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2002-12",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2002/ncdd-200212-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200212-grd-scaled.nc",
+    "sha256": "62b4fab8176ed0fc65a68c4d6baf40209994956da84d744ade56cc6ec5e959e3",
+    "downloaded_at": "2026-09-09T11:38:06.897874+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2004-10",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2004/ncdd-200410-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200410-grd-scaled.nc",
+    "sha256": "e6ac4f87543052b17d7b11f01973a4cccd8f811af56479fd6548fb6d0eeb527d",
+    "downloaded_at": "2026-09-09T11:38:07.156114+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2004-08",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2004/ncdd-200408-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200408-grd-scaled.nc",
+    "sha256": "c75fe1c0fecec46e8654458095b281393b4fa0922242d467d9ad117ba7be340b",
+    "downloaded_at": "2026-09-09T11:38:07.282678+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2005-02",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2005/ncdd-200502-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200502-grd-scaled.nc",
+    "sha256": "0ef10a71907f8010162bf065154d87ea559da173d7c6c1f8044e9d089edc6cc5",
+    "downloaded_at": "2026-09-09T11:38:07.947408+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2004-12",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2004/ncdd-200412-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200412-grd-scaled.nc",
+    "sha256": "e23bccac99abb8658f976bd37a25c6ce45925f5d1b290f93ec03223aff611a5c",
+    "downloaded_at": "2026-09-09T11:38:08.163820+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2005-04",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2005/ncdd-200504-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200504-grd-scaled.nc",
+    "sha256": "067e59ac508cec0d707c112bfb855c2d74963f470a00a5a6fff27763d303ce2f",
+    "downloaded_at": "2026-09-09T11:38:08.795416+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2005-03",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2005/ncdd-200503-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200503-grd-scaled.nc",
+    "sha256": "f619d22c8430d4021c0597071aad3ab27ea053443ef98f8491b8a8d2498960af",
+    "downloaded_at": "2026-09-09T11:38:09.163285+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2004-11",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2004/ncdd-200411-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200411-grd-scaled.nc",
+    "sha256": "9b1def83e23146f3fdbc57541b79e3357e79fd3d51eda95ef169da838f020a40",
+    "downloaded_at": "2026-09-09T11:38:09.589992+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2005-07",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2005/ncdd-200507-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200507-grd-scaled.nc",
+    "sha256": "4639c44d76f2570ed66b6da0409a1b2d64bd358e1bd488b7c6dd3db932d39ed3",
+    "downloaded_at": "2026-09-09T11:38:10.008191+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2005-06",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2005/ncdd-200506-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200506-grd-scaled.nc",
+    "sha256": "55f18cd789ac557beeba8cbb79a45dddffa702eaf5fbbc2b3579fcaae97ff9a7",
+    "downloaded_at": "2026-09-09T11:38:10.569339+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2005-05",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2005/ncdd-200505-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200505-grd-scaled.nc",
+    "sha256": "c358ad2afd8c26f4816cca8f39c7b63046ae9f5bb30ac41f94ff3012714bb3c5",
+    "downloaded_at": "2026-09-09T11:38:10.661694+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2005-01",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2005/ncdd-200501-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200501-grd-scaled.nc",
+    "sha256": "25651553458888423af3beef0d8fc842fcb5a53a2717668a5cf1bc6705a3ae00",
+    "downloaded_at": "2026-09-09T11:38:11.014478+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2005-10",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2005/ncdd-200510-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200510-grd-scaled.nc",
+    "sha256": "f386946f182cc25b820c7d5ec4b43be082b86b5d9109642326a54a5914201dbc",
+    "downloaded_at": "2026-09-09T11:38:11.510067+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2005-09",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2005/ncdd-200509-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200509-grd-scaled.nc",
+    "sha256": "2514e2c5b1cccedd96b93b724eaff893204519446676131aae8a9d51e7f691ea",
+    "downloaded_at": "2026-09-09T11:38:12.002180+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2005-08",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2005/ncdd-200508-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200508-grd-scaled.nc",
+    "sha256": "65aa49ef5442fc75ab244b1ef6c2bcccb329a938c8db8ca0604e105546e83e9a",
+    "downloaded_at": "2026-09-09T11:38:12.459434+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2006-01",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2006/ncdd-200601-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200601-grd-scaled.nc",
+    "sha256": "00d123c0cecfe03f814abc8748964349aa7fc7b6dcf32ae1e8bdc9d2c8ae21a9",
+    "downloaded_at": "2026-09-09T11:38:12.803698+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2005-12",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2005/ncdd-200512-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200512-grd-scaled.nc",
+    "sha256": "6d075213f08c20db396662c66077ccbc6cea1d2d14fba0f8fbbdf17b79000fe2",
+    "downloaded_at": "2026-09-09T11:38:12.942742+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2005-11",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2005/ncdd-200511-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200511-grd-scaled.nc",
+    "sha256": "f2f278f6275c2f0ca2d4ebd1590eb5d67b61f7e84bd4571284d872abd493edf3",
+    "downloaded_at": "2026-09-09T11:38:13.564648+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2006-04",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2006/ncdd-200604-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200604-grd-scaled.nc",
+    "sha256": "f36d7d9ed035d96886b3f3030d1603f62c612797c5caa35bbac497a45d2ba3fc",
+    "downloaded_at": "2026-09-09T11:38:13.578641+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2006-03",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2006/ncdd-200603-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200603-grd-scaled.nc",
+    "sha256": "47edf655e0d85c12b44ef830995664bc8b534b9882ae124ebd7e68406c20dfef",
+    "downloaded_at": "2026-09-09T11:38:14.471449+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2006-06",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2006/ncdd-200606-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200606-grd-scaled.nc",
+    "sha256": "ace30e35517dbb132002bfdc1959459c9df041b33070bcdc509d4dc3b7381a98",
+    "downloaded_at": "2026-09-09T11:38:14.562758+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2006-05",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2006/ncdd-200605-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200605-grd-scaled.nc",
+    "sha256": "32b2aa3919c8e88f4d2e47e6c011c587485c1759c163381af828da836f818cf6",
+    "downloaded_at": "2026-09-09T11:38:15.026804+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2006-09",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2006/ncdd-200609-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200609-grd-scaled.nc",
+    "sha256": "3aef3ccdad3a122bb96bd4de9da8c9f69b35b9599367dcdd080d3c5649b806b3",
+    "downloaded_at": "2026-09-09T11:38:15.759172+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2006-07",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2006/ncdd-200607-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200607-grd-scaled.nc",
+    "sha256": "fee5bb8dbac207691ee60178bf351a982d6adc2346dc675e45760e09b59f97d9",
+    "downloaded_at": "2026-09-09T11:38:15.990281+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2006-10",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2006/ncdd-200610-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200610-grd-scaled.nc",
+    "sha256": "e394748fc3a2699c129b1e31fbcf0c00258c221b2c5c1505257bf538de7d90f9",
+    "downloaded_at": "2026-09-09T11:38:16.634097+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2006-08",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2006/ncdd-200608-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200608-grd-scaled.nc",
+    "sha256": "48550fc2d1fd747960526bb2cbf117ba7ee60d2a1e5a00570d929c487dcf5d1c",
+    "downloaded_at": "2026-09-09T11:38:16.667626+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2006-12",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2006/ncdd-200612-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200612-grd-scaled.nc",
+    "sha256": "78bb3c2d809803026f2ec5b3e2a0e378f8bd7497f29607ee2a919813e1751258",
+    "downloaded_at": "2026-09-09T11:38:17.352936+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2006-11",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2006/ncdd-200611-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200611-grd-scaled.nc",
+    "sha256": "cab0bc630b666e7f1de29f6abd591197abd5e684b87d211e120fc3d6cd7c61f0",
+    "downloaded_at": "2026-09-09T11:38:17.980095+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2007-01",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2007/ncdd-200701-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200701-grd-scaled.nc",
+    "sha256": "742beb1392bd88426cb83b93aedde18b366decd77498cbb669464d920c4d8f45",
+    "downloaded_at": "2026-09-09T11:38:18.345411+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2007-02",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2007/ncdd-200702-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200702-grd-scaled.nc",
+    "sha256": "464f4e3906ff05c9a7cb418c47bc2a37fb1224202c8af4b5e677bfaeaa80bc57",
+    "downloaded_at": "2026-09-09T11:38:18.409959+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2007-05",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2007/ncdd-200705-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200705-grd-scaled.nc",
+    "sha256": "8b238c097d8ffa1ef253f3226532a8df05b7a5a46e8de5479a64939aa7a880fc",
+    "downloaded_at": "2026-09-09T11:38:19.068346+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2007-04",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2007/ncdd-200704-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200704-grd-scaled.nc",
+    "sha256": "bdd41608c4fb166cbdfa8f5cc67d4a50da8f4420b9651e26bfd3cc937daa7c51",
+    "downloaded_at": "2026-09-09T11:38:19.205856+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2007-07",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2007/ncdd-200707-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200707-grd-scaled.nc",
+    "sha256": "8d82ba6f6b7c11e5d87d0e561cb0ab7b042d9ddb267e48c8913918fc5eac0cdf",
+    "downloaded_at": "2026-09-09T11:38:20.191871+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2007-06",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2007/ncdd-200706-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200706-grd-scaled.nc",
+    "sha256": "4e1a2a62cddfd05a3642cfa12a3bc6cdc0ebe8033aebe7dac702bd79be653ce8",
+    "downloaded_at": "2026-09-09T11:38:20.211511+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2007-03",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2007/ncdd-200703-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200703-grd-scaled.nc",
+    "sha256": "6bf40958ba79a0ee5f7c8d6fa8c10ebe1b7da5440a9d96ec49e3167031f12f26",
+    "downloaded_at": "2026-09-09T11:38:20.213139+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2007-08",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2007/ncdd-200708-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200708-grd-scaled.nc",
+    "sha256": "f21c690f0e01e3417ca0cb8aff06e4b3fa3d754ad1701351cf778afc701eebad",
+    "downloaded_at": "2026-09-09T11:38:21.269280+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2007-09",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2007/ncdd-200709-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200709-grd-scaled.nc",
+    "sha256": "348d9416f82f7769d0f3134d16dbe8782a1a7db9673db476cc71214b02fa9d15",
+    "downloaded_at": "2026-09-09T11:38:21.327388+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2007-10",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2007/ncdd-200710-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200710-grd-scaled.nc",
+    "sha256": "5fed342549503910770fe3222d3b0ad2aa9788dd937ee09a0eb23105fe7695d0",
+    "downloaded_at": "2026-09-09T11:38:21.332061+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2007-11",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2007/ncdd-200711-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200711-grd-scaled.nc",
+    "sha256": "e0385822788ba602ac0586029474af873f5febb6db43980767aa266b156eba5b",
+    "downloaded_at": "2026-09-09T11:38:22.312308+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2008-02",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2008/ncdd-200802-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200802-grd-scaled.nc",
+    "sha256": "ad10f515078813a3ca3ebb8eee593e8435d950c08e5efa1bee05579c94ea4d33",
+    "downloaded_at": "2026-09-09T11:38:22.839297+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2008-01",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2008/ncdd-200801-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200801-grd-scaled.nc",
+    "sha256": "481ac2c7de84223ff110497788aad7e62a0d1480b18f177e86a7ee556b53fc2c",
+    "downloaded_at": "2026-09-09T11:38:23.064207+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2007-12",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2007/ncdd-200712-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200712-grd-scaled.nc",
+    "sha256": "e2b3bbe8caab2c4e99a21d03fca371393fcff290d80e521563cb76cdada8c2dd",
+    "downloaded_at": "2026-09-09T11:38:23.226679+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2006-02",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2006/ncdd-200602-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200602-grd-scaled.nc",
+    "sha256": "714871bae2a6131d948c167ac51d3158d7abfe87aa5b85872eb031965f0a4153",
+    "downloaded_at": "2026-09-09T11:38:23.303586+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2008-03",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2008/ncdd-200803-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200803-grd-scaled.nc",
+    "sha256": "b4fe627f6c49508967065f6fc1957b45328faefa3d7c6350892578198ea2705c",
+    "downloaded_at": "2026-09-09T11:38:24.865526+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2008-06",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2008/ncdd-200806-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200806-grd-scaled.nc",
+    "sha256": "a8a7842988b1c54e0632ba9439d1f524319597613c42a808b57d6e233afd1248",
+    "downloaded_at": "2026-09-09T11:38:24.905427+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2008-05",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2008/ncdd-200805-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200805-grd-scaled.nc",
+    "sha256": "acf2476ee4ae66af7e9782ba3119f88baa1539de171f867e471620c2fec0d67e",
+    "downloaded_at": "2026-09-09T11:38:24.943880+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2008-04",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2008/ncdd-200804-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200804-grd-scaled.nc",
+    "sha256": "7cdf7588f9bbaeb10cd7858d5ff7e9fc6d7b353c29f0b619eb41d22852d95981",
+    "downloaded_at": "2026-09-09T11:38:25.211572+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2008-08",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2008/ncdd-200808-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200808-grd-scaled.nc",
+    "sha256": "346d6a43c574be5a7be547aaa1fb558c5489d842b9fa0e722298e068d898fa05",
+    "downloaded_at": "2026-09-09T11:38:25.830042+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2008-07",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2008/ncdd-200807-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200807-grd-scaled.nc",
+    "sha256": "41384bffe8af5258d6ec68f7dee64579cd5a7dd1f5d78e2411efe695ca365b0e",
+    "downloaded_at": "2026-09-09T11:38:26.108281+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2008-09",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2008/ncdd-200809-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200809-grd-scaled.nc",
+    "sha256": "fd624cf97d862ba8bb0f1b34d6d92e89ab1ecdbe0a5219764cc678a89646ef01",
+    "downloaded_at": "2026-09-09T11:38:26.295296+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2008-12",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2008/ncdd-200812-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200812-grd-scaled.nc",
+    "sha256": "32971303c47b6808c48a6c4702c9f33257608d265764ea1080faf03923220340",
+    "downloaded_at": "2026-09-09T11:38:27.045789+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2008-11",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2008/ncdd-200811-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200811-grd-scaled.nc",
+    "sha256": "274711b106828a2b23daa8a8244d51ae813dbfe7bf9de555e4fe17d87d616fa9",
+    "downloaded_at": "2026-09-09T11:38:28.167278+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2009-01",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2009/ncdd-200901-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200901-grd-scaled.nc",
+    "sha256": "a3b3957d5a2303670a1e604edff30e6ea9f43c4982ad182796b8d5a25df70189",
+    "downloaded_at": "2026-09-09T11:38:28.340617+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2009-02",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2009/ncdd-200902-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200902-grd-scaled.nc",
+    "sha256": "08968550d03cd8b9a4878ef67906af20860a7fafae7af41edbf43f214a7bb328",
+    "downloaded_at": "2026-09-09T11:38:28.953573+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2009-04",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2009/ncdd-200904-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200904-grd-scaled.nc",
+    "sha256": "75b6fcc620ea86eb56a916d94032ae4e6df9ed80a99f9c2062130a55425242ac",
+    "downloaded_at": "2026-09-09T11:38:29.051319+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2009-05",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2009/ncdd-200905-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200905-grd-scaled.nc",
+    "sha256": "d2b34897be54f683910730e86ea2306a3ab524c95dfff7601d5e0e9b47cba543",
+    "downloaded_at": "2026-09-09T11:38:29.715219+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2009-06",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2009/ncdd-200906-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200906-grd-scaled.nc",
+    "sha256": "cfb6a08f071fe37484df4f2c02155d4c9b5a67824ac059eb016d25d803a3a525",
+    "downloaded_at": "2026-09-09T11:38:30.149295+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2008-10",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2008/ncdd-200810-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200810-grd-scaled.nc",
+    "sha256": "ace1f90deb41f671efb663b3df0240309231b20a27d4666383b7f81f51f64166",
+    "downloaded_at": "2026-09-09T11:38:30.405088+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2009-09",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2009/ncdd-200909-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200909-grd-scaled.nc",
+    "sha256": "77b4aba7c6bda8eef35452cf4fa949cb51f6df9fe1b36ae07b8da41921c7b15e",
+    "downloaded_at": "2026-09-09T11:38:30.871636+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2009-08",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2009/ncdd-200908-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200908-grd-scaled.nc",
+    "sha256": "108c749fde8566e380b7755d00789e19b693ccb0a7be662cb36e31f395af8350",
+    "downloaded_at": "2026-09-09T11:38:31.125702+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2009-03",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2009/ncdd-200903-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200903-grd-scaled.nc",
+    "sha256": "214b9edda8ff0c7f6c874c8c94a15b215a720862b2329a5d50ec69a315eb0edc",
+    "downloaded_at": "2026-09-09T11:38:31.563082+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2009-10",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2009/ncdd-200910-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200910-grd-scaled.nc",
+    "sha256": "9c56e6c30aeb17adb4331b7e4aca6bdd05481100568431f6fdc720006677093d",
+    "downloaded_at": "2026-09-09T11:38:31.588107+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2010-01",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2010/ncdd-201001-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201001-grd-scaled.nc",
+    "sha256": "7eeb533923eea2a8ec0c46a419fb7368f3e3baefd4553c4db69260c97203b134",
+    "downloaded_at": "2026-09-09T11:38:32.406430+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2009-07",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2009/ncdd-200907-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200907-grd-scaled.nc",
+    "sha256": "4a5d421571d4b3504f1edc23835a4a419a8b5b45e64575d160df8ca11dc4f50b",
+    "downloaded_at": "2026-09-09T11:38:32.488782+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2010-02",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2010/ncdd-201002-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201002-grd-scaled.nc",
+    "sha256": "33f98b2cc96abb0dec60b48df309cedc68ca3db13a4d6ab2a7b950fb80eb2996",
+    "downloaded_at": "2026-09-09T11:38:33.456780+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2009-12",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2009/ncdd-200912-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200912-grd-scaled.nc",
+    "sha256": "1a8f6cc51d48cf951d5f2727d5f7ba35e4a3232deafc1c81c453034504a0cfbc",
+    "downloaded_at": "2026-09-09T11:38:33.539902+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2009-11",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2009/ncdd-200911-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-200911-grd-scaled.nc",
+    "sha256": "d75a5fbb54f4fd8b528143a9ac4b65bcf3f58f0b48352e3807827a27158b48ff",
+    "downloaded_at": "2026-09-09T11:38:33.681949+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2010-03",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2010/ncdd-201003-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201003-grd-scaled.nc",
+    "sha256": "413eb10c964446a1e66b964bc4f594b4daeec5b64bb7f80d33627af01318b8c6",
+    "downloaded_at": "2026-09-09T11:38:34.578519+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2010-04",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2010/ncdd-201004-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201004-grd-scaled.nc",
+    "sha256": "b0b3295b4f6bfc079d0e5efd1eff4e4dc2daa7c3809cdbdd39590c882be731ee",
+    "downloaded_at": "2026-09-09T11:38:34.929711+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2010-05",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2010/ncdd-201005-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201005-grd-scaled.nc",
+    "sha256": "96f3784a5f894640d7bb516babe5a844f8dad266db051af8daeb2d95987f3d95",
+    "downloaded_at": "2026-09-09T11:38:35.062209+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2010-09",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2010/ncdd-201009-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201009-grd-scaled.nc",
+    "sha256": "74d5a65b013107ba7cf1444c67fd3805651b5ac6bfc113156451db68a3c3ef2c",
+    "downloaded_at": "2026-09-09T11:38:35.604475+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2010-06",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2010/ncdd-201006-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201006-grd-scaled.nc",
+    "sha256": "06c3c400d84259d68186cec3c6d1d96a7b9d54e3001c76f42451beb03b13fc55",
+    "downloaded_at": "2026-09-09T11:38:36.361838+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2010-07",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2010/ncdd-201007-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201007-grd-scaled.nc",
+    "sha256": "e11685fc1ca5d8e7df38f0edb6c47e1d3c93750550ea41c191c7f2924a501be8",
+    "downloaded_at": "2026-09-09T11:38:36.645432+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2010-08",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2010/ncdd-201008-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201008-grd-scaled.nc",
+    "sha256": "a5461fa979f04343af3043a15cb7bde510249c4d53406e5cdf7dad5a43c7864f",
+    "downloaded_at": "2026-09-09T11:38:36.720566+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2010-10",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2010/ncdd-201010-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201010-grd-scaled.nc",
+    "sha256": "efb12a9f746980494910f81d44e1c5e05c8d9ee9d4e8b93637048dc2a33d6172",
+    "downloaded_at": "2026-09-09T11:38:36.867929+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2011-01",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2011/ncdd-201101-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201101-grd-scaled.nc",
+    "sha256": "7deb702fe37eb1d47dc222f90f0add103585228935da43e7fe874ba50f7ce328",
+    "downloaded_at": "2026-09-09T11:38:37.720485+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2010-11",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2010/ncdd-201011-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201011-grd-scaled.nc",
+    "sha256": "03a279726e5d289b8850b40a99ef56ac8bf6fcbb53a6ba69bb38e7499447c062",
+    "downloaded_at": "2026-09-09T11:38:38.217651+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2011-03",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2011/ncdd-201103-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201103-grd-scaled.nc",
+    "sha256": "79ea8a9ee9d27b158bc348559e2b21040a353c5484eadd5a590689759d33c950",
+    "downloaded_at": "2026-09-09T11:38:39.055933+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2011-02",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2011/ncdd-201102-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201102-grd-scaled.nc",
+    "sha256": "44b410cf764185a5a2305945d890f897c1b7e8a052a786bfb29d5b0e82b9a74b",
+    "downloaded_at": "2026-09-09T11:38:39.069593+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2010-12",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2010/ncdd-201012-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201012-grd-scaled.nc",
+    "sha256": "7dd736286cb58213b0d82fa32c745f1c990d2fa92e9d8a168d5bf9f5a6a23e26",
+    "downloaded_at": "2026-09-09T11:38:39.751122+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2011-06",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2011/ncdd-201106-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201106-grd-scaled.nc",
+    "sha256": "8da0fa8cee9c147c37537e3f03ec50e510e61a1a2fb4479e585e969818be1bee",
+    "downloaded_at": "2026-09-09T11:38:40.225989+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2011-04",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2011/ncdd-201104-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201104-grd-scaled.nc",
+    "sha256": "fdf88e68546ac43bdd3f1c11795f19f369bbdf5374e2d82f9e0f0dba51ffdbf3",
+    "downloaded_at": "2026-09-09T11:38:40.235095+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2011-05",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2011/ncdd-201105-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201105-grd-scaled.nc",
+    "sha256": "3239f2fc771140eaa65d57d4078b9b5bc620806ccf08088b37079d179307917c",
+    "downloaded_at": "2026-09-09T11:38:40.807686+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2011-07",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2011/ncdd-201107-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201107-grd-scaled.nc",
+    "sha256": "0de9fb821256cdf3b117d635842b9f50fd84a368b860348ca47c3f24b727b4da",
+    "downloaded_at": "2026-09-09T11:38:41.041318+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2011-08",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2011/ncdd-201108-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201108-grd-scaled.nc",
+    "sha256": "9b2437ba15745d7d38ba1dcba6ca83ad0ba330707cdc7d93fb59e15a2d1d9b97",
+    "downloaded_at": "2026-09-09T11:38:41.683093+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2011-10",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2011/ncdd-201110-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201110-grd-scaled.nc",
+    "sha256": "354be3945b00a06bc5f64fc31af15924d9966154327da558b511ec7eb312ae4b",
+    "downloaded_at": "2026-09-09T11:38:42.359948+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2011-11",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2011/ncdd-201111-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201111-grd-scaled.nc",
+    "sha256": "94841afe9a9cfd9969a51f6b37e150a1de5412296203310e7e1d8cf21f9e8656",
+    "downloaded_at": "2026-09-09T11:38:42.614753+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2011-09",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2011/ncdd-201109-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201109-grd-scaled.nc",
+    "sha256": "6e9a0b30bf082bdfad0c44b793bc8c72ce62d146d28909171e10081f7e89606d",
+    "downloaded_at": "2026-09-09T11:38:42.949850+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2012-01",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2012/ncdd-201201-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201201-grd-scaled.nc",
+    "sha256": "0f426dfc9c7593adbda47baf090a81024461b9fc13adfd0b742585db8822fc4e",
+    "downloaded_at": "2026-09-09T11:38:43.241877+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2011-12",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2011/ncdd-201112-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201112-grd-scaled.nc",
+    "sha256": "e0f32c277c47168c319349610d267e973c7d7f1291c8e027b9dcb3b1ce0e13a0",
+    "downloaded_at": "2026-09-09T11:38:43.443892+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2012-02",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2012/ncdd-201202-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201202-grd-scaled.nc",
+    "sha256": "8c5a7c5cc9c6f146b3a15a484741f3f714c029c47efab59c09ff8dd1ec3b65cf",
+    "downloaded_at": "2026-09-09T11:38:44.886643+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2012-04",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2012/ncdd-201204-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201204-grd-scaled.nc",
+    "sha256": "41a3029a32e7ca5a04b8ab070c4c5d88a1266cc521151d5d2f658acfade2a470",
+    "downloaded_at": "2026-09-09T11:38:45.032117+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2012-06",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2012/ncdd-201206-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201206-grd-scaled.nc",
+    "sha256": "b1ad853075e04bf3b0eeca7e1703d7ee8767997d00b2f7ee7a70230847cdc15f",
+    "downloaded_at": "2026-09-09T11:38:45.746934+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2012-05",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2012/ncdd-201205-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201205-grd-scaled.nc",
+    "sha256": "c5533d8ba1d8628b7ca18f6ed0b14d4b00cb58ada66300e44754ec3bdc5a4d3f",
+    "downloaded_at": "2026-09-09T11:38:45.911616+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2012-07",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2012/ncdd-201207-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201207-grd-scaled.nc",
+    "sha256": "997e9d920eea0f8f0b4f36fe44f894927292114e761631f5765689ff570cb8a3",
+    "downloaded_at": "2026-09-09T11:38:46.034216+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2012-03",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2012/ncdd-201203-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201203-grd-scaled.nc",
+    "sha256": "00b4954a8d372f9ddb981e637bcf304b476774e7acc8f44046c87e38450f7f5c",
+    "downloaded_at": "2026-09-09T11:38:46.094756+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2012-08",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2012/ncdd-201208-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201208-grd-scaled.nc",
+    "sha256": "2cb59e5bb5a7d844d08bb33245cbd3510bb8e201006191d775db4bf477279051",
+    "downloaded_at": "2026-09-09T11:38:47.059059+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2012-10",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2012/ncdd-201210-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201210-grd-scaled.nc",
+    "sha256": "320ab57b0f918c34dfb6b69db06ae69358dc819524eb3a0e5a0b6ce0c9d42779",
+    "downloaded_at": "2026-09-09T11:38:47.439145+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2012-11",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2012/ncdd-201211-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201211-grd-scaled.nc",
+    "sha256": "c1c74a20b266c3b7146ac211070e612ae01e1bc34c6dda073f233747ab571dfa",
+    "downloaded_at": "2026-09-09T11:38:48.491792+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2012-09",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2012/ncdd-201209-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201209-grd-scaled.nc",
+    "sha256": "8f4320a6d57234e529026dc2ef407235fe535d446d28a6cc4e5ed3ffb1fd984f",
+    "downloaded_at": "2026-09-09T11:38:48.595680+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2012-12",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2012/ncdd-201212-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201212-grd-scaled.nc",
+    "sha256": "8b5992ea2edfce1e219a486a332355546e368b1a893d2e937a93bc7509d9cbcd",
+    "downloaded_at": "2026-09-09T11:38:48.649176+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2013-02",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2013/ncdd-201302-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201302-grd-scaled.nc",
+    "sha256": "462f26dfe3317d9e5394792d1a2d02f8c2a83d642a50e1d92c3334075b8e6735",
+    "downloaded_at": "2026-09-09T11:38:49.098607+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2013-01",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2013/ncdd-201301-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201301-grd-scaled.nc",
+    "sha256": "80794f6b1eb65440ccc5a9fe96633e1da328caab4904615c5d6fd68b64d38f57",
+    "downloaded_at": "2026-09-09T11:38:49.123879+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2013-05",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2013/ncdd-201305-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201305-grd-scaled.nc",
+    "sha256": "449f51a178869c13267c217a496a52282a47438ae42ac2a2aeebcb7a9565aefe",
+    "downloaded_at": "2026-09-09T11:38:50.344475+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2013-06",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2013/ncdd-201306-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201306-grd-scaled.nc",
+    "sha256": "5941d98b143fc9a7055a97a415f74fef184eec35ae196914554c04eddc0a7471",
+    "downloaded_at": "2026-09-09T11:38:50.424371+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2013-04",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2013/ncdd-201304-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201304-grd-scaled.nc",
+    "sha256": "cf9e9424ca8caa2df359b5280f29e4c04ad7142482c3e5eea76b696623f6af60",
+    "downloaded_at": "2026-09-09T11:38:51.216995+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2013-07",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2013/ncdd-201307-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201307-grd-scaled.nc",
+    "sha256": "fc16d4a63a94cf0080e964f3e5bc65a638eb708d3226491f282abb0eea324677",
+    "downloaded_at": "2026-09-09T11:38:51.398078+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2013-08",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2013/ncdd-201308-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201308-grd-scaled.nc",
+    "sha256": "9839c1845a85e407c5786af72348694184e7b7c59ce1c6c77d3cd1fdda12f1a6",
+    "downloaded_at": "2026-09-09T11:38:51.694641+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2013-11",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2013/ncdd-201311-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201311-grd-scaled.nc",
+    "sha256": "0c96bfbd9e806b5e33046f0c574572be9a7eebbf3374bcd94dfd7fcd8d4f47c7",
+    "downloaded_at": "2026-09-09T11:38:52.218618+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2013-10",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2013/ncdd-201310-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201310-grd-scaled.nc",
+    "sha256": "4f1eaba358c5ba0ff6a117634ae3c6242308c97fcc6818eb060a72ba81326a82",
+    "downloaded_at": "2026-09-09T11:38:52.484162+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2013-03",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2013/ncdd-201303-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201303-grd-scaled.nc",
+    "sha256": "bf73bfd1393c9db20d4a3d912dd861fd135495b41658d866582e3eb9ba6cb6c5",
+    "downloaded_at": "2026-09-09T11:38:52.798640+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2014-02",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2014/ncdd-201402-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201402-grd-scaled.nc",
+    "sha256": "3d5f417cafdad905dd664e79254353a57d8d3e86079ad70b8bf36333dc4cd9a5",
+    "downloaded_at": "2026-09-09T11:38:53.519313+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2014-01",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2014/ncdd-201401-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201401-grd-scaled.nc",
+    "sha256": "1b565e44dca7fe2bd088ff7567ac0bae219fb51a6645ebb679e0ab0f2da48446",
+    "downloaded_at": "2026-09-09T11:38:53.560755+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2013-09",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2013/ncdd-201309-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201309-grd-scaled.nc",
+    "sha256": "63a81af3c6f91f3f4134421947d89fec2146ea4886aa84954b81d8febe904acf",
+    "downloaded_at": "2026-09-09T11:38:54.246620+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2013-12",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2013/ncdd-201312-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201312-grd-scaled.nc",
+    "sha256": "50bb98d489f230d38ff54e6adc9cd1ccc1e55f30ac1c3419fe405fbf97394ce8",
+    "downloaded_at": "2026-09-09T11:38:54.811769+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2014-03",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2014/ncdd-201403-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201403-grd-scaled.nc",
+    "sha256": "530be17f08130c206417c59b3d2dc393e5ecc86906eff59ca83f8dd244bec0e6",
+    "downloaded_at": "2026-09-09T11:38:55.434254+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2014-05",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2014/ncdd-201405-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201405-grd-scaled.nc",
+    "sha256": "3b689cbb3d8f204776017e49f683f9b9e3a2c656cd45fec8c1bbca267a891a47",
+    "downloaded_at": "2026-09-09T11:38:55.567049+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2014-04",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2014/ncdd-201404-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201404-grd-scaled.nc",
+    "sha256": "bf35ceaca6d61c78872f3ddba791a99df7cc5fd0a9a8744a9937c738be3ea361",
+    "downloaded_at": "2026-09-09T11:38:56.045131+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2014-06",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2014/ncdd-201406-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201406-grd-scaled.nc",
+    "sha256": "7e7ef9b46b9b263ea3ef0db7fa5898c69e1828bc5e5a09ccb1c72000ab755d3d",
+    "downloaded_at": "2026-09-09T11:38:56.707805+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2014-08",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2014/ncdd-201408-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201408-grd-scaled.nc",
+    "sha256": "dcae5c8db789f7efcf2a5f78a017fd1bb5e871384885dc12dfc979d2892b224d",
+    "downloaded_at": "2026-09-09T11:38:56.724139+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2014-07",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2014/ncdd-201407-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201407-grd-scaled.nc",
+    "sha256": "29a24d8a477b8fe26d20408f5a8e467446f97ef62a678dd86c43692532b5b3f3",
+    "downloaded_at": "2026-09-09T11:38:56.982488+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2014-09",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2014/ncdd-201409-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201409-grd-scaled.nc",
+    "sha256": "4c81b9c36099962dbc7216b6ea24bd8158933b118172a5b166cc4c78f983e4c9",
+    "downloaded_at": "2026-09-09T11:38:57.828671+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2014-11",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2014/ncdd-201411-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201411-grd-scaled.nc",
+    "sha256": "3ba509476b9d785fde13d0d4b1ab315382ad11113484722d4812d0513a2d65bf",
+    "downloaded_at": "2026-09-09T11:38:57.954640+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2014-12",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2014/ncdd-201412-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201412-grd-scaled.nc",
+    "sha256": "19d85b6c1593884abc1eebe0b8822e7f582ece82fff5380e51e3cc2e8b5587d8",
+    "downloaded_at": "2026-09-09T11:38:58.354076+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2015-02",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2015/ncdd-201502-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201502-grd-scaled.nc",
+    "sha256": "a3354fc5f85430cfdcd7129636abf3f9e78b831a705eff4f30bc3335be25e3ef",
+    "downloaded_at": "2026-09-09T11:38:58.743604+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2014-10",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2014/ncdd-201410-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201410-grd-scaled.nc",
+    "sha256": "e4414b6c70eb3fc5dd1df3086d64508ab477af3812e98875db8e7028d8806d4d",
+    "downloaded_at": "2026-09-09T11:38:58.991288+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2015-03",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2015/ncdd-201503-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201503-grd-scaled.nc",
+    "sha256": "4c4e6c451c31ff6900affc50dbdb570e2f1226583b4b8c25bbae5d71828db7d3",
+    "downloaded_at": "2026-09-09T11:38:59.762590+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2015-05",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2015/ncdd-201505-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201505-grd-scaled.nc",
+    "sha256": "c450ba209fc901e699a950a8039829ef8f4c8b9be632a0869070a2466dcbcec9",
+    "downloaded_at": "2026-09-09T11:39:00.096941+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2015-04",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2015/ncdd-201504-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201504-grd-scaled.nc",
+    "sha256": "b5a63fd9c84603b35ee0eb59d3fbfcf2a53fc11069e02097204a8e3b6ffe724a",
+    "downloaded_at": "2026-09-09T11:39:00.427281+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2015-01",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2015/ncdd-201501-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201501-grd-scaled.nc",
+    "sha256": "2df19eb4625afae2ffca9a26b6d1a8c148c9a0a7341986ff64f07ad01b3a6c35",
+    "downloaded_at": "2026-09-09T11:39:00.917988+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2015-07",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2015/ncdd-201507-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201507-grd-scaled.nc",
+    "sha256": "38fcfdb406b48c32003a9f5d2d6c4dfb7149ff1579b712d7392fc8c8d0918b8a",
+    "downloaded_at": "2026-09-09T11:39:01.261317+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2015-06",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2015/ncdd-201506-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201506-grd-scaled.nc",
+    "sha256": "0ad4333bcc06d5f14f50bec30a64a94de446dd1d7505c6180f378caf57d491f9",
+    "downloaded_at": "2026-09-09T11:39:02.156022+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2015-10",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2015/ncdd-201510-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201510-grd-scaled.nc",
+    "sha256": "5b1f02c088d58ff6601cdf9b4b9033906c5eaf411249a1327b1d70d2c7e863d9",
+    "downloaded_at": "2026-09-09T11:39:02.480096+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2015-09",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2015/ncdd-201509-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201509-grd-scaled.nc",
+    "sha256": "c26f4be1c981d8e9575234647ac63420b33488ec520ed140048c0a6b73c7fba5",
+    "downloaded_at": "2026-09-09T11:39:02.912944+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2015-08",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2015/ncdd-201508-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201508-grd-scaled.nc",
+    "sha256": "0870297a83a354cf5cd9b140da01e08453faaf648615461903f4e8643fb29895",
+    "downloaded_at": "2026-09-09T11:39:03.325359+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2015-12",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2015/ncdd-201512-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201512-grd-scaled.nc",
+    "sha256": "883c473e7e4b0ed65acc8672ceb357680d0b22748777bf2fd6f695df597baf91",
+    "downloaded_at": "2026-09-09T11:39:03.658185+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2016-02",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2016/ncdd-201602-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201602-grd-scaled.nc",
+    "sha256": "687283de26f76cc9e8572cd107c29ab50a671fdcbc3f8d9ddf620352a40509ec",
+    "downloaded_at": "2026-09-09T11:39:04.083504+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2016-01",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2016/ncdd-201601-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201601-grd-scaled.nc",
+    "sha256": "1d86992ed2e6d4cfc6403c522c0e9c649979f2953e8335e8724467ef59965c89",
+    "downloaded_at": "2026-09-09T11:39:04.854567+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2016-04",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2016/ncdd-201604-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201604-grd-scaled.nc",
+    "sha256": "ca71c56758cdfe7ed7853d9ad199cdf887efefd072a7277aa03f9dce62798b78",
+    "downloaded_at": "2026-09-09T11:39:05.096868+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2016-06",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2016/ncdd-201606-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201606-grd-scaled.nc",
+    "sha256": "6b312cfa5f3dfa70f73165b6d377b285738ddce9954cc3b93b3c3451be9a5461",
+    "downloaded_at": "2026-09-09T11:39:05.567727+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2016-05",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2016/ncdd-201605-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201605-grd-scaled.nc",
+    "sha256": "fe639e45b690a0222fc77a1f98a0c5e203d6ed00c430e0e53af6e4d1a01b83e6",
+    "downloaded_at": "2026-09-09T11:39:05.991176+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2015-11",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2015/ncdd-201511-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201511-grd-scaled.nc",
+    "sha256": "dba0e6054e51c40528f7da01912012b232888bc9676bd874fffc56d223c410ca",
+    "downloaded_at": "2026-09-09T11:39:06.212932+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2016-03",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2016/ncdd-201603-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201603-grd-scaled.nc",
+    "sha256": "18885920ecf6160cb568642e2a2f36e355571763ca8002eb4cf1652c538fc2d2",
+    "downloaded_at": "2026-09-09T11:39:06.276993+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2016-10",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2016/ncdd-201610-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201610-grd-scaled.nc",
+    "sha256": "1dcc02fa1c5887dec825b4199faaaf9b7c560ade54125fdf88276acd1b666a39",
+    "downloaded_at": "2026-09-09T11:39:07.302081+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2016-07",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2016/ncdd-201607-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201607-grd-scaled.nc",
+    "sha256": "0eeb72ef1873793583c3715608ec3526ac0f8b4070dfbbaa5507321e0fd723a5",
+    "downloaded_at": "2026-09-09T11:39:07.549809+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2016-09",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2016/ncdd-201609-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201609-grd-scaled.nc",
+    "sha256": "795074863eb17c1c20e2495abbf58824826b3ae83348b4518594a7a17c75dc13",
+    "downloaded_at": "2026-09-09T11:39:07.624204+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2016-08",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2016/ncdd-201608-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201608-grd-scaled.nc",
+    "sha256": "e5378c73ade20fe50b6e967a55a9390bb6fcbee02572650a0a93e5f396a5cc68",
+    "downloaded_at": "2026-09-09T11:39:07.686873+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2016-12",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2016/ncdd-201612-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201612-grd-scaled.nc",
+    "sha256": "333deb28ab72ccee3897d3ac408d978bf450ea96dcda9f4bd3c1994f915b2ee3",
+    "downloaded_at": "2026-09-09T11:39:09.167174+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2017-02",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2017/ncdd-201702-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201702-grd-scaled.nc",
+    "sha256": "5cdb0f66f5cf20cc0ed9e00db8e3948a96142b017dae752d66d86124a1c3d4ed",
+    "downloaded_at": "2026-09-09T11:39:09.301339+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2016-11",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2016/ncdd-201611-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201611-grd-scaled.nc",
+    "sha256": "9c1cc9bd87bb8b3862236ee02931261c4bbbe38c2ed2d73c2722d5a857977f41",
+    "downloaded_at": "2026-09-09T11:39:09.306429+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2017-04",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2017/ncdd-201704-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201704-grd-scaled.nc",
+    "sha256": "e39d2247a3b05e7b90783f60ef2f8460a95bdea3ce0698665575345aa64d26be",
+    "downloaded_at": "2026-09-09T11:39:09.922864+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2017-01",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2017/ncdd-201701-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201701-grd-scaled.nc",
+    "sha256": "eea50169f3b9345a10336e9eb1e11e5023e1806a8f0cf5b3cde90a4483590927",
+    "downloaded_at": "2026-09-09T11:39:09.968142+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2017-05",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2017/ncdd-201705-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201705-grd-scaled.nc",
+    "sha256": "5d88051725c4e1f88277d809b586fb8e5970a8c448ac7a4ebf2f79c7f11d63ae",
+    "downloaded_at": "2026-09-09T11:39:10.814179+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2017-08",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2017/ncdd-201708-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201708-grd-scaled.nc",
+    "sha256": "c079f1c51b35c8ae3071b985395e0501831122d97206e6f1ac91f1d9034fc1da",
+    "downloaded_at": "2026-09-09T11:39:11.789733+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2017-06",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2017/ncdd-201706-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201706-grd-scaled.nc",
+    "sha256": "a5d92887a138e162ddb4cea9ac81a1667693bf220ab68a11b9020610fd308ddb",
+    "downloaded_at": "2026-09-09T11:39:11.837519+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2017-07",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2017/ncdd-201707-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201707-grd-scaled.nc",
+    "sha256": "4ca2a2b613da6b82bdbcdb7c4d955d941041df690dc89eab6c562ae4e5113016",
+    "downloaded_at": "2026-09-09T11:39:12.190600+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2017-09",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2017/ncdd-201709-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201709-grd-scaled.nc",
+    "sha256": "2666ad993e4709f86abd534449424496e0fe2c23979afdb6cece1f72f89c4d0b",
+    "downloaded_at": "2026-09-09T11:39:12.192898+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2017-10",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2017/ncdd-201710-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201710-grd-scaled.nc",
+    "sha256": "928381f1e7a8f85441d8e2317c10e98cf41ede32fe519f628eb1f8552b869a06",
+    "downloaded_at": "2026-09-09T11:39:13.196752+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2017-12",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2017/ncdd-201712-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201712-grd-scaled.nc",
+    "sha256": "6ad88d5398663c537d72f4ebad8dbdf2167d685ee7ad9987ece1c67ed68839fa",
+    "downloaded_at": "2026-09-09T11:39:13.207174+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2017-11",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2017/ncdd-201711-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201711-grd-scaled.nc",
+    "sha256": "ef4b9ed930fc462da374208598de5aabc4d56618dfebb6ddd8ae78bcf2d013ea",
+    "downloaded_at": "2026-09-09T11:39:14.002059+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2018-03",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2018/ncdd-201803-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201803-grd-scaled.nc",
+    "sha256": "9785cc0693cd4af503da7a07a8b60326abe52510d9b37bcf10ae79648042a7f6",
+    "downloaded_at": "2026-09-09T11:39:14.658235+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2018-02",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2018/ncdd-201802-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201802-grd-scaled.nc",
+    "sha256": "1c799b2b70f363b89b29a2021ccc4c14dae071e389dd26a7184a364069a54d26",
+    "downloaded_at": "2026-09-09T11:39:14.704917+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2018-04",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2018/ncdd-201804-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201804-grd-scaled.nc",
+    "sha256": "f27406f93ef21362a0df2128b0e7b539c441d86e2a2da4e930caca64f4d77ba5",
+    "downloaded_at": "2026-09-09T11:39:15.768502+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2018-05",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2018/ncdd-201805-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201805-grd-scaled.nc",
+    "sha256": "2727c3e5f9a4c51b0cccbd24004ea498697a284da379d29a73978b7f3aac3d0b",
+    "downloaded_at": "2026-09-09T11:39:15.769610+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2018-01",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2018/ncdd-201801-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201801-grd-scaled.nc",
+    "sha256": "4eb25b9afb3d9e664018eaee30a3c6ddf0a5661cbd2db9850239f536cd1d96df",
+    "downloaded_at": "2026-09-09T11:39:15.772936+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2017-03",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2017/ncdd-201703-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201703-grd-scaled.nc",
+    "sha256": "d25bfed2a44c797866b44d6a1f6eca08b5022859eb52e91493258b0567bbc72e",
+    "downloaded_at": "2026-09-09T11:39:15.784914+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2018-07",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2018/ncdd-201807-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201807-grd-scaled.nc",
+    "sha256": "4bb2195416fad13f4065fc836cd9ddc166773ff304fbe0d3702b1357b44ec77f",
+    "downloaded_at": "2026-09-09T11:39:16.618053+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2018-08",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2018/ncdd-201808-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201808-grd-scaled.nc",
+    "sha256": "72272c4f5928b46de9d60871dd4bc55597bf819063b1f000f62a5cbb961393cd",
+    "downloaded_at": "2026-09-09T11:39:17.198271+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2018-10",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2018/ncdd-201810-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201810-grd-scaled.nc",
+    "sha256": "60500c6cf407d82bf231726166cfaa4841f3f150715c12a1bb8edd7f732b81cb",
+    "downloaded_at": "2026-09-09T11:39:17.742745+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2018-06",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2018/ncdd-201806-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201806-grd-scaled.nc",
+    "sha256": "edbae3e1b235ed95a45ef72f264b2602a3daecf98417ecfa1af905c9d79c50dc",
+    "downloaded_at": "2026-09-09T11:39:17.754955+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2018-09",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2018/ncdd-201809-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201809-grd-scaled.nc",
+    "sha256": "47809251c491de4f123f53e8aa4476da6254395411bc09b3ccbaf5a741898843",
+    "downloaded_at": "2026-09-09T11:39:18.357334+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2018-12",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2018/ncdd-201812-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201812-grd-scaled.nc",
+    "sha256": "993b5bea0e76b09b79ac402697580b68d03b34015b3a8e90138eff591ad08f50",
+    "downloaded_at": "2026-09-09T11:39:19.146230+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2018-11",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2018/ncdd-201811-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201811-grd-scaled.nc",
+    "sha256": "6f4d72d5fd57c7a60b18e6533c36d7b9c01079dfedffed4ede10d3965144237d",
+    "downloaded_at": "2026-09-09T11:39:19.156999+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2019-04",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2019/ncdd-201904-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201904-grd-scaled.nc",
+    "sha256": "4706b4937d5dfe769c288d76b90eaff142f948b4c87e159989e40b3193688ab1",
+    "downloaded_at": "2026-09-09T11:39:19.872531+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2019-03",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2019/ncdd-201903-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201903-grd-scaled.nc",
+    "sha256": "ded4b50c1558bc812a3c70f73dd64a103b24b1e0e9b5298b5558771745701a03",
+    "downloaded_at": "2026-09-09T11:39:20.461686+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2019-05",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2019/ncdd-201905-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201905-grd-scaled.nc",
+    "sha256": "81302b801a4fe8f55c5a02ba1ae3e80079e061938f84c7a615a74e200da0d71d",
+    "downloaded_at": "2026-09-09T11:39:21.190823+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2019-06",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2019/ncdd-201906-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201906-grd-scaled.nc",
+    "sha256": "c4581632a148d5dc0f6511ff1301d96104b59471acbd8c776fc17f8d9ea69e80",
+    "downloaded_at": "2026-09-09T11:39:21.837621+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2019-07",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2019/ncdd-201907-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201907-grd-scaled.nc",
+    "sha256": "9c0d2826d82f4cec834d46a7dfdce7243e144a649b4c2939f02ec0b9709f6b1f",
+    "downloaded_at": "2026-09-09T11:39:22.234220+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2019-02",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2019/ncdd-201902-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201902-grd-scaled.nc",
+    "sha256": "450d8aa0eb440bb2aa22b08611e8eec7085be26c264249e3c33f89027bf73c72",
+    "downloaded_at": "2026-09-09T11:39:22.512131+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2019-10",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2019/ncdd-201910-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201910-grd-scaled.nc",
+    "sha256": "899f2c8c7e890741717d8e583fcf5ae3216e98eb4d6e69399e7fd8eed9ccff8a",
+    "downloaded_at": "2026-09-09T11:39:23.082518+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2019-08",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2019/ncdd-201908-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201908-grd-scaled.nc",
+    "sha256": "236beb8e965fdc5cb75ef6e0e40c803e6fbc8bb21725d511c338a573d982d210",
+    "downloaded_at": "2026-09-09T11:39:23.091712+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2019-01",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2019/ncdd-201901-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201901-grd-scaled.nc",
+    "sha256": "67b850d051c0449a70483b5233f302faadbad729e6054baf0a4e8177574f1152",
+    "downloaded_at": "2026-09-09T11:39:23.309993+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2019-09",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2019/ncdd-201909-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201909-grd-scaled.nc",
+    "sha256": "e37c3206fa29bf04aec3004f9bea89a077df03b22bc351c1d9e6636dda9f92d5",
+    "downloaded_at": "2026-09-09T11:39:24.286103+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2020-01",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2020/ncdd-202001-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202001-grd-scaled.nc",
+    "sha256": "4b4c2d4d18ecf4530904a451af105826236b9fa7e97e86b52659931eb71b24e2",
+    "downloaded_at": "2026-09-09T11:39:24.453219+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2019-12",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2019/ncdd-201912-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201912-grd-scaled.nc",
+    "sha256": "6eff8cf4335ef11d6f35f6700d58820df63bc79fb9626fb8a032d565df555434",
+    "downloaded_at": "2026-09-09T11:39:24.594799+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2019-11",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2019/ncdd-201911-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-201911-grd-scaled.nc",
+    "sha256": "7d06315335cb816b9a701da0ea90956a2ffb868c7243875ab6e26ff97a973942",
+    "downloaded_at": "2026-09-09T11:39:24.708029+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2020-02",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2020/ncdd-202002-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202002-grd-scaled.nc",
+    "sha256": "c903d89f70ec924c7341d16296c40f89b6107e28b22e484f82517ea3353efd20",
+    "downloaded_at": "2026-09-09T11:39:26.058466+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2020-05",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2020/ncdd-202005-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202005-grd-scaled.nc",
+    "sha256": "db6bc3ceec0830069b15a0ecc358bfee0b6c378cc433aad9dc9d68ef271dc1c1",
+    "downloaded_at": "2026-09-09T11:39:26.157695+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2020-07",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2020/ncdd-202007-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202007-grd-scaled.nc",
+    "sha256": "ed3e3588b1aa920d6d0e39b1db92f2bcf67fed00e8765434af806163e29f4096",
+    "downloaded_at": "2026-09-09T11:39:26.640545+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2020-04",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2020/ncdd-202004-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202004-grd-scaled.nc",
+    "sha256": "b7dc65afbf4f9696a648a00f0221ca6e7b71d6654d8e0da6175b2da2dffb14f0",
+    "downloaded_at": "2026-09-09T11:39:26.802958+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2020-03",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2020/ncdd-202003-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202003-grd-scaled.nc",
+    "sha256": "73d089cd59e19c795a768bb82413be14fb8ddbd8d47d6fe91f35c344caf843d5",
+    "downloaded_at": "2026-09-09T11:39:27.372235+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2020-08",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2020/ncdd-202008-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202008-grd-scaled.nc",
+    "sha256": "e3c71a5586337265aff4acf84b4ed9b829b812dd0603286d9869bee0be5f26c8",
+    "downloaded_at": "2026-09-09T11:39:27.428972+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2020-09",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2020/ncdd-202009-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202009-grd-scaled.nc",
+    "sha256": "e8dafa9c247eb6afc4f82ba0889b0e2a7796773a7c5dd87b279e93de6a69dc7e",
+    "downloaded_at": "2026-09-09T11:39:28.276544+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2020-10",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2020/ncdd-202010-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202010-grd-scaled.nc",
+    "sha256": "1638d5498fdb9990da4d5c7fd4a1c64634ca63e3cde2c827663e805e3a772919",
+    "downloaded_at": "2026-09-09T11:39:28.337251+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2020-06",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2020/ncdd-202006-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202006-grd-scaled.nc",
+    "sha256": "e7384daf922daaf40fa169c1274ddf61da694de1540418fb0d26b53cda6da514",
+    "downloaded_at": "2026-09-09T11:39:28.436226+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2020-11",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2020/ncdd-202011-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202011-grd-scaled.nc",
+    "sha256": "d98880f4769a26759268a3492a8a82fb297684ed0378fa0961ef704d2d9ae806",
+    "downloaded_at": "2026-09-09T11:39:29.147458+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2021-03",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2021/ncdd-202103-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202103-grd-scaled.nc",
+    "sha256": "46e0a25b3991f3d088a93a3a8d2c83a807f04afc02dcaeef969b7e4ae39ac79a",
+    "downloaded_at": "2026-09-09T11:39:30.123492+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2020-12",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2020/ncdd-202012-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202012-grd-scaled.nc",
+    "sha256": "5e44b73764c4c7e105732eb018d2592fb4ed8ea63f709bb5784dc06edddd0bba",
+    "downloaded_at": "2026-09-09T11:39:30.242753+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2021-02",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2021/ncdd-202102-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202102-grd-scaled.nc",
+    "sha256": "76b1f3d5a759c0f6832bef6b3ea8c487c488b8636bde9ca30ebecdee09a87804",
+    "downloaded_at": "2026-09-09T11:39:30.306351+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2021-01",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2021/ncdd-202101-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202101-grd-scaled.nc",
+    "sha256": "3dd3236161edef252325b97477b9583917e89329da00fc13e4d87984ee4a4776",
+    "downloaded_at": "2026-09-09T11:39:30.881553+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2021-04",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2021/ncdd-202104-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202104-grd-scaled.nc",
+    "sha256": "2c434331ae66890489351978e3c8d31756856c5f48e03d78a7c4ea6a5adecddb",
+    "downloaded_at": "2026-09-09T11:39:31.576149+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2021-08",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2021/ncdd-202108-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202108-grd-scaled.nc",
+    "sha256": "7b3d33ea57e89299e6f22a431effd121e55191de1e4e654d11103f2bd9723de2",
+    "downloaded_at": "2026-09-09T11:39:31.975518+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2021-05",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2021/ncdd-202105-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202105-grd-scaled.nc",
+    "sha256": "4cf650c2920d1945736c26d92535f146749647603202d6d05efdfeb814a12e9b",
+    "downloaded_at": "2026-09-09T11:39:32.188258+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2021-06",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2021/ncdd-202106-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202106-grd-scaled.nc",
+    "sha256": "08289511462ecc5f6fab560c7eccfd2d3344f3025294f53e960846e90a88d049",
+    "downloaded_at": "2026-09-09T11:39:32.640763+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2021-10",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2021/ncdd-202110-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202110-grd-scaled.nc",
+    "sha256": "75999623244fca25e3a88325a010cd1f15f4295cdaf85536d531c0936f3adeb9",
+    "downloaded_at": "2026-09-09T11:39:32.819238+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2021-11",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2021/ncdd-202111-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202111-grd-scaled.nc",
+    "sha256": "9bec1d86c87c72ccb9559c15e2c4e8e4bd1863331e43724aae36ef29a0868d75",
+    "downloaded_at": "2026-09-09T11:39:33.466804+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2021-09",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2021/ncdd-202109-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202109-grd-scaled.nc",
+    "sha256": "4999df54ef19e160c510e4240e6599da95df1cba2233a7d0f710d8e48cf04d46",
+    "downloaded_at": "2026-09-09T11:39:33.502225+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2022-01",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2022/ncdd-202201-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202201-grd-scaled.nc",
+    "sha256": "83af08fbaa681bd02ecbc485d64c63a1bc98c04309b8c5bd948eff34fd1ac9ba",
+    "downloaded_at": "2026-09-09T11:39:33.971506+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2021-07",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2021/ncdd-202107-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202107-grd-scaled.nc",
+    "sha256": "2af04a01d4bfa25beafbe50df35c51afc9664b80050a5e7603ed103572464cbb",
+    "downloaded_at": "2026-09-09T11:39:34.468656+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2022-03",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2022/ncdd-202203-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202203-grd-scaled.nc",
+    "sha256": "98d80ec393a960eb5b41c7f02b6e488dc45f9d347a4e31dcb8b9ee85c453db46",
+    "downloaded_at": "2026-09-09T11:39:35.443411+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2021-12",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2021/ncdd-202112-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202112-grd-scaled.nc",
+    "sha256": "be490ffe2b0688e54fc5daef57d84cda8ea837416a743b865e305cecaa33d296",
+    "downloaded_at": "2026-09-09T11:39:35.862474+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2022-02",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2022/ncdd-202202-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202202-grd-scaled.nc",
+    "sha256": "449467d69b2a8bf99bd97ed666cd1cebd97ccc22766e8e46eab01484931be280",
+    "downloaded_at": "2026-09-09T11:39:35.873605+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2022-04",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2022/ncdd-202204-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202204-grd-scaled.nc",
+    "sha256": "c9aaf090f739226c21b65378f97104a826a1ccd2991389ae7b1e415e8fbd9b34",
+    "downloaded_at": "2026-09-09T11:39:35.964022+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2022-05",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2022/ncdd-202205-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202205-grd-scaled.nc",
+    "sha256": "b634d16f8a941f0c3791a60280688385459173dd8150cf89db8c0a46aa76a038",
+    "downloaded_at": "2026-09-09T11:39:36.876520+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2022-07",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2022/ncdd-202207-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202207-grd-scaled.nc",
+    "sha256": "c1d0a450efe155af089a78a62a02abd1bb691366c243469aa0b804a41842658a",
+    "downloaded_at": "2026-09-09T11:39:37.124079+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2022-06",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2022/ncdd-202206-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202206-grd-scaled.nc",
+    "sha256": "26be86ce13ed469341fc757d90ab96e8e724b76e3029c8a7b7d2516ec09d23a1",
+    "downloaded_at": "2026-09-09T11:39:37.842602+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2022-08",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2022/ncdd-202208-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202208-grd-scaled.nc",
+    "sha256": "93a673ad9a375e2f26c9d358c318d3b0ad37fba6dbf1c79b5b39a6d995331a94",
+    "downloaded_at": "2026-09-09T11:39:37.910281+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2022-09",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2022/ncdd-202209-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202209-grd-scaled.nc",
+    "sha256": "8882491e5f9938d285169d3e5c959c16ae16d09c5e57b063bef6c175da0adfe0",
+    "downloaded_at": "2026-09-09T11:39:38.220523+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2023-01",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2023/ncdd-202301-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202301-grd-scaled.nc",
+    "sha256": "16c2cdfc217e191538e4375e7e279b1cb9313fee8c5762abc4cd24a4a681facc",
+    "downloaded_at": "2026-09-09T11:39:38.887370+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2022-12",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2022/ncdd-202212-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202212-grd-scaled.nc",
+    "sha256": "798fe5001745fc7b8ff1d3e425666945f57932f5bb0de08c3ef02667db7480aa",
+    "downloaded_at": "2026-09-09T11:39:39.151597+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2022-10",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2022/ncdd-202210-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202210-grd-scaled.nc",
+    "sha256": "7955519d58ef7460a00c663a18be88aa01e67f9a44709c13ea76349891824491",
+    "downloaded_at": "2026-09-09T11:39:39.678339+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2023-02",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2023/ncdd-202302-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202302-grd-scaled.nc",
+    "sha256": "1f3f42db3f818b35738b08f4d78fab1b20ef63946b2452f4dbd6b75c2a1f9781",
+    "downloaded_at": "2026-09-09T11:39:40.095399+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2023-05",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2023/ncdd-202305-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202305-grd-scaled.nc",
+    "sha256": "95749c416293d72f0f06d8e9b4b20db33eaf11089455ce0bf65d307cc4519a32",
+    "downloaded_at": "2026-09-09T11:39:40.611140+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2022-11",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2022/ncdd-202211-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202211-grd-scaled.nc",
+    "sha256": "b287d4b62136ec8ce573655dc84f834d830b7b4217adacc6a8365a58d7c184da",
+    "downloaded_at": "2026-09-09T11:39:40.861835+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2023-03",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2023/ncdd-202303-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202303-grd-scaled.nc",
+    "sha256": "85a054672bec8f37e4ef9fcf41949a7b7906f15d7451f8d37e70457a0a4f85e2",
+    "downloaded_at": "2026-09-09T11:39:41.544737+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2023-06",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2023/ncdd-202306-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202306-grd-scaled.nc",
+    "sha256": "517c0c55c951b78a3f0be8a5945cbcd69d20b6e9198f83d31c72fe1ab368b15d",
+    "downloaded_at": "2026-09-09T11:39:41.627300+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2023-04",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2023/ncdd-202304-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202304-grd-scaled.nc",
+    "sha256": "f468af57604ea4cf181b5bebb8faa6c7dc6770e291cfdff31f87f744ce2a10bf",
+    "downloaded_at": "2026-09-09T11:39:41.629123+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2023-07",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2023/ncdd-202307-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202307-grd-scaled.nc",
+    "sha256": "c5ec9bb14cab873bb8088a294e935ceef2188c2bc3c7344765a4dba104704f51",
+    "downloaded_at": "2026-09-09T11:39:42.489809+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2023-08",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2023/ncdd-202308-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202308-grd-scaled.nc",
+    "sha256": "4626d8cf27c30ea99e7d311b3c01a585f5d99b23c1ba3974df5d2913e633acab",
+    "downloaded_at": "2026-09-09T11:39:42.567327+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2023-10",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2023/ncdd-202310-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202310-grd-scaled.nc",
+    "sha256": "2ffb1497e5117f019e6103f9024b2a3f74b3f9a7dc7775d87fe0ecc2d752682e",
+    "downloaded_at": "2026-09-09T11:39:43.276004+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2023-12",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2023/ncdd-202312-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202312-grd-scaled.nc",
+    "sha256": "a3d060ce780af790de1dd2d402a9c0a317abf1a7e6647f6d2712e0cc2043790b",
+    "downloaded_at": "2026-09-09T11:39:43.636740+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2023-09",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2023/ncdd-202309-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202309-grd-scaled.nc",
+    "sha256": "8491f7461a5d23828a169d2d8916afecaa4653ee813b8e6de05e51a8c33187a4",
+    "downloaded_at": "2026-09-09T11:39:43.674381+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2023-11",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2023/ncdd-202311-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202311-grd-scaled.nc",
+    "sha256": "3d201e2384cf6ff7be37a09ac5e84f2930d793a80a67f68f4bd156c24b74feb0",
+    "downloaded_at": "2026-09-09T11:39:44.079748+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2024-04",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2024/ncdd-202404-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202404-grd-scaled.nc",
+    "sha256": "e2bf5bb1157d7b32b4fbceec82e0dac830880ef5131b0551a932b32f8c8eb27a",
+    "downloaded_at": "2026-09-09T11:39:44.843445+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2024-01",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2024/ncdd-202401-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202401-grd-scaled.nc",
+    "sha256": "e7745e3acef9c2f3167e713c6ac31f5af2e19a95ac7b2b1552114f04020a6096",
+    "downloaded_at": "2026-09-09T11:39:44.929734+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2024-02",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2024/ncdd-202402-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202402-grd-scaled.nc",
+    "sha256": "ceb1d6bee89d6008c7986db415f029037bc7169c2b8fc52e448a0fca8e6e2aca",
+    "downloaded_at": "2026-09-09T11:39:45.378829+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2024-03",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2024/ncdd-202403-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202403-grd-scaled.nc",
+    "sha256": "8ac067ba775047224e94cd088be277db03bd04fb21c84e476f48c040d4a655a7",
+    "downloaded_at": "2026-09-09T11:39:45.546991+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2024-07",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2024/ncdd-202407-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202407-grd-scaled.nc",
+    "sha256": "33a7a36b2a2eed4850912b010bca39042266ea706e10fe3c07e10c967292020a",
+    "downloaded_at": "2026-09-09T11:39:46.369487+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2024-06",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2024/ncdd-202406-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202406-grd-scaled.nc",
+    "sha256": "7e2fb645b6a6a4ac3b349f0e1ddd51a7b9355053b65d8db1252038700d297d71",
+    "downloaded_at": "2026-09-09T11:39:46.849393+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2024-08",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2024/ncdd-202408-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202408-grd-scaled.nc",
+    "sha256": "cdbf1e0f165df0371b520559bd78ad7192c03b7a4fbadb6258115a75b86f22bf",
+    "downloaded_at": "2026-09-09T11:39:46.990309+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2024-05",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2024/ncdd-202405-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202405-grd-scaled.nc",
+    "sha256": "2821a657fcecd8e390c5256b04388a1df418fcfb0a31aa6cc6df16dd52593184",
+    "downloaded_at": "2026-09-09T11:39:47.513555+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2024-09",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2024/ncdd-202409-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202409-grd-scaled.nc",
+    "sha256": "e38d2e89a7ff3df67e31583850c60476975c53e5182c543d1b745cd864ef1109",
+    "downloaded_at": "2026-09-09T11:39:48.096151+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2024-10",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2024/ncdd-202410-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202410-grd-scaled.nc",
+    "sha256": "59a5edb4997814abeea2cc549d6f5e8479f3e0ebcfdc668b9a24a0ab646cc9df",
+    "downloaded_at": "2026-09-09T11:39:48.387190+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2024-11",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2024/ncdd-202411-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202411-grd-scaled.nc",
+    "sha256": "0427bf3eda5c54a646be1e43ac47dbd01a2afcfb6d64d97ef1fbe15bbc413964",
+    "downloaded_at": "2026-09-09T11:39:48.744398+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2024-12",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2024/ncdd-202412-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202412-grd-scaled.nc",
+    "sha256": "fae71e318887f27b61121873184b360a03b62612d82df7ea572ffbbd9aa48bad",
+    "downloaded_at": "2026-09-09T11:39:49.258499+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2025-01",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2025/ncdd-202501-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202501-grd-scaled.nc",
+    "sha256": "809a58714578ce654e61e094e5f7d0ee704d332f1ff6a86c644e56de4ee4da31",
+    "downloaded_at": "2026-09-09T11:39:49.666167+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2025-02",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2025/ncdd-202502-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202502-grd-scaled.nc",
+    "sha256": "416a45f222982435d70b9fc159ddc75d9cd62e5abdb542ad5dca2e25e9cfa322",
+    "downloaded_at": "2026-09-09T11:39:49.822809+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2025-03",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2025/ncdd-202503-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202503-grd-scaled.nc",
+    "sha256": "5b5656cc8c96731947a5edffe91d06b2683fd84841838c7faeeeae79ed7cb6a0",
+    "downloaded_at": "2026-09-09T11:39:50.535775+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2025-07",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2025/ncdd-202507-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202507-grd-scaled.nc",
+    "sha256": "648dd13ead17bc602a7da780c373b22a779e342786267eff065aa77021c4788d",
+    "downloaded_at": "2026-09-09T11:39:50.957120+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2025-04",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2025/ncdd-202504-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202504-grd-scaled.nc",
+    "sha256": "1cb8e939543c4820e02ff1f5454d3b05fc8d24f564bac90a5cb205ea05e3a1ef",
+    "downloaded_at": "2026-09-09T11:39:51.103305+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2025-05",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2025/ncdd-202505-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202505-grd-scaled.nc",
+    "sha256": "7edc7f6c3855f591517d0edad511287a4022d57ead7504726d84d360df23b37f",
+    "downloaded_at": "2026-09-09T11:39:51.234566+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2025-08",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2025/ncdd-202508-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202508-grd-scaled.nc",
+    "sha256": "be4a716bffe69dd17fb3ee96c5b833d919c80cdcd799fd2d162db095e0a2106d",
+    "downloaded_at": "2026-09-09T11:39:51.551288+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2025-10",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2025/ncdd-202510-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202510-grd-scaled.nc",
+    "sha256": "7e2b88055445ef1009ee42935160e70447c8b4653dd4a7bb04ce2e28aee141e2",
+    "downloaded_at": "2026-09-09T11:39:52.884080+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2025-09",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2025/ncdd-202509-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202509-grd-scaled.nc",
+    "sha256": "134975a536a5cf5a9c0b23f6fe2e05b6e46ca2899b3eb0f941e255a72a9b5c24",
+    "downloaded_at": "2026-09-09T11:39:53.158365+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2025-12",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2025/ncdd-202512-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202512-grd-scaled.nc",
+    "sha256": "ff1407e9a2872bfd6c159f07060c1a38e2d19abd450db1219abb07ab2f9f3ed2",
+    "downloaded_at": "2026-09-09T11:39:53.746332+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2025-11",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2025/ncdd-202511-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202511-grd-scaled.nc",
+    "sha256": "d86f61a6649d3605acd8651ae8279822675837c0e42e95c44452e61773d51aad",
+    "downloaded_at": "2026-09-09T11:39:53.928442+00:00"
+  },
+  {
+    "name": "NOAA nClimGrid-Daily 2025-06",
+    "url": "https://www.ncei.noaa.gov/data/nclimgrid-daily/access/grids/2025/ncdd-202506-grd-scaled.nc",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202506-grd-scaled.nc",
+    "sha256": "58178f3c0d2e7c47c05128bb5794d2917f14be89c9dcd0e4cee5bad21057be3e",
+    "downloaded_at": "2026-09-09T11:39:54.053549+00:00"
+  }
+]
