@@ -1,3 +1,10 @@
+"""
+Authoritative geographic boundaries for spatial analysis.
+
+California's boundary is sourced from the U.S. Census Bureau's
+cartographic boundary files.
+"""
+
 from __future__ import annotations
 import zipfile
 
@@ -13,6 +20,12 @@ _EXTRACT_DIR = CA_BOUNDARY_DIR / "cb_2020_us_state_500k"
 
 
 def get_california_boundary() -> gpd.GeoDataFrame:
+    """
+    Return California's boundary as a one-row GeoDataFrame in EPSG:4326.
+
+    Downloads and caches the Census cartographic boundary state file
+    on first use; later calls just read the cached shapefile.
+    """
     if not _EXTRACT_DIR.exists():
         _, digest = download_file(
             dataset_name="Census Cartographic Boundary - States (1:500k)",
