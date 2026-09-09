@@ -4,3 +4,4 @@ xarray
 scipy
 matplotlib
 geopandas
+requests
