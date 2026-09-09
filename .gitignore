@@ -15,6 +15,7 @@ config.py
 
 # Large datasets
 data/raw/
+data/intermediate/
 data/processed/
 
 # Generated outputs
