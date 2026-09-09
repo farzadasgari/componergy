@@ -17,6 +17,15 @@ CA_BOUNDARY_DIR = RAW_DATA_DIR / "boundaries" / "california"
 # California-cropped copies of the raw NOAA nClimGrid-Daily files
 NOAA_CA_DIR = INTERMEDIATE_DATA_DIR / "nclimgrid-ca"
 
+# Single combined monthly-resolution climate dataset spanning the full
+# record (all cropped daily files aggregated to one file per month, one
+# time dimension)
+NOAA_MONTHLY_FILE = PROCESSED_DATA_DIR / "california_monthly_climate.nc"
+
+# Final combined dataset: climate + PET + STI + SAPEI + SCDHI, all months
+# from the full record
+INDICES_FILE = PROCESSED_DATA_DIR / "california_monthly_indices.nc"
+
 MANIFEST_PATH = DATA_DIR / "download_manifest.json"
 
 
