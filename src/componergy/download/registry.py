@@ -1,3 +1,10 @@
+"""Central orchestration for the componergy data-acquisition pipeline.
+
+Runs all registered download tasks -- currently the California state
+boundary (single file) and NOAA nClimGrid-Daily (many files, downloaded
+in parallel) -- and records every downloaded file in a JSON manifest.
+"""
+
 from __future__ import annotations
 
 import logging
@@ -28,6 +35,7 @@ def download_all(
         noaa_start_year: int = 1991,
         noaa_end_year: int = 2025,
 ) -> None:
+    """Run the full download pipeline."""
     ensure_dirs()
 
     logger.info("Fetching California boundary")
