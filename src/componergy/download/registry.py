@@ -14,7 +14,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from tqdm import tqdm
 
 from componergy.download import boundaries, noaa_nclimgrid
-from componergy.download.http import download_file
+from componergy.download.http import DatasetNotAvailableError, download_file
 from componergy.download.manifest import append_manifest
 from componergy.download.tasks import DatasetTask
 from componergy.paths import ensure_dirs
@@ -39,21 +39,22 @@ def download_all(
         noaa_end_year: int = 2026,
 ) -> None:
     """Run the full download pipeline."""
-    print(f"Starting componergy download pipeline (max_workers={max_workers})")
+    print(f"starting componergy download pipeline (max_workers={max_workers})")
     ensure_dirs()
 
-    print("Fetching California boundary...")
+    print("fetching California boundary...")
     boundaries.get_california_boundary()
     print("California boundary ready.")
 
     if not include_noaa:
-        print("Skipping NOAA nClimGrid downloads (--skip-noaa flag set).")
+        print("skipping NOAA nClimGrid downloads (--skip-noaa flag set).")
         return
 
     tasks = noaa_nclimgrid.build_tasks(noaa_start_year, noaa_end_year)
-    print(f"Queued {len(tasks)} NOAA nClimGrid-Daily files ({noaa_start_year}-{noaa_end_year}).")
+    print(f"queued {len(tasks)} NOAA nClimGrid-Daily files ({noaa_start_year}-{noaa_end_year}).")
 
     succeeded = 0
+    unavailable: list[str] = []
     failed: list[str] = []
 
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
@@ -61,7 +62,7 @@ def download_all(
         progress = tqdm(
             as_completed(futures),
             total=len(futures),
-            desc="Downloading NOAA nClimGrid-Daily",
+            desc="downloading NOAA nClimGrid-Daily",
             unit="file",
         )
         for future in progress:
@@ -69,13 +70,23 @@ def download_all(
             try:
                 future.result()
                 succeeded += 1
+            except DatasetNotAvailableError:
+                unavailable.append(task.name)
+                progress.write(f"not yet available: {task.name}")
             except Exception:
                 failed.append(task.name)
-                logger.exception("Failed to download %s", task.name)
+                logger.exception("failed to download %s", task.name)
                 progress.write(f"FAILED: {task.name}")
 
-    print(f"Download pipeline complete: {succeeded} succeeded, {len(failed)} failed.")
+    print(
+        f"download pipeline complete: {succeeded} succeeded, "
+        f"{len(unavailable)} not yet available, {len(failed)} failed."
+    )
+    if unavailable:
+        print("not yet available (re-run later once the source publishes them):")
+        for name in unavailable:
+            print(f"  - {name}")
     if failed:
-        print("Failed downloads:")
+        print("failed downloads:")
         for name in failed:
             print(f"  - {name}")
