@@ -19,11 +19,11 @@ from __future__ import annotations
 import logging
 
 import geopandas as gpd
-import rioxarray
 import xarray as xr
 from tqdm import tqdm
 
 from componergy.download.boundaries import get_california_boundary
+from componergy.netcdf_io import atomic_to_netcdf
 from componergy.paths import NOAA_CA_DIR, RAW_DATA_CLIMATE_DIR, ensure_dirs
 
 logger = logging.getLogger(__name__)
@@ -41,7 +41,7 @@ def crop_file(nc_file, california: gpd.GeoDataFrame):
     ds_ca = ds.rio.clip(california.geometry, california.crs)
 
     out_path = NOAA_CA_DIR / f"ca-{nc_file.name}"
-    ds_ca.to_netcdf(out_path)
+    atomic_to_netcdf(ds_ca, out_path)
     return out_path
 
 
