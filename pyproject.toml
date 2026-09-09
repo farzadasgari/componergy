@@ -17,6 +17,8 @@ dependencies = [
     "requests",
     "tqdm",
     "rioxarray",
+    "netCDF4",
+    "dask",
 ]
 
 [tool.setuptools.packages.find]
