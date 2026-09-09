@@ -1,3 +1,10 @@
+"""Provenance log of every file downloaded by the pipeline.
+
+Kept as its own module (rather than living in registry.py) so that both
+registry.py and any individual dataset module (e.g. boundaries.py) can
+record downloads without those modules having to import each other.
+"""
+
 from __future__ import annotations
 
 import json
@@ -8,6 +15,7 @@ from componergy.paths import MANIFEST_PATH, ensure_dirs
 
 
 def append_manifest(name: str, url: str, destination: Path, digest: str) -> None:
+    """Append a record of one downloaded file to the JSON manifest."""
     ensure_dirs()
 
     entry = {
