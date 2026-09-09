@@ -6,3 +6,4 @@ matplotlib
 geopandas
 requests
 tqdm
+rioxarray
