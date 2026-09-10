@@ -1,10 +1,37 @@
+"""
+Log-logistic distribution fitting via L-moments (Hosking, 1990).
+
+Used for SAPEI's water-balance marginal. Generic and reusable
+-- not SAPEI-specific by construction, just used by it.
+"""
+
 from __future__ import annotations
 
 import numpy as np
+from numpy import complex128, float64
 from scipy.special import gamma as gamma_func
 
 
-def fit_loglogistic_lmoments(x: np.ndarray) -> tuple[float, float, float]:
+def fit_loglogistic_lmoments(x: np.ndarray) -> tuple[float64 | complex128, float64 | complex128, float64 | complex128]:
+    """Fit a 3-parameter log-logistic distribution via L-moments.
+
+    Parameters
+    ----------
+    x : np.ndarray
+        Sample values (no NaNs -- filter before calling). Requires at
+        least 10 samples.
+
+    Returns
+    -------
+    (alpha, beta, gamma_param) : tuple[float, float, float]
+        Scale, shape, and location parameters (matches scipy.stats.fisk's
+        parameterization: scale=alpha, c=beta, loc=gamma_param).
+
+    Raises
+    ------
+    ValueError
+        If fewer than 10 samples are provided.
+    """
     x = np.sort(np.asarray(x, dtype=float))
     n = len(x)
     if n < 10:
@@ -25,4 +52,5 @@ def fit_loglogistic_lmoments(x: np.ndarray) -> tuple[float, float, float]:
 
 
 def loglogistic_cdf(x: np.ndarray, alpha: float, beta: float, gamma_param: float) -> np.ndarray:
+    """CDF of the fitted 3-parameter log-logistic distribution at values `x`."""
     return 1.0 / (1.0 + (alpha / (x - gamma_param)) ** beta)
