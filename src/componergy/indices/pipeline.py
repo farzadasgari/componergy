@@ -6,3 +6,23 @@ from componergy.indices.pet import add_pet
 from componergy.indices.sti import add_sti
 from componergy.indices.sapei import add_sapei
 from componergy.indices.scdhi import add_scdhi
+
+
+def build_all_indices(monthly_ds: xr.Dataset, n_jobs: int = -1, copula_family: str = None) -> xr.Dataset:
+    print("computing PET...")
+    ds = add_pet(monthly_ds)
+    print("PET done.")
+
+    print("computing STI...")
+    ds = add_sti(ds)
+    print("STI done.")
+
+    print("computing SAPEI (3/6/9/12-month)...")
+    ds = add_sapei(ds, n_jobs=n_jobs)
+    print("SAPEI done.")
+
+    print("computing SCDHI (3/6/9/12-month)...")
+    ds = add_scdhi(ds, family_name=copula_family, n_jobs=n_jobs)
+    print("SCDHI done.")
+
+    return ds
