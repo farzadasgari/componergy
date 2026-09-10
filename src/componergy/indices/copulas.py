@@ -154,3 +154,29 @@ def _rosenblatt_transform(u, v, cdf_func, params, delta=1e-4):
     c_hi = cdf_func(u_hi, v, params)
     c_lo = cdf_func(u_lo, v, params)
     return np.clip((c_hi - c_lo) / (u_hi - u_lo), 1e-10, 1 - 1e-10)
+
+
+def compare_families(u: np.ndarray, v: np.ndarray, families: dict = None) -> list:
+    families = families or FAMILIES
+    n = len(u)
+    results = []
+    for name, fam in families.items():
+        try:
+            params = fam["fit"](u, v)
+            ll = fam["loglik"](u, v, params)
+            k = fam["n_params"]
+            aic = 2 * k - 2 * ll
+            bic = k * np.log(n) - 2 * ll
+            w = _rosenblatt_transform(u, v, fam["cdf"], params)
+            ks_stat, ks_pval = kstest(w, "uniform")
+            results.append({
+                "family": name, "params": params, "loglik": ll,
+                "aic": aic, "bic": bic, "ks_stat": ks_stat, "ks_pval": ks_pval,
+            })
+        except Exception as exc:
+            results.append({
+                "family": name, "params": None, "loglik": None,
+                "aic": np.inf, "bic": np.inf, "ks_stat": None, "ks_pval": 0.0,
+                "error": str(exc),
+            })
+    return sorted(results, key=lambda r: r["aic"])
