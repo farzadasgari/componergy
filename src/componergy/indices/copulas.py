@@ -65,3 +65,11 @@ def gaussian_loglik(u, v, params):
         -(rho ** 2 * (x ** 2 + y ** 2) - 2 * rho * x * y) / (2 * (1 - rho ** 2))
     )
     return float(np.sum(np.log(np.clip(density, 1e-300, None))))
+
+
+def gaussian_fit(u, v):
+    u, v = _clip(u, v)
+    x, y = norm.ppf(u), norm.ppf(v)
+    rho = float(np.corrcoef(x, y)[0, 1])
+    rho = float(np.clip(rho, -0.999, 0.999))
+    return {"rho": rho}
