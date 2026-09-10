@@ -80,3 +80,11 @@ GAUSSIAN = {"fit": gaussian_fit, "loglik": gaussian_loglik, "cdf": gaussian_cdf,
 
 def _clayton_cdf_base(u, v, theta):
     return np.maximum(u ** (-theta) + v ** (-theta) - 1, 1e-12) ** (-1 / theta)
+
+
+def _clayton_density_base(u, v, theta):
+    return (
+            (theta + 1)
+            * (u * v) ** (-theta - 1)
+            * (u ** (-theta) + v ** (-theta) - 1) ** (-1 / theta - 2)
+    )
