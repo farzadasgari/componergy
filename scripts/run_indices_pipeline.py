@@ -9,3 +9,16 @@ import argparse
 import logging
 
 from componergy.indices.pipeline import main as pipeline_main
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Build PET, STI, SAPEI, and SCDHI from the monthly climate dataset."
+    )
+    parser.add_argument("--n-jobs", type=int, default=-1,
+                        help="Parallel workers for SAPEI/SCDHI fitting (-1 = all cores).")
+    parser.add_argument("--copula-family", default=None, choices=["frank", "gaussian", "clayton", "gumbel"],
+                        help="Fix the SCDHI copula family instead of auto-selecting it.")
+    parser.add_argument("--force", action="store_true", help="Rebuild even if the output file already exists.")
+    parser.add_argument("-v", "--verbose", action="store_true", help="Show INFO-level logs.")
+    return parser.parse_args()
