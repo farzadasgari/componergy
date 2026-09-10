@@ -58,3 +58,22 @@ def test_sti_climatology_n_counts_years_correctly():
     result = add_sti(ds)
     n_vals = result["sti_climatology_n"].isel(lat=0, lon=0).values
     assert (n_vals == 10).all()
+
+
+def test_sti_missing_month_propagates_nan_without_breaking_others():
+    rng = np.random.default_rng(3)
+    lats, lons = np.array([35.0]), np.array([-120.0])
+    times = pd.date_range("2010-01-01", periods=60, freq="MS")
+    tavg = rng.normal(loc=15, scale=5, size=(len(times), 1, 1))
+    tavg[5, 0, 0] = np.nan  # one missing June
+
+    ds = xr.Dataset({"tavg": (("time", "lat", "lon"), tavg)}, coords={"time": times, "lat": lats, "lon": lons})
+    result = add_sti(ds)
+
+    assert np.isnan(float(result["sti"].isel(time=5, lat=0, lon=0).values))
+    n_june = float(result["sti_climatology_n"].sel(month=6).isel(lat=0, lon=0).values)
+    assert n_june == 4  # 5 years of June, one missing
+
+    june_stis = result["sti"].isel(lat=0, lon=0).values[result["time.month"].values == 6]
+    assert np.isnan(june_stis[0])
+    assert not np.any(np.isnan(june_stis[1:]))
