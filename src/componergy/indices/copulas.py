@@ -33,3 +33,13 @@ def frank_loglik(u, v, params):
     u, v = _clip(u, v)
     d = np.clip(_frank_density(u, v, params["theta"]), 1e-300, None)
     return float(np.sum(np.log(d)))
+
+
+def frank_fit(u, v):
+    u, v = _clip(u, v)
+
+    def neg_ll(theta):
+        return -np.sum(np.log(np.clip(_frank_density(u, v, theta), 1e-300, None)))
+
+    result = minimize_scalar(neg_ll, bounds=(-30, 30), method="bounded")
+    return {"theta": float(result.x)}
