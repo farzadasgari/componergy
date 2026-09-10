@@ -51,3 +51,10 @@ def test_sti_is_deseasonalized():
         sti_month = result["sti"].isel(lat=0, lon=0).values[result["time.month"].values == m]
         assert abs(sti_month.mean()) < 1e-9
         assert abs(sti_month.std() - 1.0) < 1e-9
+
+
+def test_sti_climatology_n_counts_years_correctly():
+    ds, _, _ = _make_seasonal_dataset(n_years=10)
+    result = add_sti(ds)
+    n_vals = result["sti_climatology_n"].isel(lat=0, lon=0).values
+    assert (n_vals == 10).all()
