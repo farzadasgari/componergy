@@ -49,3 +49,15 @@ def test_antecedent_water_balance_matches_manual_rolling_sum():
     for i in range(2, len(manual)):
         expected = manual[i - 2] + manual[i - 1] + manual[i]
         assert abs(wsd3[i] - expected) < 1e-9
+
+
+def test_parallel_matches_sequential():
+    ds, _ = _make_test_dataset()
+    result_seq = add_sapei(ds, n_jobs=1)
+    result_par = add_sapei(ds, n_jobs=2)
+
+    for n in SAPEI_TIMESCALES_MONTHS:
+        var = f"sapei_{n}m"
+        a, b = result_seq[var].values, result_par[var].values
+        both_nan = np.isnan(a) & np.isnan(b)
+        assert (np.isclose(a, b, equal_nan=False) | both_nan).all(), f"{var} differs between n_jobs=1 and n_jobs=2"
