@@ -69,3 +69,21 @@ def test_fully_masked_cell_stays_nan_others_dont():
     sapei_3m = result["sapei_3m"].values
     assert np.isnan(sapei_3m[:, 2, 2]).all()
     assert not np.isnan(sapei_3m[:, 0, 0]).all()
+
+
+def test_matches_manual_per_cell_calculation():
+    ds, times = _make_test_dataset()
+    result = add_sapei(ds, n_jobs=1)
+
+    wb = water_balance(ds)
+    wsd3 = antecedent_water_balance(wb, 3).values[:, 0, 0]
+    months = pd.DatetimeIndex(ds["time"].values).month.values
+    jan_vals = wsd3[months == 1]
+    valid = ~np.isnan(jan_vals)
+
+    alpha, beta, gamma_param = fit_loglogistic_lmoments(jan_vals[valid])
+    q = np.clip(loglogistic_cdf(jan_vals[valid], alpha, beta, gamma_param), 1e-10, 1 - 1e-10)
+    expected = norm.ppf(q)
+
+    actual = result["sapei_3m"].values[:, 0, 0][months == 1][valid]
+    assert np.allclose(expected, actual)
