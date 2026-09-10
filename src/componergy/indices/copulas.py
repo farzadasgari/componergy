@@ -92,3 +92,9 @@ def _clayton_density_base(u, v, theta):
 
 def _clayton_tau_to_theta(tau):
     return 2 * tau / max(1 - tau, 1e-6)
+
+
+def _gumbel_cdf_base(u, v, theta):
+    A, B = -np.log(u), -np.log(v)
+    w = A ** theta + B ** theta
+    return np.exp(-(w ** (1 / theta)))
