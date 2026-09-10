@@ -88,3 +88,7 @@ def _clayton_density_base(u, v, theta):
             * (u * v) ** (-theta - 1)
             * (u ** (-theta) + v ** (-theta) - 1) ** (-1 / theta - 2)
     )
+
+
+def _clayton_tau_to_theta(tau):
+    return 2 * tau / max(1 - tau, 1e-6)
