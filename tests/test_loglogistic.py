@@ -16,3 +16,16 @@ def test_recovers_true_parameters_from_known_distribution():
     assert abs(alpha - true_alpha) / true_alpha < 0.1
     assert abs(beta - true_beta) / true_beta < 0.1
     assert abs(gamma_param - true_gamma) < 5
+
+
+
+def test_fitted_cdf_is_approximately_uniform_on_its_own_data():
+    true_beta, true_gamma, true_alpha = 4.5, -50.0, 30.0
+    rng = np.random.default_rng(0)
+    samples = fisk.rvs(c=true_beta, loc=true_gamma, scale=true_alpha, size=20000, random_state=rng)
+
+    alpha, beta, gamma_param = fit_loglogistic_lmoments(samples)
+    u = loglogistic_cdf(samples, alpha, beta, gamma_param)
+
+    _, ks_pval = kstest(u, "uniform")
+    assert ks_pval > 0.01
