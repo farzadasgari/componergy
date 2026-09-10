@@ -30,3 +30,10 @@ def _make_test_dataset(n_years=30, seed=11, mask_one_cell=True):
         coords={"time": times, "lat": lats, "lon": lons},
     )
     return ds, times
+
+
+def test_water_balance_is_precip_minus_pet():
+    ds, _ = _make_test_dataset()
+    wb = water_balance(ds)
+    expected = ds["prcp"].values - ds["pet"].values
+    assert np.allclose(wb.values, expected, equal_nan=True)
