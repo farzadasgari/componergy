@@ -146,3 +146,11 @@ CLAYTON = _make_rotated_family(_clayton_cdf_base, _clayton_density_base, _clayto
 GUMBEL = _make_rotated_family(_gumbel_cdf_base, _gumbel_density_base, _gumbel_tau_to_theta)
 
 FAMILIES = {"frank": FRANK, "gaussian": GAUSSIAN, "clayton": CLAYTON, "gumbel": GUMBEL}
+
+
+def _rosenblatt_transform(u, v, cdf_func, params, delta=1e-4):
+    u_hi = np.clip(u + delta, delta, 1 - delta)
+    u_lo = np.clip(u - delta, delta, 1 - delta)
+    c_hi = cdf_func(u_hi, v, params)
+    c_lo = cdf_func(u_lo, v, params)
+    return np.clip((c_hi - c_lo) / (u_hi - u_lo), 1e-10, 1 - 1e-10)
