@@ -76,3 +76,7 @@ def gaussian_fit(u, v):
 
 
 GAUSSIAN = {"fit": gaussian_fit, "loglik": gaussian_loglik, "cdf": gaussian_cdf, "n_params": 1}
+
+
+def _clayton_cdf_base(u, v, theta):
+    return np.maximum(u ** (-theta) + v ** (-theta) - 1, 1e-12) ** (-1 / theta)
