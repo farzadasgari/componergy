@@ -27,3 +27,9 @@ def frank_cdf(u, v, params):
     return -1 / theta * np.log(
         1 + (np.exp(-theta * u) - 1) * (np.exp(-theta * v) - 1) / (np.exp(-theta) - 1)
     )
+
+
+def frank_loglik(u, v, params):
+    u, v = _clip(u, v)
+    d = np.clip(_frank_density(u, v, params["theta"]), 1e-300, None)
+    return float(np.sum(np.log(d)))
