@@ -98,3 +98,10 @@ def _gumbel_cdf_base(u, v, theta):
     A, B = -np.log(u), -np.log(v)
     w = A ** theta + B ** theta
     return np.exp(-(w ** (1 / theta)))
+
+
+def _gumbel_density_base(u, v, theta):
+    A, B = -np.log(u), -np.log(v)
+    w = A ** theta + B ** theta
+    C = np.exp(-(w ** (1 / theta)))
+    return C / (u * v) * (A * B) ** (theta - 1) * w ** (1 / theta - 2) * (w ** (1 / theta) + theta - 1)
