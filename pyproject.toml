@@ -19,6 +19,7 @@ dependencies = [
     "rioxarray",
     "netCDF4",
     "dask",
+    "joblib",
 ]
 
 [tool.setuptools.packages.find]
