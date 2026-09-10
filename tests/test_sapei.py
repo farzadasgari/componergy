@@ -61,3 +61,11 @@ def test_parallel_matches_sequential():
         a, b = result_seq[var].values, result_par[var].values
         both_nan = np.isnan(a) & np.isnan(b)
         assert (np.isclose(a, b, equal_nan=False) | both_nan).all(), f"{var} differs between n_jobs=1 and n_jobs=2"
+
+
+def test_fully_masked_cell_stays_nan_others_dont():
+    ds, _ = _make_test_dataset(mask_one_cell=True)
+    result = add_sapei(ds, n_jobs=1)
+    sapei_3m = result["sapei_3m"].values
+    assert np.isnan(sapei_3m[:, 2, 2]).all()
+    assert not np.isnan(sapei_3m[:, 0, 0]).all()
