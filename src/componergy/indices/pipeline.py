@@ -7,6 +7,8 @@ from componergy.indices.sti import add_sti
 from componergy.indices.sapei import add_sapei
 from componergy.indices.scdhi import add_scdhi
 
+from componergy.paths import NOAA_MONTHLY_FILE, INDICES_FILE, ensure_dirs
+
 
 def build_all_indices(monthly_ds: xr.Dataset, n_jobs: int = -1, copula_family: str = None) -> xr.Dataset:
     print("computing PET...")
