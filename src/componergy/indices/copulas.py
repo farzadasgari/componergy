@@ -144,3 +144,5 @@ def _make_rotated_family(base_cdf, base_density, tau_to_theta_start):
 
 CLAYTON = _make_rotated_family(_clayton_cdf_base, _clayton_density_base, _clayton_tau_to_theta)
 GUMBEL = _make_rotated_family(_gumbel_cdf_base, _gumbel_density_base, _gumbel_tau_to_theta)
+
+FAMILIES = {"frank": FRANK, "gaussian": GAUSSIAN, "clayton": CLAYTON, "gumbel": GUMBEL}
