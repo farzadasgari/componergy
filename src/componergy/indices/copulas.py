@@ -43,3 +43,6 @@ def frank_fit(u, v):
 
     result = minimize_scalar(neg_ll, bounds=(-30, 30), method="bounded")
     return {"theta": float(result.x)}
+
+
+FRANK = {"fit": frank_fit, "loglik": frank_loglik, "cdf": frank_cdf, "n_params": 1}
