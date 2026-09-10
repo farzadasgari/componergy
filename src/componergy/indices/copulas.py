@@ -73,3 +73,6 @@ def gaussian_fit(u, v):
     rho = float(np.corrcoef(x, y)[0, 1])
     rho = float(np.clip(rho, -0.999, 0.999))
     return {"rho": rho}
+
+
+GAUSSIAN = {"fit": gaussian_fit, "loglik": gaussian_loglik, "cdf": gaussian_cdf, "n_params": 1}
