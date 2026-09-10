@@ -105,3 +105,7 @@ def _gumbel_density_base(u, v, theta):
     w = A ** theta + B ** theta
     C = np.exp(-(w ** (1 / theta)))
     return C / (u * v) * (A * B) ** (theta - 1) * w ** (1 / theta - 2) * (w ** (1 / theta) + theta - 1)
+
+
+def _gumbel_tau_to_theta(tau):
+    return 1 / max(1 - tau, 1e-6)
