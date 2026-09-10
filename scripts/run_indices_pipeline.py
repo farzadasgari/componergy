@@ -22,3 +22,16 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--force", action="store_true", help="Rebuild even if the output file already exists.")
     parser.add_argument("-v", "--verbose", action="store_true", help="Show INFO-level logs.")
     return parser.parse_args()
+
+
+def main() -> None:
+    args = parse_args()
+    logging.basicConfig(
+        level=logging.INFO if args.verbose else logging.WARNING,
+        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+    )
+    pipeline_main(n_jobs=args.n_jobs, copula_family=args.copula_family, force=args.force)
+
+
+if __name__ == "__main__":
+    main()
