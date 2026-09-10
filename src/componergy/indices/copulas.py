@@ -55,3 +55,13 @@ def gaussian_cdf(u, v, params):
     mvn = multivariate_normal(mean=[0, 0], cov=[[1, rho], [rho, 1]])
     pts = np.column_stack([x, y])
     return np.array([mvn.cdf(p) for p in pts])
+
+
+def gaussian_loglik(u, v, params):
+    rho = params["rho"]
+    u, v = _clip(u, v)
+    x, y = norm.ppf(u), norm.ppf(v)
+    density = (1 / np.sqrt(1 - rho ** 2)) * np.exp(
+        -(rho ** 2 * (x ** 2 + y ** 2) - 2 * rho * x * y) / (2 * (1 - rho ** 2))
+    )
+    return float(np.sum(np.log(np.clip(density, 1e-300, None))))
