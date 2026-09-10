@@ -10,3 +10,4 @@ rioxarray
 netCDF4
 dask
 joblib
+pytest
