@@ -17,3 +17,13 @@ def _frank_density(u, v, theta):
     num = theta * (1 - np.exp(-theta)) * np.exp(-theta * (u + v))
     denom = ((1 - np.exp(-theta)) - (1 - np.exp(-theta * u)) * (1 - np.exp(-theta * v))) ** 2
     return num / denom
+
+
+def frank_cdf(u, v, params):
+    theta = params["theta"]
+    u, v = _clip(u, v)
+    if abs(theta) < 1e-6:
+        return u * v
+    return -1 / theta * np.log(
+        1 + (np.exp(-theta * u) - 1) * (np.exp(-theta * v) - 1) / (np.exp(-theta) - 1)
+    )
