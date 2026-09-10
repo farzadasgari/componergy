@@ -1,3 +1,21 @@
+"""
+Monthly potential evapotranspiration (PET) via the Hargreaves-Samani
+equation, applied to monthly-mean temperature.
+
+Per the "monthly-native" design: PET is estimated directly from
+monthly-mean tavg/tmax/tmin (as produced by
+preprocessing.aggregate_monthly), not by aggregating a daily PET series.
+The daily-equivalent PET rate is scaled by the actual number of days in
+each calendar month to give a monthly total (mm/month), comparable to
+monthly total precipitation for the SAPEI water balance.
+
+Ra (extraterrestrial radiation) uses the standard FAO-56 formulation
+(Allen et al., 1998), not a simplified variant -- an earlier version of
+this used a more compact approximation that produces negative (physically
+invalid) Ra for California in Oct-Mar; verified below to stay
+non-negative across all months and latitudes.
+"""
+
 from __future__ import annotations
 
 import calendar
@@ -18,7 +36,7 @@ def _extraterrestrial_radiation(lat_deg: float, day_of_year: float) -> float:
 
     Depends only on latitude and day-of-year, not on temperature or year,
     so it's computed once per (month, lat) and reused across all years/lon.
-    Always non-negative by construction (see test_pet.py).
+    Always non-negative by construction.
     """
     lat_rad = radians(lat_deg)
     dr = 1 + 0.033 * cos(2 * pi * day_of_year / 365)
@@ -51,8 +69,7 @@ def hargreaves_pet_monthly(lat_deg, month, tavg, tmax, tmin, days_in_month) -> f
     """
     Monthly total PET (mm/month) for a single (lat, month, year) value.
 
-    Scalar reference implementation -- see add_pet() for the vectorized
-    version used on real grids. Returns NaN if any temperature input is NaN.
+    Scalar reference implementation.
     """
     if np.isnan(tavg) or np.isnan(tmax) or np.isnan(tmin):
         return np.nan
