@@ -55,3 +55,44 @@ def compute_scdhi_for_cell(sapei_by_timescale: dict, sti: np.ndarray, family_nam
         scdhi[valid] = standardized
         result[n_months] = scdhi
     return result
+
+
+def add_scdhi(monthly_ds: xr.Dataset, family_name: str = None, n_jobs: int = -1) -> xr.Dataset:
+    sapei_timescales = [3, 6, 9, 12]
+    sapei_grids = {n: monthly_ds[f"sapei_{n}m"].values for n in sapei_timescales}
+    sti_grid = monthly_ds["sti"].values
+
+    if family_name is None:
+        ranking = select_primary_copula_family(sapei_grids[3], sti_grid)
+        family_name = ranking[0]["family"]
+        print(f"selected primary copula family: {family_name}")
+        for r in ranking:
+            print(f"  {r['family']:10s} AIC={r['aic']:9.2f}  BIC={r['bic']:9.2f}  KS_pval={r['ks_pval']}")
+
+    lats = monthly_ds["lat"].values
+    lons = monthly_ds["lon"].values
+    n_time = monthly_ds.sizes["time"]
+
+    valid_cell = ~np.isnan(sti_grid).all(axis=0)
+    cell_indices = [(i, j) for i in range(len(lats)) for j in range(len(lons)) if valid_cell[i, j]]
+
+    def process_cell(i_lat, i_lon):
+        sapei_by_timescale = {n: sapei_grids[n][:, i_lat, i_lon] for n in sapei_timescales}
+        sti_cell = sti_grid[:, i_lat, i_lon]
+        return i_lat, i_lon, compute_scdhi_for_cell(sapei_by_timescale, sti_cell, family_name)
+
+    results = Parallel(n_jobs=n_jobs)(
+        delayed(process_cell)(i, j)
+        for i, j in tqdm(cell_indices, desc="fitting SCDHI per cell", unit="cell")
+    )
+
+    scdhi_arrays = {n: np.full((n_time, len(lats), len(lons)), np.nan) for n in sapei_timescales}
+    for i_lat, i_lon, cell_result in results:
+        for n in sapei_timescales:
+            scdhi_arrays[n][:, i_lat, i_lon] = cell_result[n]
+
+    out = monthly_ds.copy()
+    for n in sapei_timescales:
+        out[f"scdhi_{n}m"] = (("time", "lat", "lon"), scdhi_arrays[n])
+    out.attrs["scdhi_copula_family"] = family_name
+    return out
