@@ -38,3 +38,37 @@ def compute_sapei_for_cell(wsd_by_timescale: dict, months: np.ndarray) -> dict:
             sapei[month_indices[valid]] = norm.ppf(q)
         result[n_months] = sapei
     return result
+
+
+def add_sapei(monthly_ds: xr.Dataset, n_jobs: int = -1) -> xr.Dataset:
+    wb = water_balance(monthly_ds)
+    wsd_grids = {n: antecedent_water_balance(wb, n) for n in SAPEI_TIMESCALES_MONTHS}
+
+    times = pd.DatetimeIndex(monthly_ds["time"].values)
+    months = times.month.values
+    lats = monthly_ds["lat"].values
+    lons = monthly_ds["lon"].values
+
+    valid_cell = ~np.isnan(wb.values).all(axis=0)
+    cell_indices = [(i, j) for i in range(len(lats)) for j in range(len(lons)) if valid_cell[i, j]]
+
+    def process_cell(i_lat, i_lon):
+        wsd_by_timescale = {n: wsd_grids[n].values[:, i_lat, i_lon] for n in SAPEI_TIMESCALES_MONTHS}
+        return i_lat, i_lon, compute_sapei_for_cell(wsd_by_timescale, months)
+
+    results = Parallel(n_jobs=n_jobs)(
+        delayed(process_cell)(i, j)
+        for i, j in tqdm(cell_indices, desc="fitting SAPEI per cell", unit="cell")
+    )
+
+    sapei_arrays = {n: np.full((len(times), len(lats), len(lons)), np.nan) for n in SAPEI_TIMESCALES_MONTHS}
+    for i_lat, i_lon, cell_result in results:
+        for n in SAPEI_TIMESCALES_MONTHS:
+            sapei_arrays[n][:, i_lat, i_lon] = cell_result[n]
+
+    out = monthly_ds.copy()
+    for n in SAPEI_TIMESCALES_MONTHS:
+        out[f"sapei_{n}m"] = (("time", "lat", "lon"), sapei_arrays[n])
+        out[f"sapei_{n}m"].attrs[
+            "long_name"] = f"Standardized Antecedent Precipitation Evapotranspiration Index ({n}-month)"
+    return out
