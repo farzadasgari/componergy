@@ -1,3 +1,17 @@
+"""
+Standardized Antecedent Precipitation Evapotranspiration Index (SAPEI), monthly.
+
+"Water balance + log-logistic fit."
+Water balance = precipitation - PET (both monthly totals). SAPEI is
+computed at 4 antecedent timescales (3/6/9/12 months, per HESS 2021)
+as separate columns: sapei_3m, sapei_6m, sapei_9m, sapei_12m.
+
+For each timescale, the antecedent water balance is fit to a log-logistic
+distribution PER CALENDAR MONTH (pooling all years), then transformed to
+a standard-normal quantile -- matching HESS's per-specific-calendar-day
+fitting, translated to monthly resolution.
+"""
+
 from __future__ import annotations
 
 import numpy as np
@@ -19,10 +33,34 @@ def water_balance(monthly_ds: xr.Dataset) -> xr.DataArray:
 
 
 def antecedent_water_balance(wb: xr.DataArray, n_months: int) -> xr.DataArray:
+    """
+    Rolling n-month sum of water balance, vectorized grid-wide.
+
+    The first (n_months - 1) timesteps are NaN (incomplete window).
+    """
     return wb.rolling(time=n_months, min_periods=n_months).sum()
 
 
 def compute_sapei_for_cell(wsd_by_timescale: dict, months: np.ndarray) -> dict:
+    """
+    Fit log-logistic per calendar month and standardize, for ONE grid cell.
+
+    Handles all requested timescales for that cell in a single call, to
+    keep per-task overhead low when parallelized across cells.
+
+    Parameters
+    ----------
+    wsd_by_timescale : dict[int, np.ndarray]
+        {n_months: antecedent water balance series} for one cell.
+    months : np.ndarray
+        Calendar month (1-12) for each timestep, same length as each series.
+
+    Returns
+    -------
+    dict[int, np.ndarray]
+        {n_months: sapei series}, NaN wherever a calendar-month group had
+        fewer than MIN_SAMPLES_PER_MONTH valid values.
+    """
     result = {}
     for n_months, wsd in wsd_by_timescale.items():
         sapei = np.full_like(wsd, np.nan)
@@ -41,6 +79,24 @@ def compute_sapei_for_cell(wsd_by_timescale: dict, months: np.ndarray) -> dict:
 
 
 def add_sapei(monthly_ds: xr.Dataset, n_jobs: int = -1) -> xr.Dataset:
+    """
+    Add sapei_3m/6m/9m/12m to a monthly climate dataset.
+
+    Cells that are NaN across the entire record (e.g. ocean/masked cells
+    left over from the California clip) are skipped rather than fit.
+
+    Parameters
+    ----------
+    monthly_ds : xr.Dataset
+        Must contain 'prcp' and 'pet' on a monthly time dimension.
+    n_jobs : int
+        Passed to joblib.Parallel; -1 uses all available cores.
+
+    Returns
+    -------
+    xr.Dataset
+        `monthly_ds` with sapei_3m, sapei_6m, sapei_9m, sapei_12m added.
+    """
     wb = water_balance(monthly_ds)
     wsd_grids = {n: antecedent_water_balance(wb, n) for n in SAPEI_TIMESCALES_MONTHS}
 
