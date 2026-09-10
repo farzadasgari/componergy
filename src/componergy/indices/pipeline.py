@@ -28,3 +28,21 @@ def build_all_indices(monthly_ds: xr.Dataset, n_jobs: int = -1, copula_family: s
     print("SCDHI done.")
 
     return ds
+
+
+def main(n_jobs: int = -1, copula_family: str = None, force: bool = False) -> None:
+    ensure_dirs()
+
+    if INDICES_FILE.exists() and not force:
+        print(f"{INDICES_FILE} already exists, skipping (pass force=True to rebuild).")
+        return
+
+    print(f"loading {NOAA_MONTHLY_FILE}...")
+    monthly_ds = xr.open_dataset(NOAA_MONTHLY_FILE)
+
+    result = build_all_indices(monthly_ds, n_jobs=n_jobs, copula_family=copula_family)
+
+    print(f"writing {INDICES_FILE}...")
+    encoding = {v: {"zlib": True, "complevel": 5} for v in result.data_vars}
+    result.to_netcdf(INDICES_FILE, encoding=encoding)
+    print(f"wrote {INDICES_FILE}: {dict(result.sizes)}")
