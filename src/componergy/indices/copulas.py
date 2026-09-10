@@ -109,3 +109,34 @@ def _gumbel_density_base(u, v, theta):
 
 def _gumbel_tau_to_theta(tau):
     return 1 / max(1 - tau, 1e-6)
+
+
+def _make_rotated_family(base_cdf, base_density, tau_to_theta_start):
+    def cdf(u, v, params):
+        u, v = _clip(u, v)
+        theta = params["theta"]
+        if params["rotated"]:
+            return v - base_cdf(1 - u, v, theta)
+        return base_cdf(u, v, theta)
+
+    def loglik(u, v, params):
+        u, v = _clip(u, v)
+        theta = params["theta"]
+        uu = 1 - u if params["rotated"] else u
+        d = np.clip(base_density(uu, v, theta), 1e-300, None)
+        return float(np.sum(np.log(d)))
+
+    def fit(u, v):
+        u, v = _clip(u, v)
+        tau = kendalltau(u, v)[0]
+        rotated = tau < 0
+        uu = 1 - u if rotated else u
+        theta0 = max(tau_to_theta_start(abs(tau)), 1e-3)
+
+        def neg_ll(theta):
+            return -np.sum(np.log(np.clip(base_density(uu, v, max(theta, 1e-6)), 1e-300, None)))
+
+        result = minimize_scalar(neg_ll, bounds=(1e-6, 50), method="bounded")
+        return {"theta": float(result.x), "rotated": bool(rotated), "_theta0": theta0}
+
+    return {"fit": fit, "loglik": loglik, "cdf": cdf, "n_params": 1}
