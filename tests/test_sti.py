@@ -41,3 +41,13 @@ def test_sti_matches_manual_zscore_per_calendar_month():
                     max_abs_diff = max(max_abs_diff, abs(actual - expected_z))
 
     assert max_abs_diff < 1e-10
+
+
+def test_sti_is_deseasonalized():
+    ds, _, _ = _make_seasonal_dataset()
+    result = add_sti(ds)
+
+    for m in [1, 6]:
+        sti_month = result["sti"].isel(lat=0, lon=0).values[result["time.month"].values == m]
+        assert abs(sti_month.mean()) < 1e-9
+        assert abs(sti_month.std() - 1.0) < 1e-9
