@@ -46,3 +46,12 @@ def frank_fit(u, v):
 
 
 FRANK = {"fit": frank_fit, "loglik": frank_loglik, "cdf": frank_cdf, "n_params": 1}
+
+
+def gaussian_cdf(u, v, params):
+    rho = params["rho"]
+    u, v = _clip(u, v)
+    x, y = norm.ppf(u), norm.ppf(v)
+    mvn = multivariate_normal(mean=[0, 0], cov=[[1, rho], [rho, 1]])
+    pts = np.column_stack([x, y])
+    return np.array([mvn.cdf(p) for p in pts])
