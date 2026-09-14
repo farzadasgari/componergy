@@ -42,3 +42,8 @@ def classify_events(
         "is_heatwave_only": heat_only,
         "is_drought_only": drought_only,
     })
+
+
+def normal_mask_exclude_all_events(is_heatwave: xr.DataArray, is_drought: xr.DataArray,
+                                   is_compound: xr.DataArray) -> xr.DataArray:
+    return ~(is_heatwave | is_drought | is_compound)
