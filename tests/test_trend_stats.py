@@ -51,3 +51,18 @@ def test_footprint_fraction_matches_manual_calc():
     )
     frac = compute_footprint_fraction(bool_da)
     assert abs(float(frac.values) - 0.75) < 1e-9
+
+
+def _make_known_trend_grid(true_slope_per_year, n_years=30, noise_std=0.0, seed=0):
+    rng = np.random.default_rng(seed)
+    times = pd.date_range("1990-01-01", periods=12 * n_years, freq="MS")
+    years_frac = times.year.values + (times.month.values - 0.5) / 12.0
+    values = true_slope_per_year * (years_frac - years_frac.mean())
+    if noise_std:
+        values = values + rng.normal(0, noise_std, len(times))
+    da = xr.DataArray(
+        np.broadcast_to(values[:, None, None], (len(times), 2, 2)).copy(),
+        dims=("time", "lat", "lon"),
+        coords={"time": times, "lat": [35.0, 38.0], "lon": [-120.0, -119.0]},
+    )
+    return da, times, values
