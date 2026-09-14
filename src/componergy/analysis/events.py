@@ -1,11 +1,13 @@
 from __future__ import annotations
 
-import numpy as np
 import xarray as xr
+import warnings
 
 
 def compute_percentile_threshold(da: xr.DataArray, q: float) -> xr.DataArray:
-    threshold = da.quantile(q, dim="time", skipna=True)
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", message="All-NaN slice encountered", category=RuntimeWarning)
+        threshold = da.quantile(q, dim="time", skipna=True)
     return threshold.drop_vars("quantile", errors="ignore")
 
 
