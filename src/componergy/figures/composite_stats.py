@@ -9,10 +9,23 @@ from scipy import stats
 
 
 def series_to_data_array(series: pd.Series) -> xr.DataArray:
+    """
+    Wrap a pandas Series as a 1-D xr.DataArray with dim 'time'.
+
+    Lets the existing xarray-based event classification functions
+    (analysis.events) be reused directly on a statewide-aggregated
+    (non-gridded) signal, without a separate pandas-specific
+    reimplementation of the same threshold logic.
+    """
     return xr.DataArray(series.values, dims="time", coords={"time": series.index})
 
 
 def welch_ttest(a: pd.Series, b: pd.Series) -> tuple[float, float]:
+    """
+    Welch's t-test (unequal variance) between two samples, dropping NaNs first.
+
+    Returns (nan, nan) if either sample has fewer than 5 valid values.
+    """
     a = a.dropna()
     b = b.dropna()
     if len(a) < 5 or len(b) < 5:
@@ -22,6 +35,25 @@ def welch_ttest(a: pd.Series, b: pd.Series) -> tuple[float, float]:
 
 
 def compute_composite_table(signal_df: pd.DataFrame, event_masks: dict, normal_mask: pd.Series) -> pd.DataFrame:
+    """
+    For every (event, column) pair, the mean-difference anomaly and a
+    Welch's t-test against the normal-period sample.
+
+    Parameters
+    ----------
+    signal_df : pd.DataFrame
+        One column per series to test (e.g. one per generation source).
+    event_masks : dict[str, pd.Series]
+        {event_name: boolean mask}, each aligned or reindexable to signal_df's index.
+    normal_mask : pd.Series
+        Boolean mask defining the reference/baseline period.
+
+    Returns
+    -------
+    pd.DataFrame
+        One row per (event, column): N_event, N_normal, Mean_event,
+        Mean_normal, Difference, tstat, p_value.
+    """
     rows = []
     for event_name, event_mask in event_masks.items():
         event_mask = event_mask.reindex(signal_df.index).fillna(False)
@@ -45,6 +77,28 @@ def compute_composite_table(signal_df: pd.DataFrame, event_masks: dict, normal_m
 
 
 def best_lag_slope(x: pd.Series, y: pd.Series, lags=range(-6, 7), min_n=60):
+    """
+    Scan a range of lags (in the series' own time step) and return the
+    one with the highest R^2 for a simple OLS fit of y on lagged x.
+
+    A positive lag means x is shifted to lead y by that many steps.
+
+    Parameters
+    ----------
+    x, y : pd.Series
+        Same-frequency series (need not already be aligned/same length).
+    lags : iterable[int]
+        Candidate lags to scan.
+    min_n : int
+        Minimum number of valid paired observations required to
+        consider a given lag.
+
+    Returns
+    -------
+    dict or None
+        {"lag", "slope", "r2", "n"} for the best lag, or None if no lag
+        met min_n.
+    """
     best = None
     for lag in lags:
         if lag < 0:
