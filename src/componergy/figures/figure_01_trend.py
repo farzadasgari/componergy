@@ -66,3 +66,20 @@ def style_timeseries(ax):
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
     ax.grid(False)
+
+
+def style_map(ax, extent, boundary):
+    """
+    Apply shared map styling: extent, coastline/borders/lakes/rivers, and the boundary outline.
+
+    Note: cfeature.COASTLINE/BORDERS/LAKES/RIVERS fetch Natural Earth
+    shapefiles over the network on first use (cached locally afterward).
+    """
+    ax.set_extent(extent, crs=PC)
+    ax.add_feature(cfeature.COASTLINE, linewidth=0.8)
+    ax.add_feature(cfeature.BORDERS, linewidth=0.5)
+    ax.add_feature(cfeature.LAKES, linewidth=0.3, alpha=0.35)
+    ax.add_feature(cfeature.RIVERS, linewidth=0.3, alpha=0.35)
+    ax.add_geometries(boundary.geometry, crs=PC, facecolor="none", edgecolor="black", linewidth=0.9)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
