@@ -1,4 +1,4 @@
-"""Generation-mix-by-source figure: statewide timeseries and composite event-anomaly bars, one output file per source."""
+""""Generation-mix-by-source figure: statewide timeseries and composite event-anomaly bars, one output file per source."""
 
 from __future__ import annotations
 
@@ -11,7 +11,6 @@ import pandas as pd
 import xarray as xr
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-from matplotlib.lines import Line2D
 
 from componergy.figures.trend_stats import compute_area_weights, compute_statewide_mean
 from componergy.figures.print_style import SOURCE_STYLE, EVENT_STYLE
@@ -19,7 +18,6 @@ from componergy.figures.composite_stats import series_to_data_array, compute_com
 from componergy.figures.stats_log import write_figure_log
 from componergy.analysis.events import (
     classify_heatwave, classify_drought, classify_compound,
-    normal_mask_exclude_all_events,
 )
 from componergy.paths import INDICES_FILE, GENERATION_MONTHLY_FILE, FIGURES_DIR
 
@@ -73,6 +71,9 @@ def add_letter(ax, letter, x=0.01, y=0.98, fs=19):
 
 
 def prepare_data(indices_ds: xr.Dataset, generation_df: pd.DataFrame, sapei_var="sapei_3m", scdhi_var="scdhi_3m"):
+    """
+    Align statewide climate signals with generation shares and classify events.
+    """
     weights = compute_area_weights(indices_ds["lat"])
     sti = zscore(compute_statewide_mean(indices_ds["sti"], weights).to_series())
     sapei = zscore(compute_statewide_mean(indices_ds[sapei_var], weights).to_series())
@@ -183,6 +184,9 @@ def plot_single_source_composite_bars(ax, comp_table, src):
 
 
 def save_two_panel_figure(fig_path, left_label, right_label, left_plot_fn, right_plot_fn):
+    """
+    Render a timeseries + composite-bars panel pair and save to fig_path.
+    """
     fig, (axL, axR) = plt.subplots(1, 2, figsize=(16.5, 5.2), gridspec_kw={"width_ratios": [1.75, 1.0], "wspace": 0.28})
     fig.subplots_adjust(top=0.72, bottom=0.16, left=0.06, right=0.98)
 
@@ -197,6 +201,7 @@ def save_two_panel_figure(fig_path, left_label, right_label, left_plot_fn, right
 
 
 def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
+    """Build all 6 output figures, the composite/lag-scan CSVs, and the log/json summary."""
     from componergy.netcdf_io import atomic_to_csv
 
     out_dir = FIGURES_DIR / "figure_02"
