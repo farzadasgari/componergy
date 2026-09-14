@@ -74,3 +74,14 @@ def test_trend_per_decade_recovers_exact_noiseless_slope():
     slope_decade, _ = compute_trend_per_decade(annual)
     assert abs(float(slope_decade.isel(lat=0, lon=0).values) - 5.0) < 1e-6
 
+
+def test_trend_significance_distinguishes_real_trend_from_pure_noise():
+    da_trend, times, _ = _make_known_trend_grid(true_slope_per_year=0.03, n_years=40, noise_std=0.3, seed=0)
+    da_noise, _, _ = _make_known_trend_grid(true_slope_per_year=0.0, n_years=40, noise_std=0.3, seed=1)
+
+    _, pval_trend = compute_trend_per_decade(annualize_monthly(da_trend))
+    _, pval_noise = compute_trend_per_decade(annualize_monthly(da_noise))
+
+    assert float(pval_trend.isel(lat=0, lon=0).values) < 0.05
+    assert float(pval_noise.isel(lat=0, lon=0).values) > 0.05
+
