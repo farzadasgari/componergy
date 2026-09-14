@@ -70,3 +70,40 @@ def style_bar_axis(ax):
 
 def add_letter(ax, letter, x=0.01, y=0.98, fs=19):
     ax.text(x, y, letter, transform=ax.transAxes, ha="left", va="top", fontsize=fs, clip_on=False)
+
+
+def prepare_data(indices_ds: xr.Dataset, generation_df: pd.DataFrame, sapei_var="sapei_3m", scdhi_var="scdhi_3m"):
+    weights = compute_area_weights(indices_ds["lat"])
+    sti = zscore(compute_statewide_mean(indices_ds["sti"], weights).to_series())
+    sapei = zscore(compute_statewide_mean(indices_ds[sapei_var], weights).to_series())
+    scdhi = zscore(compute_statewide_mean(indices_ds[scdhi_var], weights).to_series())
+
+    mix_pct = generation_df[SOURCE_COLUMNS].div(generation_df["Total"], axis=0) * 100.0
+    mix_pct_sm = mix_pct.rolling(SMOOTH_MONTHS, center=True, min_periods=1).mean()
+
+    common = mix_pct_sm.index.intersection(sti.index).intersection(sapei.index).intersection(scdhi.index)
+    mix_pct_sm = mix_pct_sm.loc[common]
+    sti, sapei, scdhi = sti.loc[common], sapei.loc[common], scdhi.loc[common]
+
+    mix_z_total = mix_pct_sm.apply(zscore, axis=0)
+    mix_z_local = mix_pct_sm.apply(deseasonalize_monthly, axis=0).apply(zscore, axis=0)
+
+    heat = classify_heatwave(series_to_data_array(sti)).to_series()
+    drought = classify_drought(series_to_data_array(sapei)).to_series()
+    compound = classify_compound(series_to_data_array(scdhi)).to_series()
+
+    heat_only = heat & (~drought)
+    drought_only = drought & (~heat)
+    normal = ~(heat | drought | compound)
+
+    event_masks = {"Heatwave": heat_only, "Drought": drought_only, "Compound": compound}
+
+    return {
+        "drivers": {"STI": sti, "SAPEI": sapei, "SCDHI": scdhi},
+        "mix_pct_sm": mix_pct_sm,
+        "mix_z_total": mix_z_total,
+        "mix_z_local": mix_z_local,
+        "event_masks": event_masks,
+        "normal": normal,
+        "compound_months": mix_pct_sm.index[compound.reindex(mix_pct_sm.index).fillna(False).values],
+    }
