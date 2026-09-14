@@ -51,3 +51,12 @@ def zscore(series: pd.Series) -> pd.Series:
 def deseasonalize_monthly(series: pd.Series) -> pd.Series:
     clim = series.groupby(series.index.month).mean()
     return series - series.index.month.map(clim)
+
+
+def style_timeseries_axis(ax):
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    ax.grid(False)
+    ax.xaxis.set_major_locator(mdates.YearLocator(10))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
+    ax.xaxis.set_minor_locator(mdates.YearLocator(5))
