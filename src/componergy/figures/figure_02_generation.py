@@ -138,3 +138,25 @@ def plot_single_source_timeseries(ax, data, src):
     ax.set_xlabel("Time (Year)")
     shade_compound_months(ax, data["compound_months"])
     style_timeseries_axis(ax)
+
+
+def plot_mix_composite_bars(ax, comp_table):
+    order_src = SOURCE_COLUMNS
+    events_plot = ["Heatwave", "Drought", "Compound"]
+    x = np.arange(len(order_src))
+    w = 0.26
+
+    for j, ev in enumerate(events_plot):
+        ev_tbl = comp_table[comp_table["Event"] == ev].set_index("Source")
+        vals = ev_tbl.reindex(order_src)["Difference"].to_numpy(dtype=float)
+        style = EVENT_STYLE[ev]
+        ax.bar(x + (j - 1) * w, vals, width=w, color=style["color"], hatch=style["hatch"],
+               alpha=0.9, edgecolor="black", linewidth=1, label=ev)
+
+    ax.axhline(0, color="k", lw=0.9, alpha=0.5)
+    ax.set_xticks(x)
+    ax.set_xticklabels(order_src, rotation=40, ha="right")
+    ax.set_ylabel("Generation share anomaly ($\\Delta z$)")
+    style_bar_axis(ax)
+
+    ax.legend(frameon=False, ncol=3, loc="upper left", bbox_to_anchor=(0.0, 1.30), borderaxespad=0.0)
