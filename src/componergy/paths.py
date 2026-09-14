@@ -28,15 +28,22 @@ INDICES_FILE = PROCESSED_DATA_DIR / "california_monthly_indices.nc"
 
 MANIFEST_PATH = DATA_DIR / "download_manifest.json"
 
+# Output directory for generated figures
+FIGURES_DIR = ROOT / "figures"
+
 
 def ensure_dirs() -> None:
     """Create all pipeline directories if they don't already exist."""
     for d in (
-        RAW_DATA_DIR,
-        INTERMEDIATE_DATA_DIR,
-        PROCESSED_DATA_DIR,
-        RAW_DATA_CLIMATE_DIR,
-        CA_BOUNDARY_DIR,
-        NOAA_CA_DIR,
+            RAW_DATA_DIR,
+            INTERMEDIATE_DATA_DIR,
+            PROCESSED_DATA_DIR,
+            RAW_DATA_CLIMATE_DIR,
+            CA_BOUNDARY_DIR,
+            NOAA_CA_DIR,
+            NOAA_MONTHLY_FILE,
+            INDICES_FILE,
+            MANIFEST_PATH,
+            FIGURES_DIR,
     ):
         d.mkdir(parents=True, exist_ok=True)
