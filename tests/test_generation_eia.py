@@ -87,3 +87,44 @@ def test_month_with_no_reported_total_gives_nan_not_crash():
     assert row["Fossil"] == 100.0
     assert pd.isna(row["EIA_Reported_Total"])
     assert pd.isna(row["Excluded_MWh"])
+
+
+def test_sheets_with_preamble_rows_are_not_silently_dropped():
+    """Regression test for the actual production bug: sheets from 2012
+    onward have 3 title/metadata rows (DOE header, description, source
+    citation) above the real column header row, while 2001-2011 sheets
+    have the header on row 0. Reading every sheet with a fixed header row
+    silently dropped every post-2011 sheet, since they never had a real
+    'ENERGY SOURCE' column at row 0.
+    """
+    test_dir = Path(tempfile.mkdtemp())
+    test_path = test_dir / "gen_mixed_preamble.xlsx"
+
+    old_style = pd.DataFrame([
+        ["YEAR", "MONTH", "STATE", "TYPE OF PRODUCER", "ENERGY SOURCE", "GENERATION (Megawatthours)"],
+        [2001, 1, "CA", "Total Electric Power Industry", "Coal", 199857],
+        [2001, 1, "CA", "Total Electric Power Industry", "Total", 199857],
+    ])
+
+    new_style = pd.DataFrame([
+        ["U.S. Department of Energy, The Energy Information Administration (EIA)", None, None, None, None, None],
+        ["Monthly Generation Data by State, Producer Sector and Energy Source; Final 2012", None, None, None, None,
+         None],
+        ["Sources: EIA-923 Report", None, None, None, None, None],
+        ["YEAR", "MONTH", "STATE", "TYPE OF PRODUCER", "ENERGY SOURCE", "GENERATION (Megawatthours)"],
+        [2012, 1, "CA", "Total Electric Power Industry", "Coal", 200000],
+        [2012, 1, "CA", "Total Electric Power Industry", "Total", 200000],
+    ])
+
+    with pd.ExcelWriter(test_path) as writer:
+        old_style.to_excel(writer, sheet_name="2001_2002_FINAL", index=False, header=False)
+        new_style.to_excel(writer, sheet_name="2012_Final", index=False, header=False)
+
+    raw = load_raw_sheets(test_path, state="CA")
+    years_found = sorted(raw["YEAR"].astype(int).unique())
+
+    assert years_found == [2001, 2012], f"expected both years present, got {years_found}"
+
+    grouped = pivot_by_source_group(raw)
+    assert grouped.loc["2001-01-01", "Fossil"] == 199857
+    assert grouped.loc["2012-01-01", "Fossil"] == 200000
