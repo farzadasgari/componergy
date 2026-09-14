@@ -51,3 +51,33 @@ def compute_trend_per_decade(da_annual: xr.DataArray) -> tuple[xr.DataArray, xr.
         output_dtypes=[float],
     )
     return slope_per_decade, pval
+
+
+def compute_linear_trend_with_ci(series: pd.Series, confidence: float = 0.95) -> tuple[pd.Series, pd.Series]:
+    valid = series.notna()
+    idx = series.index[valid]
+    y = series.values[valid].astype(float)
+
+    years = idx.year.to_numpy(dtype=float) + (idx.month.to_numpy(dtype=float) - 0.5) / 12.0
+    x = years
+
+    n = len(x)
+    xbar = x.mean()
+    ybar = y.mean()
+    sxx = np.sum((x - xbar) ** 2)
+
+    slope = np.sum((x - xbar) * (y - ybar)) / sxx
+    intercept = ybar - slope * xbar
+    yhat = intercept + slope * x
+
+    resid = y - yhat
+    df = n - 2
+    sse = np.sum(resid ** 2)
+    sigma2 = sse / df
+    se_yhat = np.sqrt(sigma2 * (1 / n + (x - xbar) ** 2 / sxx))
+    tcrit = stats.t.ppf(1 - (1 - confidence) / 2, df=df)
+    ci = tcrit * se_yhat
+
+    fitted = pd.Series(yhat, index=idx)
+    ci_band = pd.Series(ci, index=idx)
+    return fitted, ci_band
