@@ -10,3 +10,8 @@ def test_no_two_sources_share_the_same_linestyle_and_marker_combination():
 def test_no_two_sources_share_the_same_hatch():
     hatches = [s["hatch"] for s in SOURCE_STYLE.values()]
     assert len(hatches) == len(set(hatches))
+
+
+def test_no_two_events_share_the_same_hatch():
+    hatches = [s["hatch"] for s in EVENT_STYLE.values()]
+    assert len(hatches) == len(set(hatches))
