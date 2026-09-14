@@ -52,3 +52,11 @@ def compute_extent_from_boundary(boundary, pad_deg=0.35):
     """Map extent [minx, maxx, miny, maxy] from a boundary GeoDataFrame's bounds, with padding in degrees."""
     minx, miny, maxx, maxy = boundary.total_bounds
     return [minx - pad_deg, maxx + pad_deg, miny - pad_deg, maxy + pad_deg]
+
+
+def zscore(series):
+    """Standardize a pandas Series to zero mean, unit variance. Returns all-zero if std is 0 or non-finite."""
+    std = series.std(ddof=0)
+    if not std or not np.isfinite(std):
+        return series * 0.0
+    return (series - series.mean()) / std
