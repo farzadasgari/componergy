@@ -10,7 +10,7 @@ SOURCE_STYLE = {
 }
 
 EVENT_STYLE = {
-    "Heatwave": {"color": "#D55E00", "hatch": "///"},
-    "Drought": {"color": "#0072B2", "hatch": "\\\\\\"},
-    "Compound": {"color": "#CC79A7", "hatch": "xx"},
+    "Heatwave": {"color": "crimson", "hatch": "///"},
+    "Drought":  {"color": "#0072B2", "hatch": "\\\\\\"},
+    "Compound": {"color": "purple", "hatch": "xx"},
 }
