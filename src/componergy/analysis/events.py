@@ -12,3 +12,8 @@ def compute_percentile_threshold(da: xr.DataArray, q: float) -> xr.DataArray:
 def classify_heatwave(sti: xr.DataArray, percentile: float = 0.90) -> xr.DataArray:
     threshold = compute_percentile_threshold(sti, percentile)
     return sti > threshold
+
+
+def classify_drought(sapei: xr.DataArray, percentile: float = 0.10) -> xr.DataArray:
+    threshold = compute_percentile_threshold(sapei, percentile)
+    return sapei < threshold
