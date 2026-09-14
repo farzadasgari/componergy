@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import matplotlib
+
 matplotlib.use("Agg")
 
 import numpy as np
@@ -45,3 +46,9 @@ plt.rcParams.update({
     "axes.linewidth": 1.4,
     "savefig.dpi": 600,
 })
+
+
+def compute_extent_from_boundary(boundary, pad_deg=0.35):
+    """Map extent [minx, maxx, miny, maxy] from a boundary GeoDataFrame's bounds, with padding in degrees."""
+    minx, miny, maxx, maxy = boundary.total_bounds
+    return [minx - pad_deg, maxx + pad_deg, miny - pad_deg, maxy + pad_deg]
