@@ -107,3 +107,8 @@ def prepare_data(indices_ds: xr.Dataset, generation_df: pd.DataFrame, sapei_var=
         "normal": normal,
         "compound_months": mix_pct_sm.index[compound.reindex(mix_pct_sm.index).fillna(False).values],
     }
+
+
+def shade_compound_months(ax, compound_months):
+    for d in compound_months:
+        ax.axvspan(d, d + pd.offsets.MonthEnd(0), color="#d73027", alpha=0.14, linewidth=0)
