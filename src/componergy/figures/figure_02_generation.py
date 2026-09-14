@@ -160,3 +160,23 @@ def plot_mix_composite_bars(ax, comp_table):
     style_bar_axis(ax)
 
     ax.legend(frameon=False, ncol=3, loc="upper left", bbox_to_anchor=(0.0, 1.30), borderaxespad=0.0)
+
+
+def plot_single_source_composite_bars(ax, comp_table, src):
+    events_plot = ["Heatwave", "Drought", "Compound"]
+    tbl = comp_table[comp_table["Source"] == src].set_index("Event")
+    x = np.arange(len(events_plot))
+
+    for i, ev in enumerate(events_plot):
+        val = tbl.loc[ev, "Difference"] if ev in tbl.index else np.nan
+        style = EVENT_STYLE[ev]
+        ax.bar(x[i], val, width=0.6, color=style["color"], hatch=style["hatch"],
+               alpha=0.9, edgecolor="black", linewidth=1, label=ev)
+
+    ax.axhline(0, color="k", lw=0.9, alpha=0.5)
+    ax.set_xticks(x)
+    ax.set_xticklabels(events_plot)
+    ax.set_ylabel("Share anomaly ($\\Delta z$)")
+    style_bar_axis(ax)
+
+    ax.legend(frameon=False, ncol=3, loc="upper left", bbox_to_anchor=(0.0, 1.30), borderaxespad=0.0)
