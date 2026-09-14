@@ -21,7 +21,7 @@ data/processed/
 # Generated outputs
 outputs/
 plots/
-figures/generated/
+/figures/
 
 # OS files
 .DS_Store
