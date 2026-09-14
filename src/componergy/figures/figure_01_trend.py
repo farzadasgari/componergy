@@ -235,13 +235,13 @@ def build_figure_01(indices_ds: xr.Dataset, sapei_var: str = "sapei_3m", scdhi_v
     vmin_scdhi, vmax_scdhi = sym_limits_robust(scdhi_slope)
 
     axD = fig.add_subplot(gs[0, 2], projection=PC)
-    plot_trend_map(axD, sti_slope, sti_p, vmin_sti, vmax_sti, "STI trend per decade", "D", extent, boundary)
+    plot_trend_map(axD, sti_slope, sti_p, vmin_sti, vmax_sti, "Trend per decade", "D", extent, boundary)
 
     axE = fig.add_subplot(gs[1, 2], projection=PC)
-    plot_trend_map(axE, sapei_slope, sapei_p, vmin_sapei, vmax_sapei, "SAPEI trend per decade", "E", extent, boundary)
+    plot_trend_map(axE, sapei_slope, sapei_p, vmin_sapei, vmax_sapei, "Trend per decade", "E", extent, boundary)
 
     axF = fig.add_subplot(gs[2, 2], projection=PC)
-    plot_trend_map(axF, scdhi_slope, scdhi_p, vmin_scdhi, vmax_scdhi, "SCDHI trend per decade", "F", extent, boundary)
+    plot_trend_map(axF, scdhi_slope, scdhi_p, vmin_scdhi, vmax_scdhi, "Trend per decade", "F", extent, boundary)
 
     log_sections = {
         "Overview": {
