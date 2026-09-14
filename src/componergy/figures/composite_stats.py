@@ -42,3 +42,33 @@ def compute_composite_table(signal_df: pd.DataFrame, event_masks: dict, normal_m
                 "p_value": pval,
             })
     return pd.DataFrame(rows)
+
+
+def best_lag_slope(x: pd.Series, y: pd.Series, lags=range(-6, 7), min_n=60):
+    best = None
+    for lag in lags:
+        if lag < 0:
+            x_lagged = x.iloc[-lag:].values
+            y_lagged = y.iloc[:len(x_lagged)].values
+        elif lag > 0:
+            x_lagged = x.iloc[:-lag].values
+            y_lagged = y.iloc[lag:].values
+        else:
+            x_lagged = x.values
+            y_lagged = y.values
+
+        mask = np.isfinite(x_lagged) & np.isfinite(y_lagged)
+        if mask.sum() < min_n:
+            continue
+
+        A = np.vstack([x_lagged[mask], np.ones(mask.sum())]).T
+        slope, intercept = np.linalg.lstsq(A, y_lagged[mask], rcond=None)[0]
+        yhat = slope * x_lagged[mask] + intercept
+        ssr = np.sum((y_lagged[mask] - yhat) ** 2)
+        sst = np.sum((y_lagged[mask] - np.mean(y_lagged[mask])) ** 2)
+        r2 = 1.0 - ssr / sst if sst > 0 else np.nan
+
+        candidate = {"lag": int(lag), "slope": float(slope), "r2": float(r2), "n": int(mask.sum())}
+        if best is None or np.nan_to_num(candidate["r2"], nan=-np.inf) > np.nan_to_num(best["r2"], nan=-np.inf):
+            best = candidate
+    return best
