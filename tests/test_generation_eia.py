@@ -44,3 +44,17 @@ def test_load_raw_sheets_filters_state_and_producer_type():
     assert (raw["TYPE OF PRODUCER"] == "Total Electric Power Industry").all()
     assert 88888888 not in raw["GENERATION (Megawatthours)"].values
     assert 55555555 not in raw["GENERATION (Megawatthours)"].values
+
+
+def test_source_grouping_matches_manual_sum():
+    path, sources, total = _make_test_workbook()
+    raw = load_raw_sheets(path, state="CA")
+    grouped = pivot_by_source_group(raw)
+    row = grouped.loc["2001-01-01"]
+
+    expected_fossil = sources["Coal"] + sources["Natural Gas"] + sources["Petroleum"] + sources["Other Gases"]
+    expected_other_renew = sources["Geothermal"] + sources["Wood and Wood Derived Fuels"] + sources["Other Biomass"]
+
+    assert abs(row["Fossil"] - expected_fossil) < 1e-6
+    assert abs(row["Hydro"] - sources["Hydroelectric Conventional"]) < 1e-6
+    assert abs(row["Other Renewable"] - expected_other_renew) < 1e-6
