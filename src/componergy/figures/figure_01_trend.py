@@ -130,9 +130,10 @@ def plot_signal_panel(ax, z_series, foot_series, fitted, ci_band, color, ylabel,
 
 
 def plot_trend_map(ax, slope, pvals, vmin, vmax, cbar_label, letter, extent, boundary):
-    im = slope.plot(ax=ax, transform=PC, cmap="RdBu_r", vmin=vmin, vmax=vmax, add_colorbar=False)
-    cbar = plt.colorbar(im, ax=ax, shrink=0.88, fraction=0.18, pad=0.06)
-    cbar.set_label(cbar_label, labelpad=14)
+    slope.plot(
+        ax=ax, transform=PC, cmap="RdBu_r", vmin=vmin, vmax=vmax, add_colorbar=True,
+        cbar_kwargs={"label": cbar_label, "shrink": 0.88, "fraction": 0.18, "pad": 0.03},
+    )
     style_map(ax, extent, boundary)
     add_letter(ax, letter, x=-0.12, y=1.02)
 
