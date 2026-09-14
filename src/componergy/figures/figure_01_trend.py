@@ -7,7 +7,6 @@ import matplotlib
 matplotlib.use("Agg")
 
 import numpy as np
-import pandas as pd
 import xarray as xr
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
@@ -24,6 +23,10 @@ from componergy.figures.trend_stats import (
 from componergy.figures.stats_log import write_figure_log
 from componergy.analysis.events import classify_heatwave, classify_drought, classify_compound
 from componergy.paths import INDICES_FILE, FIGURES_DIR
+
+import logging
+
+logging.getLogger("matplotlib.font_manager").setLevel(logging.ERROR)
 
 PC = ccrs.PlateCarree()
 SMOOTH_MONTHS = 3
@@ -127,10 +130,9 @@ def plot_signal_panel(ax, z_series, foot_series, fitted, ci_band, color, ylabel,
 
 
 def plot_trend_map(ax, slope, pvals, vmin, vmax, cbar_label, letter, extent, boundary):
-    slope.plot(
-        ax=ax, transform=PC, cmap="RdBu_r", vmin=vmin, vmax=vmax, add_colorbar=True,
-        cbar_kwargs={"label": cbar_label, "shrink": 0.88, "fraction": 0.1, "pad": 0.03},
-    )
+    im = slope.plot(ax=ax, transform=PC, cmap="RdBu_r", vmin=vmin, vmax=vmax, add_colorbar=False)
+    cbar = plt.colorbar(im, ax=ax, shrink=0.88, fraction=0.18, pad=0.06)
+    cbar.set_label(cbar_label, labelpad=14)
     style_map(ax, extent, boundary)
     add_letter(ax, letter, x=-0.12, y=1.02)
 
