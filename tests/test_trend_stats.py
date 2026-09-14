@@ -85,3 +85,12 @@ def test_trend_significance_distinguishes_real_trend_from_pure_noise():
     assert float(pval_trend.isel(lat=0, lon=0).values) < 0.05
     assert float(pval_noise.isel(lat=0, lon=0).values) > 0.05
 
+
+def test_linear_trend_with_ci_recovers_exact_noiseless_slope():
+    _, times, values = _make_known_trend_grid(true_slope_per_year=0.5, noise_std=0.0)
+    series = pd.Series(values, index=times)
+    fitted, ci = compute_linear_trend_with_ci(series)
+
+    years_frac = times.year.values + (times.month.values - 0.5) / 12.0
+    manual_slope = (fitted.iloc[-1] - fitted.iloc[0]) / (years_frac[-1] - years_frac[0])
+    assert abs(manual_slope - 0.5) < 1e-6
