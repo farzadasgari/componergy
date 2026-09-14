@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import matplotlib
+
 matplotlib.use("Agg")
 
 import numpy as np
@@ -38,3 +39,10 @@ plt.rcParams.update({
     "axes.linewidth": 1.4,
     "savefig.dpi": 600,
 })
+
+
+def zscore(series: pd.Series) -> pd.Series:
+    std = series.std(ddof=0)
+    if not std or not np.isfinite(std):
+        return series * 0.0
+    return (series - series.mean()) / std
