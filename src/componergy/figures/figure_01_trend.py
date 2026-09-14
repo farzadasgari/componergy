@@ -124,3 +124,19 @@ def plot_signal_panel(ax, z_series, foot_series, fitted, ci_band, color, ylabel,
     ax2.set_yticks([])
     for sp in ax2.spines.values():
         sp.set_visible(False)
+
+
+def plot_trend_map(ax, slope, pvals, vmin, vmax, cbar_label, letter, extent, boundary):
+    slope.plot(
+        ax=ax, transform=PC, cmap="RdBu_r", vmin=vmin, vmax=vmax, add_colorbar=True,
+        cbar_kwargs={"label": cbar_label, "shrink": 0.88, "fraction": 0.1, "pad": 0.03},
+    )
+    style_map(ax, extent, boundary)
+    add_letter(ax, letter, x=-0.12, y=1.02)
+
+    sig = pvals < ALPHA_SIG
+    step = 3
+    sig_sub = sig.isel(lat=slice(None, None, step), lon=slice(None, None, step))
+    lon2, lat2 = np.meshgrid(sig_sub["lon"].values, sig_sub["lat"].values)
+    mask = np.asarray(sig_sub.values, dtype=bool)
+    ax.scatter(lon2[mask], lat2[mask], s=2, c="k", alpha=0.25, transform=PC, linewidths=0)
