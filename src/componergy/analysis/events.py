@@ -47,3 +47,8 @@ def classify_events(
 def normal_mask_exclude_all_events(is_heatwave: xr.DataArray, is_drought: xr.DataArray,
                                    is_compound: xr.DataArray) -> xr.DataArray:
     return ~(is_heatwave | is_drought | is_compound)
+
+
+def normal_mask_opposite_extreme(scdhi: xr.DataArray, percentile: float = 0.90) -> xr.DataArray:
+    threshold = compute_percentile_threshold(scdhi, percentile)
+    return scdhi >= threshold
