@@ -66,3 +66,11 @@ def _make_known_trend_grid(true_slope_per_year, n_years=30, noise_std=0.0, seed=
         coords={"time": times, "lat": [35.0, 38.0], "lon": [-120.0, -119.0]},
     )
     return da, times, values
+
+
+def test_trend_per_decade_recovers_exact_noiseless_slope():
+    da, _, _ = _make_known_trend_grid(true_slope_per_year=0.5, noise_std=0.0)
+    annual = annualize_monthly(da)
+    slope_decade, _ = compute_trend_per_decade(annual)
+    assert abs(float(slope_decade.isel(lat=0, lon=0).values) - 5.0) < 1e-6
+
