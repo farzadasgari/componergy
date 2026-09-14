@@ -194,3 +194,81 @@ def save_two_panel_figure(fig_path, left_label, right_label, left_plot_fn, right
 
     fig.savefig(fig_path, bbox_inches="tight")
     plt.close(fig)
+
+
+def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
+    from componergy.netcdf_io import atomic_to_csv
+
+    out_dir = FIGURES_DIR / "figure_02"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    print(f"loading {INDICES_FILE} and {GENERATION_MONTHLY_FILE}...")
+    indices_ds = xr.open_dataset(INDICES_FILE)
+    generation_df = pd.read_csv(GENERATION_MONTHLY_FILE, parse_dates=[0], index_col=0)
+    generation_df.index = pd.DatetimeIndex(generation_df.index.values, name=None)
+
+    data = prepare_data(indices_ds, generation_df, sapei_var=sapei_var, scdhi_var=scdhi_var)
+
+    comp_total = compute_composite_table(data["mix_z_total"], data["event_masks"], data["normal"])
+    comp_total.insert(0, "Mode", "total_share")
+    comp_local = compute_composite_table(data["mix_z_local"], data["event_masks"], data["normal"])
+    comp_local.insert(0, "Mode", "deseasonalized_share")
+    comp_all = pd.concat([comp_total, comp_local], ignore_index=True)
+
+    lag_rows = []
+    for mode_name, mix_z in [("total_share", data["mix_z_total"]), ("deseasonalized_share", data["mix_z_local"])]:
+        for src in mix_z.columns:
+            y = mix_z[src].dropna()
+            for driver_name, driver_series in data["drivers"].items():
+                x = driver_series.reindex(y.index)
+                best = best_lag_slope(x, y, lags=LAGS, min_n=60)
+                if best is None:
+                    continue
+                lag_rows.append({"Mode": mode_name, "Source": src, "Driver": driver_name, **best})
+
+    slope_df = pd.DataFrame(lag_rows)
+
+    print("saving figures...")
+    save_two_panel_figure(
+        out_dir / "figure_02A_mix_composite.jpg", "A", "B",
+        left_plot_fn=lambda ax: plot_mix_timeseries(ax, data),
+        right_plot_fn=lambda ax: plot_mix_composite_bars(ax, comp_total),
+    )
+    single_source_panels = [
+        ("figure_02B_fossil.jpg", "C", "D", "Fossil"),
+        ("figure_02C_hydro.jpg", "E", "F", "Hydro"),
+        ("figure_02D_solar.jpg", "G", "H", "Solar"),
+        ("figure_02E_wind.jpg", "I", "J", "Wind"),
+        ("figure_02F_nuclear.jpg", "K", "L", "Nuclear"),
+    ]
+    for fname, left_letter, right_letter, src in single_source_panels:
+        save_two_panel_figure(
+            out_dir / fname, left_letter, right_letter,
+            left_plot_fn=lambda ax, s=src: plot_single_source_timeseries(ax, data, s),
+            right_plot_fn=lambda ax, s=src: plot_single_source_composite_bars(ax, comp_total, s),
+        )
+
+    atomic_to_csv(comp_all, out_dir / "figure_02_composite.csv", index=False)
+    atomic_to_csv(slope_df, out_dir / "figure_02_lag_scan.csv", index=False)
+
+    log_sections = {
+        "Overview": {
+            "sapei_variable": sapei_var, "scdhi_variable": scdhi_var,
+            "smoothing_months": SMOOTH_MONTHS,
+            "year_start": int(data["mix_pct_sm"].index.year.min()),
+            "year_end": int(data["mix_pct_sm"].index.year.max()),
+            "n_months": len(data["mix_pct_sm"]),
+        },
+        "Event counts": {k: int(v.sum()) for k, v in data["event_masks"].items()},
+        "Note": (
+            "Generation shares reflect both climate-driven anomalies and secular "
+            "changes in installed capacity over the record; the latter is not "
+            "controlled for here (would require an installed-capacity dataset)."
+        ),
+    }
+    write_figure_log(out_dir / "figure_02_generation_response", log_sections)
+    print(f"wrote outputs to {out_dir}")
+
+
+if __name__ == "__main__":
+    main()
