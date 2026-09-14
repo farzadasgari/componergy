@@ -46,3 +46,8 @@ def zscore(series: pd.Series) -> pd.Series:
     if not std or not np.isfinite(std):
         return series * 0.0
     return (series - series.mean()) / std
+
+
+def deseasonalize_monthly(series: pd.Series) -> pd.Series:
+    clim = series.groupby(series.index.month).mean()
+    return series - series.index.month.map(clim)
