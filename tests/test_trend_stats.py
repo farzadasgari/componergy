@@ -40,3 +40,14 @@ def test_statewide_mean_excludes_nan_cell_from_numerator_and_denominator():
     expected_month2 = np.sum(month2[valid] * w_grid[valid]) / np.sum(w_grid[valid])
 
     assert abs(float(result.isel(time=1).values) - expected_month2) < 1e-9
+
+
+def test_footprint_fraction_matches_manual_calc():
+    lats = xr.DataArray([0.0, 60.0], dims="lat")
+    lons = xr.DataArray([-120.0, -119.0], dims="lon")
+    bool_da = xr.DataArray(
+        np.array([[True, False], [True, True]]),
+        dims=("lat", "lon"), coords={"lat": lats, "lon": lons},
+    )
+    frac = compute_footprint_fraction(bool_da)
+    assert abs(float(frac.values) - 0.75) < 1e-9
