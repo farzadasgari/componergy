@@ -180,3 +180,17 @@ def plot_single_source_composite_bars(ax, comp_table, src):
     style_bar_axis(ax)
 
     ax.legend(frameon=False, ncol=3, loc="upper left", bbox_to_anchor=(0.0, 1.30), borderaxespad=0.0)
+
+
+def save_two_panel_figure(fig_path, left_label, right_label, left_plot_fn, right_plot_fn):
+    fig, (axL, axR) = plt.subplots(1, 2, figsize=(16.5, 5.2), gridspec_kw={"width_ratios": [1.75, 1.0], "wspace": 0.28})
+    fig.subplots_adjust(top=0.72, bottom=0.16, left=0.06, right=0.98)
+
+    left_plot_fn(axL)
+    right_plot_fn(axR)
+
+    add_letter(axL, left_label, x=-0.08, y=1.32)
+    add_letter(axR, right_label, x=-0.12, y=1.32)
+
+    fig.savefig(fig_path, bbox_inches="tight")
+    plt.close(fig)
