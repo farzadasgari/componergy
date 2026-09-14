@@ -47,3 +47,30 @@ def pivot_by_source_group(df: pd.DataFrame) -> pd.DataFrame:
     grouped["Excluded_MWh"] = grouped["EIA_Reported_Total"] - grouped["Total"]
 
     return grouped.sort_index()
+
+
+def main(state: str = "CA", force: bool = False) -> None:
+    from componergy.netcdf_io import atomic_to_csv
+    from componergy.paths import EIA_GENERATION_RAW_FILE, GENERATION_MONTHLY_FILE, ensure_dirs
+
+    ensure_dirs()
+
+    if GENERATION_MONTHLY_FILE.exists() and not force:
+        print(f"{GENERATION_MONTHLY_FILE} already exists, skipping (pass force=True to rebuild).")
+        return
+
+    print(f"reading {EIA_GENERATION_RAW_FILE} (all sheets)...")
+    raw = load_raw_sheets(EIA_GENERATION_RAW_FILE, state=state)
+    print(f"found {len(raw)} rows for state={state}")
+
+    grouped = pivot_by_source_group(raw)
+
+    max_excluded_frac = (grouped["Excluded_MWh"].abs() / grouped["EIA_Reported_Total"].abs()).max()
+    print(f"max |excluded (pumped storage + other)| / reported total across all months: {max_excluded_frac:.4f}")
+
+    atomic_to_csv(grouped, GENERATION_MONTHLY_FILE)
+    print(f"wrote {GENERATION_MONTHLY_FILE}: {len(grouped)} months")
+
+
+if __name__ == "__main__":
+    main()
