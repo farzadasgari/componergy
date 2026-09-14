@@ -58,3 +58,14 @@ def test_source_grouping_matches_manual_sum():
     assert abs(row["Fossil"] - expected_fossil) < 1e-6
     assert abs(row["Hydro"] - sources["Hydroelectric Conventional"]) < 1e-6
     assert abs(row["Other Renewable"] - expected_other_renew) < 1e-6
+
+
+def test_reconciliation_against_eia_reported_total():
+    path, sources, total = _make_test_workbook()
+    raw = load_raw_sheets(path, state="CA")
+    grouped = pivot_by_source_group(raw)
+    row = grouped.loc["2001-01-01"]
+
+    assert abs(row["EIA_Reported_Total"] - total) < 1e-6
+    expected_excluded = sources["Pumped Storage"] + sources["Other"]
+    assert abs(row["Excluded_MWh"] - expected_excluded) < 1e-6
