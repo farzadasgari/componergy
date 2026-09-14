@@ -25,3 +25,10 @@ dependencies = [
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = [
+    "ignore:numpy.ndarray size changed:RuntimeWarning",
+    "ignore:Setting the shape on a NumPy array has been deprecated:DeprecationWarning",
+]
