@@ -112,3 +112,18 @@ def prepare_data(indices_ds: xr.Dataset, generation_df: pd.DataFrame, sapei_var=
 def shade_compound_months(ax, compound_months):
     for d in compound_months:
         ax.axvspan(d, d + pd.offsets.MonthEnd(0), color="#d73027", alpha=0.14, linewidth=0)
+
+
+def plot_mix_timeseries(ax, data):
+    for col in SOURCE_COLUMNS:
+        style = SOURCE_STYLE[col]
+        ax.plot(data["mix_pct_sm"].index, data["mix_pct_sm"][col].values,
+                color=style["color"], linestyle=style["linestyle"], marker=style["marker"],
+                markevery=24, markersize=6, lw=2.2, label=col)
+    ax.set_ylabel("Share (%)")
+    ax.set_xlabel("Time (Year)")
+    shade_compound_months(ax, data["compound_months"])
+    style_timeseries_axis(ax)
+
+    ax.legend(ncol=2, frameon=False, loc="upper left", bbox_to_anchor=(0.0, 1.34),
+              borderaxespad=0.0, handlelength=2.6, columnspacing=1.2)
