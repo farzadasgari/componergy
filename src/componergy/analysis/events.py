@@ -52,3 +52,10 @@ def normal_mask_exclude_all_events(is_heatwave: xr.DataArray, is_drought: xr.Dat
 def normal_mask_opposite_extreme(scdhi: xr.DataArray, percentile: float = 0.90) -> xr.DataArray:
     threshold = compute_percentile_threshold(scdhi, percentile)
     return scdhi >= threshold
+
+
+def compute_delta_z(standardized_var: xr.DataArray, event_mask: xr.DataArray,
+                    normal_mask: xr.DataArray) -> xr.DataArray:
+    event_mean = standardized_var.where(event_mask).mean(dim="time", skipna=True)
+    normal_mean = standardized_var.where(normal_mask).mean(dim="time", skipna=True)
+    return event_mean - normal_mean
