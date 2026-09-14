@@ -19,3 +19,7 @@ def compute_statewide_mean(da: xr.DataArray, weights: xr.DataArray) -> xr.DataAr
 
 def compute_footprint_fraction(is_extreme: xr.DataArray) -> xr.DataArray:
     return is_extreme.mean(dim=["lat", "lon"], skipna=True)
+
+
+def annualize_monthly(da: xr.DataArray) -> xr.DataArray:
+    return da.groupby("time.year").mean("time")
