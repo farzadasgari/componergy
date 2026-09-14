@@ -34,3 +34,13 @@ def _make_test_workbook():
         pd.DataFrame({"Note": ["metadata"]}).to_excel(writer, sheet_name="EnergySource_Notes", index=False)
 
     return test_path, sources, total
+
+
+def test_load_raw_sheets_filters_state_and_producer_type():
+    path, sources, total = _make_test_workbook()
+    raw = load_raw_sheets(path, state="CA")
+
+    assert (raw["STATE"] == "CA").all()
+    assert (raw["TYPE OF PRODUCER"] == "Total Electric Power Industry").all()
+    assert 88888888 not in raw["GENERATION (Megawatthours)"].values
+    assert 55555555 not in raw["GENERATION (Megawatthours)"].values
