@@ -39,11 +39,7 @@ EIA_GENERATION_RAW_FILE = RAW_DATA_ELECTRICITY_DIR / "generation_monthly.xlsx"
 # Processed California-only, source-grouped monthly generation table
 GENERATION_MONTHLY_FILE = PROCESSED_DATA_DIR / "california_generation_monthly.csv"
 
-# Directories the pipeline needs to exist -- deliberately only directories,
-# never file-path constants (NOAA_MONTHLY_FILE, INDICES_FILE, etc.):
-# Path.mkdir(exist_ok=True) only tolerates an already-existing DIRECTORY at
-# that path, not an already-existing FILE, so including a file constant
-# here would raise FileExistsError as soon as that file is created.
+# Directories the pipeline needs to exist
 _PIPELINE_DIRS = (
     RAW_DATA_DIR,
     INTERMEDIATE_DATA_DIR,
