@@ -277,3 +277,28 @@ def build_figure_01(indices_ds: xr.Dataset, sapei_var: str = "sapei_3m", scdhi_v
     }
 
     return fig, log_sections
+
+
+def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
+    """Load INDICES_FILE, build the figure, and write the .jpg, .log, and .json outputs."""
+    FIGURES_DIR.mkdir(parents=True, exist_ok=True)
+    out_dir = FIGURES_DIR / "figure_01"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    print(f"loading {INDICES_FILE}...")
+    indices_ds = xr.open_dataset(INDICES_FILE)
+
+    print("building figure 1...")
+    fig, log_sections = build_figure_01(indices_ds, sapei_var=sapei_var, scdhi_var=scdhi_var)
+
+    fig_path = out_dir / "figure_01_trend.jpg"
+    fig.savefig(fig_path, bbox_inches="tight", dpi=600)
+    plt.close(fig)
+    print(f"wrote {fig_path}")
+
+    write_figure_log(out_dir / "figure_01_trend", log_sections)
+    print(f"wrote {out_dir / 'figure_01_trend.log'} and .json")
+
+
+if __name__ == "__main__":
+    main()
