@@ -31,6 +31,11 @@ MANIFEST_PATH = DATA_DIR / "download_manifest.json"
 # Output directory for generated figures
 FIGURES_DIR = ROOT / "figures"
 
+# Raw EIA-923 "generation_monthly.xlsx" (multi-sheet, all states)
+EIA_GENERATION_RAW_FILE = RAW_DATA_DIR / "generation_monthly.xlsx"
+
+# Processed California-only, source-grouped monthly generation table
+GENERATION_MONTHLY_FILE = PROCESSED_DATA_DIR / "california_electricity_generation_monthly.csv"
 
 def ensure_dirs() -> None:
     """Create all pipeline directories if they don't already exist."""
