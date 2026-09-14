@@ -69,3 +69,21 @@ def test_reconciliation_against_eia_reported_total():
     assert abs(row["EIA_Reported_Total"] - total) < 1e-6
     expected_excluded = sources["Pumped Storage"] + sources["Other"]
     assert abs(row["Excluded_MWh"] - expected_excluded) < 1e-6
+
+
+def test_month_with_no_reported_total_gives_nan_not_crash():
+    test_dir = Path(tempfile.mkdtemp())
+    test_path = test_dir / "gen_no_total.xlsx"
+    rows = [
+        {"YEAR": 2002, "MONTH": 1, "STATE": "CA", "TYPE OF PRODUCER": "Total Electric Power Industry",
+         "ENERGY SOURCE": "Coal", "GENERATION (Megawatthours)": 100.0},
+    ]
+    pd.DataFrame(rows).to_excel(test_path, sheet_name="2002_Final", index=False)
+
+    raw = load_raw_sheets(test_path, state="CA")
+    grouped = pivot_by_source_group(raw)
+    row = grouped.loc["2002-01-01"]
+
+    assert row["Fossil"] == 100.0
+    assert pd.isna(row["EIA_Reported_Total"])
+    assert pd.isna(row["Excluded_MWh"])
