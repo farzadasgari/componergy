@@ -99,3 +99,28 @@ def sym_limits_robust(da, q=0.98, fallback=1.0):
     if not np.isfinite(vmax) or vmax == 0:
         vmax = fallback
     return -vmax, vmax
+
+
+def plot_signal_panel(ax, z_series, foot_series, fitted, ci_band, color, ylabel, letter):
+    ax.plot(z_series.index, z_series.values, color=color, lw=2.2, zorder=4)
+    ax.axhline(0, color="k", lw=1.8, alpha=0.35, zorder=1)
+    ax.set_ylabel(ylabel)
+    style_timeseries(ax)
+    add_letter(ax, letter)
+
+    ax.fill_between(fitted.index, fitted.values - ci_band.values, fitted.values + ci_band.values,
+                    color="black", alpha=0.18, linewidth=0, zorder=7)
+    ax.plot(fitted.index, fitted.values, color="black", lw=3.0, linestyle="--", zorder=8)
+
+    ax2 = ax.twinx()
+    ax2.set_facecolor("none")
+    ax2.set_zorder(0)
+    ax.set_zorder(1)
+    ax.patch.set_alpha(0)
+    ax2.fill_between(foot_series.index, 0.0, np.clip(foot_series.values, 0, 1),
+                     color=C_FOOT, alpha=0.22, linewidth=0, zorder=0)
+    ax2.plot(foot_series.index, np.clip(foot_series.values, 0, 1), color=C_FOOT, lw=1.0, alpha=0.65, zorder=1)
+    ax2.set_ylim(0, 1)
+    ax2.set_yticks([])
+    for sp in ax2.spines.values():
+        sp.set_visible(False)
