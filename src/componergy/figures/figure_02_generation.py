@@ -127,3 +127,14 @@ def plot_mix_timeseries(ax, data):
 
     ax.legend(ncol=2, frameon=False, loc="upper left", bbox_to_anchor=(0.0, 1.34),
               borderaxespad=0.0, handlelength=2.6, columnspacing=1.2)
+
+
+def plot_single_source_timeseries(ax, data, src):
+    style = SOURCE_STYLE[src]
+    s = data["mix_pct_sm"][src]
+    ax.plot(s.index, s.values, color=style["color"], linestyle=style["linestyle"],
+            marker=style["marker"], markevery=24, markersize=6, lw=2.4)
+    ax.set_ylabel(f"{src} share (%)")
+    ax.set_xlabel("Time (Year)")
+    shade_compound_months(ax, data["compound_months"])
+    style_timeseries_axis(ax)
