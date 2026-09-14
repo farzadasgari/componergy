@@ -22,3 +22,12 @@ def test_json_round_trips_exactly():
     with open(test_dir / "out.json") as f:
         loaded = json.load(f)
     assert loaded == sections
+
+
+def test_log_text_contains_section_titles_and_key_values():
+    test_dir = Path(tempfile.mkdtemp())
+    write_figure_log(test_dir / "out", {"My Section": {"mean": 0.5}})
+
+    text = (test_dir / "out.log").read_text()
+    assert "---- My Section ----" in text
+    assert "mean: 0.5" in text
