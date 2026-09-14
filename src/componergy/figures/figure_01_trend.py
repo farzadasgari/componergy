@@ -60,3 +60,9 @@ def zscore(series):
     if not std or not np.isfinite(std):
         return series * 0.0
     return (series - series.mean()) / std
+
+
+def style_timeseries(ax):
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    ax.grid(False)
