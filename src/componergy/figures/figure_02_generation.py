@@ -60,3 +60,9 @@ def style_timeseries_axis(ax):
     ax.xaxis.set_major_locator(mdates.YearLocator(10))
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
     ax.xaxis.set_minor_locator(mdates.YearLocator(5))
+
+
+def style_bar_axis(ax):
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    ax.grid(False)
