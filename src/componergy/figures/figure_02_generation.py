@@ -21,6 +21,9 @@ from componergy.analysis.events import (
 )
 from componergy.paths import INDICES_FILE, GENERATION_MONTHLY_FILE, FIGURES_DIR
 
+import logging
+logging.getLogger("matplotlib.font_manager").setLevel(logging.ERROR)
+
 SMOOTH_MONTHS = 3
 LAGS = range(-6, 7)
 SOURCE_COLUMNS = ["Fossil", "Hydro", "Solar", "Wind", "Nuclear", "Other Renewable"]
@@ -120,14 +123,14 @@ def plot_mix_timeseries(ax, data):
         style = SOURCE_STYLE[col]
         ax.plot(data["mix_pct_sm"].index, data["mix_pct_sm"][col].values,
                 color=style["color"], linestyle=style["linestyle"], marker=style["marker"],
-                markevery=24, markersize=6, lw=2.2, label=col)
+                markevery=24, markersize=6, lw=3.2, label=col)
     ax.set_ylabel("Share (%)")
     ax.set_xlabel("Time (Year)")
     shade_compound_months(ax, data["compound_months"])
     style_timeseries_axis(ax)
 
-    ax.legend(ncol=2, frameon=False, loc="upper left", bbox_to_anchor=(0.0, 1.34),
-              borderaxespad=0.0, handlelength=2.6, columnspacing=1.2)
+    ax.legend(ncol=3, frameon=False, loc="upper left", bbox_to_anchor=(0.0, 1.34),
+               borderaxespad=0.0, handlelength=2.6, columnspacing=1.2)
 
 
 def plot_single_source_timeseries(ax, data, src):
