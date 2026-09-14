@@ -159,7 +159,7 @@ def plot_mix_composite_bars(ax, comp_table):
 
     ax.axhline(0, color="k", lw=0.9, alpha=0.5)
     ax.set_xticks(x)
-    ax.set_xticklabels(order_src, rotation=40, ha="right")
+    ax.set_xticklabels(order_src, rotation=90, ha="center")
     ax.set_ylabel("Generation share anomaly ($\\Delta z$)")
     style_bar_axis(ax)
 
