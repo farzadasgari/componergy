@@ -22,6 +22,7 @@ dependencies = [
     "joblib",
     "pytest",
     "cartopy",
+    "openpyxl",
 ]
 
 [tool.setuptools.packages.find]
