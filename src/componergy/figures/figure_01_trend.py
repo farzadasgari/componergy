@@ -87,3 +87,15 @@ def style_map(ax, extent, boundary):
 
 def add_letter(ax, letter, x=0.01, y=0.98, fs=18):
     ax.text(x, y, letter, transform=ax.transAxes, ha="left", va="top", fontsize=fs, clip_on=False)
+
+
+def sym_limits_robust(da, q=0.98, fallback=1.0):
+    """Symmetric (-vmax, vmax) color limits from the q-th percentile of absolute values, robust to outliers."""
+    vals = np.abs(da.values.ravel())
+    vals = vals[np.isfinite(vals)]
+    if len(vals) == 0:
+        return -fallback, fallback
+    vmax = float(np.quantile(vals, q))
+    if not np.isfinite(vmax) or vmax == 0:
+        vmax = fallback
+    return -vmax, vmax
