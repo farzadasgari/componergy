@@ -28,19 +28,52 @@ SOURCE_GROUPS = {
     "Other Renewable": ["Geothermal", "Wood and Wood Derived Fuels", "Other Biomass"],
 }
 
+MAX_PREAMBLE_ROWS_TO_SCAN = 10
+
+
+def _normalize_sheet(df_raw: pd.DataFrame):
+    """
+    Find the real header row (the one containing 'ENERGY SOURCE') in a
+    sheet read with header=None, and return a properly-headered
+    DataFrame. Returns None if no such row is found within the first
+    MAX_PREAMBLE_ROWS_TO_SCAN rows (e.g. a notes/metadata-only sheet).
+
+    Needed because not every sheet in the workbook has its header on row
+    0 -- some have title/description rows above the real header, and the
+    number of such rows is not consistent across sheets.
+    """
+    header_row_idx = None
+    for i in range(min(MAX_PREAMBLE_ROWS_TO_SCAN, len(df_raw))):
+        row_values = df_raw.iloc[i].astype(str).tolist()
+        if "ENERGY SOURCE" in row_values:
+            header_row_idx = i
+            break
+    if header_row_idx is None:
+        return None
+
+    new_header = df_raw.iloc[header_row_idx]
+    data = df_raw.iloc[header_row_idx + 1:].copy()
+    data.columns = new_header
+    return data.reset_index(drop=True)
+
 
 def load_raw_sheets(path, state="CA", producer_type="Total Electric Power Industry") -> pd.DataFrame:
     """
-    Read every data sheet in the workbook (skipping any without an
-    ENERGY SOURCE column, e.g. the notes sheet), concatenate, and filter
-    to one state and one producer-type category.
+    Read every data sheet in the workbook (skipping any where no
+    header row can be found within MAX_PREAMBLE_ROWS_TO_SCAN, e.g. the
+    notes sheet), concatenate, and filter to one state and one
+    producer-type category.
 
     producer_type defaults to "Total Electric Power Industry", which is
     itself the sum across the other producer-type categories in the raw
     file -- using it avoids double-counting generation across categories.
     """
-    all_sheets = pd.read_excel(path, sheet_name=None)
-    frames = [sheet for sheet in all_sheets.values() if "ENERGY SOURCE" in sheet.columns]
+    all_sheets = pd.read_excel(path, sheet_name=None, header=None)
+    frames = []
+    for sheet in all_sheets.values():
+        normalized = _normalize_sheet(sheet)
+        if normalized is not None:
+            frames.append(normalized)
     combined = pd.concat(frames, ignore_index=True)
     return combined[
         (combined["STATE"] == state) & (combined["TYPE OF PRODUCER"] == producer_type)
