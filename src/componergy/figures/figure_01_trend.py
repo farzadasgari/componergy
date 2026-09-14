@@ -83,3 +83,7 @@ def style_map(ax, extent, boundary):
     ax.add_geometries(boundary.geometry, crs=PC, facecolor="none", edgecolor="black", linewidth=0.9)
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
+
+
+def add_letter(ax, letter, x=0.01, y=0.98, fs=18):
+    ax.text(x, y, letter, transform=ax.transAxes, ha="left", va="top", fontsize=fs, clip_on=False)
