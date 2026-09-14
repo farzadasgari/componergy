@@ -35,7 +35,7 @@ FIGURES_DIR = ROOT / "figures"
 EIA_GENERATION_RAW_FILE = RAW_DATA_DIR / "generation_monthly.xlsx"
 
 # Processed California-only, source-grouped monthly generation table
-GENERATION_MONTHLY_FILE = PROCESSED_DATA_DIR / "california_electricity_generation_monthly.csv"
+GENERATION_MONTHLY_FILE = PROCESSED_DATA_DIR / "california_generation_monthly.csv"
 
 def ensure_dirs() -> None:
     """Create all pipeline directories if they don't already exist."""
