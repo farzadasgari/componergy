@@ -11,3 +11,4 @@ netCDF4
 dask
 joblib
 pytest
+cartopy

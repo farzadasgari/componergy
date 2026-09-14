@@ -20,7 +20,8 @@ dependencies = [
     "netCDF4",
     "dask",
     "joblib",
-    "pytest"
+    "pytest",
+    "cartopy",
 ]
 
 [tool.setuptools.packages.find]
