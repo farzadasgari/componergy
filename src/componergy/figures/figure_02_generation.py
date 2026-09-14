@@ -66,3 +66,7 @@ def style_bar_axis(ax):
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
     ax.grid(False)
+
+
+def add_letter(ax, letter, x=0.01, y=0.98, fs=19):
+    ax.text(x, y, letter, transform=ax.transAxes, ha="left", va="top", fontsize=fs, clip_on=False)
