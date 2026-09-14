@@ -43,3 +43,14 @@ def test_ensure_dirs_does_not_crash_when_file_exists_in_processed_dir():
     for d in fake_dirs:
         assert d.is_dir()
     assert (fake_processed / "california_monthly_climate.nc").exists()
+
+
+def test_ensure_dirs_creates_all_directories():
+    test_root = Path(tempfile.mkdtemp())
+    fake_dirs = tuple(test_root / name for name in ["a", "b", "c"])
+
+    with patch.object(paths, "_PIPELINE_DIRS", fake_dirs):
+        paths.ensure_dirs()
+
+    for d in fake_dirs:
+        assert d.is_dir()
