@@ -31,8 +31,10 @@ MANIFEST_PATH = DATA_DIR / "download_manifest.json"
 # Output directory for generated figures
 FIGURES_DIR = ROOT / "figures"
 
+RAW_DATA_ELECTRICITY_DIR = RAW_DATA_DIR / "electricity"
+
 # Raw EIA-923 "generation_monthly.xlsx" (multi-sheet, all states)
-EIA_GENERATION_RAW_FILE = RAW_DATA_DIR / "generation_monthly.xlsx"
+EIA_GENERATION_RAW_FILE = RAW_DATA_ELECTRICITY_DIR / "generation_monthly.xlsx"
 
 # Processed California-only, source-grouped monthly generation table
 GENERATION_MONTHLY_FILE = PROCESSED_DATA_DIR / "california_generation_monthly.csv"
