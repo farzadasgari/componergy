@@ -128,3 +128,44 @@ def test_sheets_with_preamble_rows_are_not_silently_dropped():
     grouped = pivot_by_source_group(raw)
     assert grouped.loc["2001-01-01", "Fossil"] == 199857
     assert grouped.loc["2012-01-01", "Fossil"] == 200000
+
+
+def test_inconsistent_generation_column_whitespace_across_years_is_not_lost():
+    """
+    Regression test for the actual production bug: sheets from 2015
+    onward use 'GENERATION  (Megawatthours)' (double space) while
+    2001-2014 use 'GENERATION (Megawatthours)' (single space). Without
+    normalizing whitespace, pd.concat() treats these as two different
+    columns, silently zeroing out every 2015+ row when only the
+    single-space column name is read downstream.
+    """
+    test_dir = Path(tempfile.mkdtemp())
+    test_path = test_dir / "gen_whitespace.xlsx"
+
+    old_style = pd.DataFrame([
+        ["YEAR", "MONTH", "STATE", "TYPE OF PRODUCER", "ENERGY SOURCE", "GENERATION (Megawatthours)"],
+        [2014, 12, "CA", "Total Electric Power Industry", "Coal", 500000],
+        [2014, 12, "CA", "Total Electric Power Industry", "Total", 500000],
+    ])
+    new_style = pd.DataFrame([
+        ["U.S. Department of Energy, The Energy Information Administration (EIA)", None, None, None, None, None],
+        ["Monthly Generation Data by State, Producer Sector and Energy Source; Months Through December 2015", None,
+         None, None, None, None],
+        ["Sources: EIA-923 Report", None, None, None, None, None],
+        ["YEAR", "MONTH", "STATE", "TYPE OF PRODUCER", "ENERGY SOURCE", "GENERATION  (Megawatthours)"],
+        [2015, 1, "CA", "Total Electric Power Industry", "Coal", 600000],
+        [2015, 1, "CA", "Total Electric Power Industry", "Total", 600000],
+    ])
+
+    with pd.ExcelWriter(test_path) as writer:
+        old_style.to_excel(writer, sheet_name="2014_Final", index=False, header=False)
+        new_style.to_excel(writer, sheet_name="2015_Final", index=False, header=False)
+
+    raw = load_raw_sheets(test_path, state="CA")
+    assert "GENERATION (Megawatthours)" in raw.columns
+    assert "GENERATION  (Megawatthours)" not in raw.columns
+
+    grouped = pivot_by_source_group(raw)
+    assert grouped.loc["2014-12-01", "Fossil"] == 500000
+    assert grouped.loc["2015-01-01", "Fossil"] == 600000
+    assert grouped.loc["2015-01-01", "EIA_Reported_Total"] == 600000
