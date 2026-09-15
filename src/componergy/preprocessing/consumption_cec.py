@@ -13,6 +13,7 @@ def _find_header_row(df_raw: pd.DataFrame):
             return i
     return None
 
+
 def load_raw_consumption(path, sheet_name="Electricity Consumption") -> pd.DataFrame:
     df_raw = pd.read_excel(path, sheet_name=sheet_name, header=None)
     header_row_idx = _find_header_row(df_raw)
@@ -34,3 +35,27 @@ def load_raw_consumption(path, sheet_name="Electricity Consumption") -> pd.DataF
     data["Consumption (MWh)"] = data["Consumption (MWh)"].astype(float)
 
     return data[["Date", "CountyName", "Sector", "Consumption (MWh)"]]
+
+
+def main(force: bool = False) -> None:
+    from componergy.netcdf_io import atomic_to_csv
+    from componergy.paths import COUNTY_CONSUMPTION_XLSX, COUNTY_CONSUMPTION_MONTHLY_FILE, ensure_dirs
+
+    ensure_dirs()
+
+    if COUNTY_CONSUMPTION_MONTHLY_FILE.exists() and not force:
+        print(f"{COUNTY_CONSUMPTION_MONTHLY_FILE} already exists, skipping (pass force=True to rebuild).")
+        return
+
+    print(f"reading {COUNTY_CONSUMPTION_XLSX}...")
+    long_df = load_raw_consumption(COUNTY_CONSUMPTION_XLSX)
+    print(f"found {len(long_df)} rows: {long_df['CountyName'].nunique()} counties, "
+          f"{long_df['Sector'].nunique()} sectors, "
+          f"{long_df['Date'].min().date()} to {long_df['Date'].max().date()}")
+
+    atomic_to_csv(long_df, COUNTY_CONSUMPTION_MONTHLY_FILE, index=False)
+    print(f"wrote {COUNTY_CONSUMPTION_MONTHLY_FILE}")
+
+
+if __name__ == "__main__":
+    main()
