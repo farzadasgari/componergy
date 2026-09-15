@@ -96,8 +96,14 @@ def best_lag_slope(x: pd.Series, y: pd.Series, lags=range(-6, 7), min_n=60):
     Returns
     -------
     dict or None
-        {"lag", "slope", "r2", "n"} for the best lag, or None if no lag
-        met min_n.
+        {"lag", "slope", "r2", "n", "p_value"} for the best lag, or None
+        if no lag met min_n. p_value tests H0: slope == 0 at that lag
+        (standard OLS slope t-test) -- reported because R² alone is
+        descriptive; whether the best-fit slope is distinguishable from
+        no relationship is a separate question a bare R² doesn't answer.
+        When comparing this p-value across many regions/drivers/sectors,
+        apply benjamini_hochberg_fdr() to the collected p-values rather
+        than reading each one in isolation.
     """
     best = None
     for lag in lags:
@@ -112,17 +118,27 @@ def best_lag_slope(x: pd.Series, y: pd.Series, lags=range(-6, 7), min_n=60):
             y_lagged = y.values
 
         mask = np.isfinite(x_lagged) & np.isfinite(y_lagged)
-        if mask.sum() < min_n:
+        n = int(mask.sum())
+        if n < min_n:
             continue
 
-        A = np.vstack([x_lagged[mask], np.ones(mask.sum())]).T
-        slope, intercept = np.linalg.lstsq(A, y_lagged[mask], rcond=None)[0]
-        yhat = slope * x_lagged[mask] + intercept
-        ssr = np.sum((y_lagged[mask] - yhat) ** 2)
-        sst = np.sum((y_lagged[mask] - np.mean(y_lagged[mask])) ** 2)
+        xv, yv = x_lagged[mask], y_lagged[mask]
+        A = np.vstack([xv, np.ones(n)]).T
+        slope, intercept = np.linalg.lstsq(A, yv, rcond=None)[0]
+        yhat = slope * xv + intercept
+        ssr = np.sum((yv - yhat) ** 2)
+        sst = np.sum((yv - np.mean(yv)) ** 2)
         r2 = 1.0 - ssr / sst if sst > 0 else np.nan
 
-        candidate = {"lag": int(lag), "slope": float(slope), "r2": float(r2), "n": int(mask.sum())}
+        xbar = xv.mean()
+        sxx = np.sum((xv - xbar) ** 2)
+        mse = ssr / (n - 2) if n > 2 else np.nan
+        se_slope = np.sqrt(mse / sxx) if sxx > 0 and np.isfinite(mse) else np.nan
+        tstat = slope / se_slope if se_slope and np.isfinite(se_slope) else np.nan
+        p_value = 2 * stats.t.sf(np.abs(tstat), df=n - 2) if np.isfinite(tstat) else np.nan
+
+        candidate = {"lag": int(lag), "slope": float(slope), "r2": float(r2), "n": n,
+                     "p_value": float(p_value) if np.isfinite(p_value) else np.nan}
         if best is None or np.nan_to_num(candidate["r2"], nan=-np.inf) > np.nan_to_num(best["r2"], nan=-np.inf):
             best = candidate
     return best
