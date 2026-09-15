@@ -35,3 +35,14 @@ def _feature_to_geometry(feature):
     if isinstance(geom, dict):
         return shape(geom)
     return None
+
+
+def _features_to_gdf(features):
+    rows = []
+    for f in features:
+        geom = _feature_to_geometry(f)
+        if geom is None:
+            continue
+        rows.append({**(f.get("properties") or {}), "geometry": geom})
+    gdf = gpd.GeoDataFrame(rows, geometry="geometry")
+    return gdf.set_crs("EPSG:3857", allow_override=True).to_crs("EPSG:4326")
