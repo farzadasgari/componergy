@@ -181,3 +181,45 @@ def benjamini_hochberg_fdr(p_values):
     valid_q[order] = adjusted_q
     q_values[valid_mask] = valid_q
     return q_values
+
+
+def _ols_ssr(X, y):
+    beta = np.linalg.lstsq(X, y, rcond=None)[0]
+    resid = y - X @ beta
+    return float(np.sum(resid ** 2))
+
+
+def compute_incremental_r2(y, x_base, x_additional):
+    y = np.asarray(y, dtype=float)
+    x_base = np.asarray(x_base, dtype=float)
+    x_additional = np.asarray(x_additional, dtype=float)
+
+    n = len(y)
+    ones = np.ones(n)
+
+    X_reduced = np.column_stack([ones, x_base])
+    X_full = np.column_stack([ones, x_base, x_additional])
+
+    sst = np.sum((y - y.mean()) ** 2)
+    ssr_reduced = _ols_ssr(X_reduced, y)
+    ssr_full = _ols_ssr(X_full, y)
+
+    r2_reduced = 1.0 - ssr_reduced / sst if sst > 0 else np.nan
+    r2_full = 1.0 - ssr_full / sst if sst > 0 else np.nan
+    delta_r2 = r2_full - r2_reduced
+
+    df_full = n - X_full.shape[1]
+    df_diff = X_full.shape[1] - X_reduced.shape[1]
+
+    if df_full > 0 and ssr_full > 0:
+        f_stat = ((ssr_reduced - ssr_full) / df_diff) / (ssr_full / df_full)
+        p_value = stats.f.sf(f_stat, df_diff, df_full)
+    else:
+        f_stat, p_value = np.nan, np.nan
+
+    return {
+        "r2_reduced": float(r2_reduced), "r2_full": float(r2_full), "delta_r2": float(delta_r2),
+        "f_stat": float(f_stat) if np.isfinite(f_stat) else np.nan,
+        "p_value": float(p_value) if np.isfinite(p_value) else np.nan,
+        "n": int(n),
+    }
