@@ -19,3 +19,21 @@ def test_majority_area_overlap_assigns_larger_share():
 
     mapping = build_county_to_region_map(county, regions)
     assert mapping.loc[0, "Region"] == "A"
+
+
+def test_unmapped_county_raises_value_error():
+    orphan_county = gpd.GeoDataFrame(
+        {"CountyName": ["FAR AWAY COUNTY"]},
+        geometry=[Polygon([(-200, 60), (-199, 60), (-199, 61), (-200, 61)])],
+        crs="EPSG:4326",
+    )
+    regions = gpd.GeoDataFrame(
+        {"Region": ["A"]},
+        geometry=[Polygon([(-120, 37), (-119, 37), (-119, 38), (-120, 38)])],
+        crs="EPSG:4326",
+    )
+    try:
+        build_county_to_region_map(orphan_county, regions)
+        assert False, "should have raised ValueError"
+    except ValueError as e:
+        assert "FAR AWAY COUNTY" in str(e)
