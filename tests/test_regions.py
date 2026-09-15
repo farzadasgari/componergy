@@ -56,3 +56,21 @@ def test_regional_mean_correctly_isolates_known_split():
     result = compute_regional_mean(da, regions_gdf)
     assert abs(result["West"].mean() - 10.0) < 0.5
     assert abs(result["East"].mean() - 20.0) < 0.5
+
+
+def test_region_with_zero_overlap_is_explicit_all_nan_not_dropped():
+    lats = np.linspace(35, 40, 10)
+    lons = np.linspace(-122, -117, 10)
+    times = pd.date_range("2010-01-01", periods=3, freq="MS")
+    da = xr.DataArray(np.full((3, 10, 10), 15.0), dims=("time", "lat", "lon"),
+                      coords={"time": times, "lat": lats, "lon": lons})
+
+    covering_poly = Polygon([(-122, 34), (-117, 34), (-117, 41), (-122, 41)])
+    far_poly = Polygon([(-200, 60), (-199, 60), (-199, 61), (-200, 61)])
+    regions_gdf = gpd.GeoDataFrame({"Region": ["Covers All", "Nowhere"]}, geometry=[covering_poly, far_poly],
+                                   crs="EPSG:4326")
+
+    result = compute_regional_mean(da, regions_gdf)
+    assert "Nowhere" in result.columns
+    assert result["Nowhere"].isna().all()
+    assert abs(result["Covers All"].mean() - 15.0) < 0.1
