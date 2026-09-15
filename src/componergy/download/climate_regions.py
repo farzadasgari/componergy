@@ -46,3 +46,17 @@ def _features_to_gdf(features):
         rows.append({**(f.get("properties") or {}), "geometry": geom})
     gdf = gpd.GeoDataFrame(rows, geometry="geometry")
     return gdf.set_crs("EPSG:3857", allow_override=True).to_crs("EPSG:4326")
+
+
+def _extract_region_names(gdf):
+    name_col = next((c for c in _NAME_COLUMN_CANDIDATES if c in gdf.columns), None)
+    if name_col is None:
+        name_col = [c for c in gdf.columns if c != "geometry"][0]
+    gdf = gdf.copy()
+    gdf["Region"] = gdf[name_col].astype("string").str.strip().replace(REGION_RENAME)
+    return (
+        gdf[["Region", "geometry"]]
+        .dropna()
+        .drop_duplicates(subset=["Region"])
+        .reset_index(drop=True)
+    )
