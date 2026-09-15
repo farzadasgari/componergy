@@ -145,6 +145,20 @@ def best_lag_slope(x: pd.Series, y: pd.Series, lags=range(-6, 7), min_n=60):
 
 
 def benjamini_hochberg_fdr(p_values):
+    """
+    Benjamini-Hochberg FDR-adjusted p-values (q-values) for a collection of tests.
+
+    Addresses the multiple-comparisons problem that arises whenever many
+    p-values are examined together -- e.g. one best_lag_slope() p-value
+    per (region, driver) pair, or one per (sector, driver) pair: with
+    enough independent tests, some will look "significant" at p<0.05 by
+    chance alone. Comparing each p-value to 0.05 in isolation does not
+    control for this; comparing the returned q-values to a chosen FDR
+    threshold (e.g. 0.05 or 0.10) does.
+
+    NaN entries pass through as NaN and take no part in the ranking, so
+    they never affect the q-values of the other entries.
+    """
     p_values = np.asarray(p_values, dtype=float)
     n = len(p_values)
     q_values = np.full(n, np.nan)
