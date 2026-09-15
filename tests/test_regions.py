@@ -37,3 +37,22 @@ def test_unmapped_county_raises_value_error():
         assert False, "should have raised ValueError"
     except ValueError as e:
         assert "FAR AWAY COUNTY" in str(e)
+
+
+def test_regional_mean_correctly_isolates_known_split():
+    lats = np.linspace(35, 40, 10)
+    lons = np.linspace(-122, -117, 10)
+    times = pd.date_range("2010-01-01", periods=3, freq="MS")
+
+    data = np.zeros((3, 10, 10))
+    data[:, :, :5] = 10.0
+    data[:, :, 5:] = 20.0
+    da = xr.DataArray(data, dims=("time", "lat", "lon"), coords={"time": times, "lat": lats, "lon": lons})
+
+    west_poly = Polygon([(-122, 34), (-119.5, 34), (-119.5, 41), (-122, 41)])
+    east_poly = Polygon([(-119.5, 34), (-117, 34), (-117, 41), (-119.5, 41)])
+    regions_gdf = gpd.GeoDataFrame({"Region": ["West", "East"]}, geometry=[west_poly, east_poly], crs="EPSG:4326")
+
+    result = compute_regional_mean(da, regions_gdf)
+    assert abs(result["West"].mean() - 10.0) < 0.5
+    assert abs(result["East"].mean() - 20.0) < 0.5
