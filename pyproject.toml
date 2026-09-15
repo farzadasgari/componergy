@@ -33,4 +33,5 @@ testpaths = ["tests"]
 filterwarnings = [
     "ignore:numpy.ndarray size changed:RuntimeWarning",
     "ignore:Setting the shape on a NumPy array has been deprecated:DeprecationWarning",
+    "ignore:Use `@` matmul instead of `\\*` mul operator for matrix multiplication:PendingDeprecationWarning",
 ]
