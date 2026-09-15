@@ -20,10 +20,15 @@ dependencies = [
     "netCDF4",
     "dask",
     "joblib",
-    "pytest",
     "cartopy",
     "openpyxl",
     "regionmask",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "statsmodels",
 ]
 
 [tool.setuptools.packages.find]
