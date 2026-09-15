@@ -21,3 +21,10 @@ def _make_test_workbook():
     ]
     pd.DataFrame(rows).to_excel(test_path, sheet_name="Electricity Consumption", index=False, header=False)
     return test_path
+
+
+def test_header_row_correctly_located_past_the_title_row():
+    path = _make_test_workbook()
+    result = load_raw_consumption(path)
+    assert list(result.columns) == ["Date", "CountyName", "Sector", "Consumption (MWh)"]
+    assert len(result) == 4
