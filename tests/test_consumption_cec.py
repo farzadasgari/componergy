@@ -37,3 +37,9 @@ def test_multi_planning_area_county_kept_as_separate_rows_summing_correctly():
     la_residential = result[(result["CountyName"] == "LOS ANGELES") & (result["Sector"] == "Residential")]
     assert len(la_residential) == 2
     assert la_residential["Consumption (MWh)"].sum() == 1500.0
+
+
+def test_county_names_normalized_to_uppercase_stripped():
+    path = _make_test_workbook()
+    result = load_raw_consumption(path)
+    assert set(result["CountyName"].unique()) == {"LOS ANGELES", "ALAMEDA"}
