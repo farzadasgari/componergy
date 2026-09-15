@@ -74,3 +74,19 @@ def test_region_with_zero_overlap_is_explicit_all_nan_not_dropped():
     assert "Nowhere" in result.columns
     assert result["Nowhere"].isna().all()
     assert abs(result["Covers All"].mean() - 15.0) < 0.1
+
+
+def test_overlapping_regions_both_compute_independently():
+    lats = np.linspace(35, 40, 10)
+    lons = np.linspace(-122, -117, 10)
+    times = pd.date_range("2010-01-01", periods=3, freq="MS")
+    da = xr.DataArray(np.full((3, 10, 10), 15.0), dims=("time", "lat", "lon"),
+                      coords={"time": times, "lat": lats, "lon": lons})
+
+    region_a = Polygon([(-122, 34), (-119, 34), (-119, 41), (-122, 41)])
+    region_b = Polygon([(-120, 34), (-117, 34), (-117, 41), (-120, 41)])  # overlaps region_a
+    regions_gdf = gpd.GeoDataFrame({"Region": ["A", "B"]}, geometry=[region_a, region_b], crs="EPSG:4326")
+
+    result = compute_regional_mean(da, regions_gdf)
+    assert abs(result["A"].mean() - 15.0) < 0.1
+    assert abs(result["B"].mean() - 15.0) < 0.1
