@@ -24,3 +24,14 @@ def _fetch_all_pages(url, pagesize=2000):
         features.extend(data.get("features", []))
         next_url = data.get("next")
     return features
+
+
+def _feature_to_geometry(feature):
+    geom = feature.get("geometry")
+    if geom is None:
+        return None
+    if isinstance(geom, str):
+        return wkt.loads(geom)
+    if isinstance(geom, dict):
+        return shape(geom)
+    return None
