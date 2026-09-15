@@ -23,6 +23,7 @@ dependencies = [
     "pytest",
     "cartopy",
     "openpyxl",
+    "regionmask",
 ]
 
 [tool.setuptools.packages.find]
