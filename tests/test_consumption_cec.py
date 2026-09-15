@@ -28,3 +28,12 @@ def test_header_row_correctly_located_past_the_title_row():
     result = load_raw_consumption(path)
     assert list(result.columns) == ["Date", "CountyName", "Sector", "Consumption (MWh)"]
     assert len(result) == 4
+
+
+def test_multi_planning_area_county_kept_as_separate_rows_summing_correctly():
+    path = _make_test_workbook()
+    result = load_raw_consumption(path)
+
+    la_residential = result[(result["CountyName"] == "LOS ANGELES") & (result["Sector"] == "Residential")]
+    assert len(la_residential) == 2
+    assert la_residential["Consumption (MWh)"].sum() == 1500.0
