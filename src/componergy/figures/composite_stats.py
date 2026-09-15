@@ -184,12 +184,26 @@ def benjamini_hochberg_fdr(p_values):
 
 
 def _ols_ssr(X, y):
+    """Residual sum of squares for an OLS fit of y on design matrix X."""
     beta = np.linalg.lstsq(X, y, rcond=None)[0]
     resid = y - X @ beta
     return float(np.sum(resid ** 2))
 
 
 def compute_incremental_r2(y, x_base, x_additional):
+    """
+    Nested-model comparison: does x_additional explain variance in y
+    beyond what x_base already explains?
+
+    Fits y ~ x_base (reduced model) and y ~ x_base + x_additional (full
+    model), then runs a partial F-test on the reduction in residual sum
+    of squares attributable to adding x_additional.
+
+    Returns
+    -------
+    dict
+        r2_reduced, r2_full, delta_r2, f_stat, p_value, n.
+    """
     y = np.asarray(y, dtype=float)
     x_base = np.asarray(x_base, dtype=float)
     x_additional = np.asarray(x_additional, dtype=float)
