@@ -39,6 +39,13 @@ EIA_GENERATION_RAW_FILE = RAW_DATA_ELECTRICITY_DIR / "generation_monthly.xlsx"
 # Processed California-only, source-grouped monthly generation table
 GENERATION_MONTHLY_FILE = PROCESSED_DATA_DIR / "california_generation_monthly.csv"
 
+# Raw CEC county-level electricity consumption workbook (restricted access,
+# obtained by direct request -- not redistributable)
+COUNTY_CONSUMPTION_XLSX = RAW_DATA_ELECTRICITY_DIR / "county_electricity_consumption_2008-2024.xlsx"
+
+# Processed long-format monthly county consumption table (Date, CountyName, Sector, Consumption (MWh))
+COUNTY_CONSUMPTION_MONTHLY_FILE = PROCESSED_DATA_DIR / "california_county_consumption_monthly.csv"
+
 # Directories the pipeline needs to exist
 _PIPELINE_DIRS = (
     RAW_DATA_DIR,
