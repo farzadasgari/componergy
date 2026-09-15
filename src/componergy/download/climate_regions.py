@@ -60,3 +60,17 @@ def _extract_region_names(gdf):
         .drop_duplicates(subset=["Region"])
         .reset_index(drop=True)
     )
+
+
+def get_california_climate_regions(cache_path=None) -> gpd.GeoDataFrame:
+    cache_path = cache_path or _CACHE_PATH
+    if cache_path.exists():
+        return gpd.read_file(cache_path)
+
+    features = _fetch_all_pages(CLIMATE_REGIONS_URL)
+    gdf = _features_to_gdf(features)
+    gdf = _extract_region_names(gdf)
+
+    cache_path.parent.mkdir(parents=True, exist_ok=True)
+    gdf.to_file(cache_path, driver="GeoJSON")
+    return gdf
