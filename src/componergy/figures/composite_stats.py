@@ -142,3 +142,28 @@ def best_lag_slope(x: pd.Series, y: pd.Series, lags=range(-6, 7), min_n=60):
         if best is None or np.nan_to_num(candidate["r2"], nan=-np.inf) > np.nan_to_num(best["r2"], nan=-np.inf):
             best = candidate
     return best
+
+
+def benjamini_hochberg_fdr(p_values):
+    p_values = np.asarray(p_values, dtype=float)
+    n = len(p_values)
+    q_values = np.full(n, np.nan)
+
+    valid_mask = np.isfinite(p_values)
+    valid_p = p_values[valid_mask]
+    n_valid = len(valid_p)
+    if n_valid == 0:
+        return q_values
+
+    order = np.argsort(valid_p)
+    ranked_p = valid_p[order]
+    ranks = np.arange(1, n_valid + 1)
+
+    raw_q = ranked_p * n_valid / ranks
+    adjusted_q = np.minimum.accumulate(raw_q[::-1])[::-1]
+    adjusted_q = np.clip(adjusted_q, 0, 1)
+
+    valid_q = np.empty(n_valid)
+    valid_q[order] = adjusted_q
+    q_values[valid_mask] = valid_q
+    return q_values
