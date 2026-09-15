@@ -13,8 +13,11 @@ PROCESSED_DATA_DIR = DATA_DIR / "processed"
 
 RAW_DATA_CLIMATE_DIR = RAW_DATA_DIR / "climate"
 CA_BOUNDARY_DIR = RAW_DATA_DIR / "boundaries" / "california"
+CA_CLIMATE_REGIONS_DIR = RAW_DATA_DIR / "boundaries" / "california_climate_regions"
+CA_COUNTIES_DIR = RAW_DATA_DIR / "boundaries" / "california_counties"
 
 # California-cropped copies of the raw NOAA nClimGrid-Daily files
+# (still one file per month, not yet aggregated -- see preprocessing/crop_nclimgrid.py)
 NOAA_CA_DIR = INTERMEDIATE_DATA_DIR / "nclimgrid-ca"
 
 # Single combined monthly-resolution climate dataset spanning the full
@@ -26,14 +29,11 @@ NOAA_MONTHLY_FILE = PROCESSED_DATA_DIR / "california_monthly_climate.nc"
 # from the full record
 INDICES_FILE = PROCESSED_DATA_DIR / "california_monthly_indices.nc"
 
-MANIFEST_PATH = DATA_DIR / "download_manifest.json"
-
 # Output directory for generated figures
 FIGURES_DIR = ROOT / "figures"
 
+# Raw EIA-923 (multi-sheet, all states)
 RAW_DATA_ELECTRICITY_DIR = RAW_DATA_DIR / "electricity"
-
-# Raw EIA-923 "generation_monthly.xlsx" (multi-sheet, all states)
 EIA_GENERATION_RAW_FILE = RAW_DATA_ELECTRICITY_DIR / "generation_monthly.xlsx"
 
 # Processed California-only, source-grouped monthly generation table
@@ -45,6 +45,8 @@ COUNTY_CONSUMPTION_XLSX = RAW_DATA_ELECTRICITY_DIR / "county_electricity_consump
 
 # Processed long-format monthly county consumption table (Date, CountyName, Sector, Consumption (MWh))
 COUNTY_CONSUMPTION_MONTHLY_FILE = PROCESSED_DATA_DIR / "california_county_consumption_monthly.csv"
+
+MANIFEST_PATH = DATA_DIR / "download_manifest.json"
 
 # Directories the pipeline needs to exist
 _PIPELINE_DIRS = (
