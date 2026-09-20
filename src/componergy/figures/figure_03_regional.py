@@ -184,3 +184,28 @@ def compute_dominance_and_lag_summary(data):
     summary = pd.DataFrame(rows)
     summary["q_value"] = benjamini_hochberg_fdr(summary["p_value"].values)
     return summary
+
+
+def plot_slope_bars(ax, summary, regions_order, alpha_fdr=0.05):
+    """Bar chart of each region's driver slopes, fading bars whose FDR-corrected q-value exceeds alpha_fdr."""
+    drivers = ["STI", "SAPEI", "SCDHI"]
+    x = np.arange(len(regions_order))
+    width = 0.26
+
+    for j, drv in enumerate(drivers):
+        sub = summary[summary["Driver"] == drv].set_index("Region").reindex(regions_order)
+        vals = sub["slope"].to_numpy(dtype=float)
+        sig = (sub["q_value"] < alpha_fdr).to_numpy()
+
+        bars = ax.bar(x + (j - 1) * width, vals, width=width, label=drv, color=DRIVER_COLORS[drv])
+        for bar, is_sig in zip(bars, sig):
+            if not is_sig:
+                bar.set_alpha(0.35)
+
+    ax.axhline(0, linewidth=1.0, color="#444444", alpha=0.6)
+    ax.set_xticks(x)
+    ax.set_xticklabels(regions_order, rotation=90, ha="center")
+    ax.set_ylabel("Electricity response per unit driver z-score")
+    ax.legend(frameon=False, ncol=3, loc="upper left", bbox_to_anchor=(0.0, 1.22), borderaxespad=0.0)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
