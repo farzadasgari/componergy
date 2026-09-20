@@ -209,3 +209,28 @@ def plot_slope_bars(ax, summary, regions_order, alpha_fdr=0.05):
     ax.legend(frameon=False, ncol=3, loc="upper left", bbox_to_anchor=(0.0, 1.22), borderaxespad=0.0)
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
+
+
+def compute_incremental_r2_by_region(data):
+    """
+    Per-region incremental R^2 of SCDHI beyond STI, FDR-corrected across regions.
+
+    See composite_stats.compute_incremental_r2 for the nested-model
+    F-test this wraps, and why it is not called "dominance analysis".
+    """
+    rows = []
+    for region in data["regions_order"]:
+        y = data["electricity_z"][region].dropna()
+        sti = data["sti_z"][region].reindex(y.index)
+        scdhi = data["scdhi_z"][region].reindex(y.index)
+
+        combined = pd.concat([y.rename("y"), sti.rename("sti"), scdhi.rename("scdhi")], axis=1).dropna()
+        if len(combined) < 24:
+            continue
+
+        result = compute_incremental_r2(combined["y"], combined["sti"], combined["scdhi"])
+        rows.append({"Region": region, **result})
+
+    incremental = pd.DataFrame(rows)
+    incremental["q_value"] = benjamini_hochberg_fdr(incremental["p_value"].values)
+    return incremental
