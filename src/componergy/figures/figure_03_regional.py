@@ -243,3 +243,104 @@ def compute_sign_consistency(summary: pd.DataFrame) -> pd.DataFrame:
         .value_counts()
         .unstack(fill_value=0)
     )
+
+
+def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
+    """Build the heatmap and slope-bar figures, the five summary CSVs, and the log/json.
+
+    Requires COUNTY_CONSUMPTION_XLSX to already exist locally (restricted
+    CEC data -- see preprocessing.consumption_cec); the climate-regions
+    and county-boundary downloads are cached automatically on first use.
+    """
+    from componergy.download.climate_regions import get_california_climate_regions
+    from componergy.download.boundaries import get_california_counties
+    from componergy.preprocessing.consumption_cec import load_raw_consumption
+    from componergy.netcdf_io import atomic_to_csv
+    from componergy.paths import INDICES_FILE, COUNTY_CONSUMPTION_XLSX, FIGURES_DIR
+
+    out_dir = FIGURES_DIR / "figure_03"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    print("loading climate regions, counties, and consumption data...")
+    regions_gdf = get_california_climate_regions()
+    counties_gdf = get_california_counties()
+    county_region_map = build_county_to_region_map(counties_gdf, regions_gdf)
+    consumption_long_df = load_raw_consumption(COUNTY_CONSUMPTION_XLSX)
+    indices_ds = xr.open_dataset(INDICES_FILE)
+
+    print("preparing regional data...")
+    data = prepare_data(indices_ds, consumption_long_df, regions_gdf, county_region_map,
+                        sapei_var=sapei_var, scdhi_var=scdhi_var)
+
+    print("computing statistics...")
+    summary = compute_dominance_and_lag_summary(data)
+    incremental = compute_incremental_r2_by_region(data)
+    sign_check = compute_sign_consistency(summary)
+
+    dominance = (
+        summary.sort_values("r2", ascending=False)
+        .groupby("Region").first()
+        .reset_index()[["Region", "Driver", "r2", "q_value", "lag", "slope"]]
+    )
+    driver_stats = (
+        summary.groupby("Driver")
+        .agg(mean_slope=("slope", "mean"), median_slope=("slope", "median"), std_slope=("slope", "std"),
+             mean_r2=("r2", "mean"), median_r2=("r2", "median"),
+             n_significant_fdr=("q_value", lambda q: int((q < 0.05).sum())))
+        .reset_index()
+    )
+    lag_summary = (
+        summary.groupby("Driver")
+        .agg(mean_lag=("lag", "mean"), median_lag=("lag", "median"), min_lag=("lag", "min"), max_lag=("lag", "max"))
+        .reset_index()
+    )
+
+    print("saving figures...")
+    heatmap_fig = build_heatmap_figure(data)
+    heatmap_fig.savefig(out_dir / "figure_03A_heatmaps.jpg", bbox_inches="tight")
+    plt.close(heatmap_fig)
+
+    slope_fig, ax = plt.subplots(figsize=(max(10, 0.9 * len(data["regions_order"])), 5.5))
+    plot_slope_bars(ax, summary, data["regions_order"])
+    slope_fig.savefig(out_dir / "figure_03B_slope.jpg", bbox_inches="tight")
+    plt.close(slope_fig)
+
+    atomic_to_csv(dominance, out_dir / "figure_03_dominance.csv", index=False)
+    atomic_to_csv(driver_stats, out_dir / "figure_03_driver_stats.csv", index=False)
+    atomic_to_csv(lag_summary, out_dir / "figure_03_lag_summary.csv", index=False)
+    atomic_to_csv(sign_check, out_dir / "figure_03_sign_consistency.csv")
+    atomic_to_csv(incremental, out_dir / "figure_03_incremental_r2.csv", index=False)
+
+    log_sections = {
+        "Overview": {
+            "sapei_variable": sapei_var, "scdhi_variable": scdhi_var,
+            "smoothing_months": SMOOTH_MONTHS,
+            "n_regions": len(data["regions_order"]),
+            "period_start": str(data["period_start"].date()),
+            "period_end": str(data["period_end"].date()),
+        },
+        "County to region mapping": {
+            "method": "majority area overlap (EPSG:3310)",
+            "n_counties_mapped": len(county_region_map),
+        },
+        "Dominant driver per region (highest R2)": dominance.to_string(index=False),
+        "Driver overall statistics across regions": driver_stats.to_string(index=False),
+        "Lag summary per driver": lag_summary.to_string(index=False),
+        "Sign consistency of slopes": sign_check.to_string(),
+        "Incremental R2 (SCDHI beyond STI)": incremental.to_string(index=False),
+        "Note": (
+            "Climate regions are not electrical balancing areas, transmission "
+            "zones, or utility planning areas; regional climate-electricity "
+            "relationships shown here should not be read as grid-system risk "
+            "without separately modeling balancing areas, transmission, and "
+            "imports. All p-values are FDR-corrected (Benjamini-Hochberg) "
+            "across regions within each driver; q_value < 0.05 is the "
+            "significance criterion used for shading in figure_03B."
+        ),
+    }
+    write_figure_log(out_dir / "figure_03_regional", log_sections)
+    print(f"wrote outputs to {out_dir}")
+
+
+if __name__ == "__main__":
+    main()
