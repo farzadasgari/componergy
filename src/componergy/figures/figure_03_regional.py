@@ -67,3 +67,46 @@ def aggregate_consumption_to_regional(consumption_long_df: pd.DataFrame,
             / 1000.0
     )
     return regional
+
+
+def prepare_data(indices_ds: xr.Dataset, consumption_long_df: pd.DataFrame, regions_gdf,
+                 county_region_map: pd.DataFrame,
+                 sapei_var="sapei_3m", scdhi_var="scdhi_3m"):
+    """
+    Align regional electricity consumption with regional climate signals.
+
+    Returns a dict with regions_order (list) and four smoothed,
+    z-scored, common-period DataFrames (time index, one column per
+    region): electricity_z, sti_z, sapei_z, scdhi_z, plus period_start/end.
+    """
+    electricity_regional = aggregate_consumption_to_regional(consumption_long_df, county_region_map)
+
+    sti_regional = compute_regional_mean(indices_ds["sti"], regions_gdf)
+    sapei_regional = compute_regional_mean(indices_ds[sapei_var], regions_gdf)
+    scdhi_regional = compute_regional_mean(indices_ds[scdhi_var], regions_gdf)
+
+    regions_order = [r for r in regions_gdf["Region"] if r in electricity_regional.columns]
+
+    start = max(electricity_regional.index.min(), sti_regional.index.min(),
+                sapei_regional.index.min(), scdhi_regional.index.min())
+    end = min(electricity_regional.index.max(), sti_regional.index.max(),
+              sapei_regional.index.max(), scdhi_regional.index.max())
+
+    electricity_regional = electricity_regional.loc[start:end, regions_order]
+    sti_regional = sti_regional.loc[start:end, regions_order]
+    sapei_regional = sapei_regional.loc[start:end, regions_order]
+    scdhi_regional = scdhi_regional.loc[start:end, regions_order]
+
+    def smooth_and_z(df):
+        smoothed = df.rolling(SMOOTH_MONTHS, center=True, min_periods=1).mean()
+        return smoothed.apply(zscore, axis=0)
+
+    return {
+        "regions_order": regions_order,
+        "electricity_z": smooth_and_z(electricity_regional),
+        "sti_z": smooth_and_z(sti_regional),
+        "sapei_z": smooth_and_z(sapei_regional),
+        "scdhi_z": smooth_and_z(scdhi_regional),
+        "period_start": start,
+        "period_end": end,
+    }
