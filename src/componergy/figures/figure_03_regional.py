@@ -7,6 +7,7 @@ region's dominant climate driver.
 from __future__ import annotations
 
 import matplotlib
+
 matplotlib.use("Agg")
 
 import numpy as np
@@ -38,4 +39,12 @@ plt.rcParams.update({
 })
 
 import logging
+
 logging.getLogger("matplotlib.font_manager").setLevel(logging.ERROR)
+
+
+def zscore(series: pd.Series) -> pd.Series:
+    std = series.std(ddof=0)
+    if not std or not np.isfinite(std):
+        return series * 0.0
+    return (series - series.mean()) / std
