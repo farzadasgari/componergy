@@ -158,3 +158,29 @@ def build_heatmap_figure(data):
     cbar.set_label("Standardized anomaly (z-score)", labelpad=14)
 
     return fig
+
+
+def compute_dominance_and_lag_summary(data):
+    """
+    Best-lag driver regression per (region, driver), with FDR-corrected q-values.
+
+    One best_lag_slope() call per (region, driver) pair; the resulting
+    p-values are corrected together across the whole table via
+    benjamini_hochberg_fdr(), not read individually against 0.05.
+    """
+    regions_order = data["regions_order"]
+    drivers = {"STI": data["sti_z"], "SAPEI": data["sapei_z"], "SCDHI": data["scdhi_z"]}
+
+    rows = []
+    for region in regions_order:
+        y = data["electricity_z"][region].dropna()
+        for driver_name, driver_df in drivers.items():
+            x = driver_df[region].reindex(y.index)
+            best = best_lag_slope(x, y, lags=LAGS, min_n=24)
+            if best is None:
+                continue
+            rows.append({"Region": region, "Driver": driver_name, **best})
+
+    summary = pd.DataFrame(rows)
+    summary["q_value"] = benjamini_hochberg_fdr(summary["p_value"].values)
+    return summary
