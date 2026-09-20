@@ -48,3 +48,22 @@ def zscore(series: pd.Series) -> pd.Series:
     if not std or not np.isfinite(std):
         return series * 0.0
     return (series - series.mean()) / std
+
+
+def aggregate_consumption_to_regional(consumption_long_df: pd.DataFrame,
+                                      county_region_map: pd.DataFrame) -> pd.DataFrame:
+    """Sum county consumption (all sectors, all planning-area splits) to monthly regional totals, in GWh."""
+    merged = consumption_long_df.merge(county_region_map, on="CountyName", how="left")
+
+    unmapped = sorted(merged.loc[merged["Region"].isna(), "CountyName"].unique().tolist())
+    if unmapped:
+        raise ValueError(f"Counties missing region assignment: {unmapped}")
+
+    regional = (
+            merged.groupby(["Date", "Region"])["Consumption (MWh)"]
+            .sum()
+            .unstack("Region")
+            .sort_index()
+            / 1000.0
+    )
+    return regional
