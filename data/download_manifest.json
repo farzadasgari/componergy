@@ -6354,5 +6354,12 @@
     "destination": "/mnt/Workspace/Work/componergy/data/raw/climate/ncdd-202608-grd-scaled.nc",
     "sha256": "2f9531cf2c60d8edc53bb08ad93fd4c8fd19174cdce0c86bc5a50f0c9d87ebee",
     "downloaded_at": "2026-09-09T12:43:21.222232+00:00"
+  },
+  {
+    "name": "Census Cartographic Boundary - Counties (1:500k)",
+    "url": "https://www2.census.gov/geo/tiger/GENZ2020/shp/cb_2020_us_county_500k.zip",
+    "destination": "/mnt/Workspace/Work/componergy/data/raw/boundaries/california_counties/cb_2020_us_county_500k.zip",
+    "sha256": "1a45c87a5a0c322514c9d5c9ebcba5eb9df313bd38962f6db56107ba0ccacc6f",
+    "downloaded_at": "2026-09-20T10:55:23.701149+00:00"
   }
 ]
