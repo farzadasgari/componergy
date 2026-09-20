@@ -132,3 +132,29 @@ def plot_heatmap(ax, data, regions_order, row_label, vlim=2.5, cmap="viridis"):
     ax.spines["right"].set_visible(False)
     ax.text(1.02, 0.5, row_label, transform=ax.transAxes, rotation=90, ha="center", va="center", fontsize=16)
     return im
+
+
+def build_heatmap_figure(data):
+    regions_order = data["regions_order"]
+    fig, axes = plt.subplots(nrows=4, ncols=1, figsize=(13, 1.1 * len(regions_order) + 6), sharex=True)
+    fig.subplots_adjust(left=0.16, right=0.83, top=0.96, bottom=0.06, hspace=0.15)
+
+    im0 = plot_heatmap(axes[0], data["sti_z"], regions_order, "STI")
+    plot_heatmap(axes[1], data["sapei_z"], regions_order, "SAPEI")
+    plot_heatmap(axes[2], data["scdhi_z"], regions_order, "SCDHI")
+    plot_heatmap(axes[3], data["electricity_z"], regions_order, "Electricity")
+
+    for ax in axes[:-1]:
+        ax.tick_params(axis="x", labelbottom=False)
+    axes[-1].set_xlabel("Time (Year)")
+
+    tick_idx = np.arange(0, len(data["electricity_z"].index), 24)
+    tick_labels = [data["electricity_z"].index[i].strftime("%Y") for i in tick_idx]
+    for ax in axes:
+        ax.set_xticks(tick_idx)
+        ax.set_xticklabels(tick_labels)
+
+    cbar = fig.colorbar(im0, ax=axes, orientation="vertical", fraction=0.05, pad=0.03, shrink=0.9)
+    cbar.set_label("Standardized anomaly (z-score)", labelpad=14)
+
+    return fig
