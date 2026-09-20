@@ -234,3 +234,12 @@ def compute_incremental_r2_by_region(data):
     incremental = pd.DataFrame(rows)
     incremental["q_value"] = benjamini_hochberg_fdr(incremental["p_value"].values)
     return incremental
+
+
+def compute_sign_consistency(summary: pd.DataFrame) -> pd.DataFrame:
+    return (
+        summary.assign(sign=lambda df_: np.sign(df_["slope"]))
+        .groupby("Driver")["sign"]
+        .value_counts()
+        .unstack(fill_value=0)
+    )
