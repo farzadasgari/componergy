@@ -113,3 +113,32 @@ def text_color_for_bg(value, norm, cmap_obj, light_thresh=0.55):
     r, g, b, _ = cmap_obj(norm(value))
     lum = 0.2126 * r + 0.7152 * g + 0.0722 * b
     return "black" if lum >= light_thresh else "white"
+
+
+def plot_event_choropleth(ax, regions_plot, event_name, comp, state_outline, cmap_obj, norm):
+    sub = comp[comp["Event"] == event_name].set_index("Region")
+    g = regions_plot.copy()
+    g["Delta_pct"] = g["Region"].map(sub["Delta_pct"].to_dict())
+    g["q_value"] = g["Region"].map(sub["q_value"].to_dict())
+
+    g.plot(ax=ax, column="Delta_pct", cmap=cmap_obj, norm=norm, linewidth=1.0, edgecolor="white")
+    state_outline.plot(ax=ax, color="black", linewidth=1.1)
+
+    g_sig = g[g["q_value"] < Q_ALPHA_FDR]
+    if len(g_sig):
+        g_sig.boundary.plot(ax=ax, color="black", linewidth=2.0)
+    g_marg = g[(g["q_value"] >= Q_ALPHA_FDR) & (g["q_value"] < Q_ALPHA_FDR_MARGINAL)]
+    if len(g_marg):
+        g_marg.boundary.plot(ax=ax, color="#555555", linewidth=1.6)
+
+    for _, r in g.iterrows():
+        if r["centroid"] is None or r["centroid"].is_empty:
+            continue
+        tcol = text_color_for_bg(r["Delta_pct"], norm, cmap_obj, light_thresh=0.55)
+        stroke_col = "black" if tcol == "white" else "white"
+        ax.text(r["centroid"].x, r["centroid"].y, r["abbr"], ha="center", va="center",
+                fontsize=14, fontweight="bold", color=tcol, alpha=0.98,
+                path_effects=[pe.withStroke(linewidth=1.6, foreground=stroke_col), pe.Normal()])
+
+    ax.set_title(event_name, pad=6)
+    ax.set_axis_off()
