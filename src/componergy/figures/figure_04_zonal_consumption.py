@@ -86,3 +86,17 @@ def prepare_zonal_data(indices_ds: xr.Dataset, consumption_long_df: pd.DataFrame
         "period_start": start,
         "period_end": end,
     }
+
+
+def compute_zonal_composites(data: dict) -> pd.DataFrame:
+    z_table = compute_composite_table(data["electricity_z"], data["event_masks"], data["normal"])
+    raw_table = compute_composite_table(data["electricity_raw"], data["event_masks"], data["normal"])
+
+    merged = z_table.merge(
+        raw_table[["Event", "Source", "Mean_event", "Mean_normal"]],
+        on=["Event", "Source"], suffixes=("_z", "_raw"),
+    )
+    merged["Delta_pct"] = 100.0 * (merged["Mean_event_raw"] - merged["Mean_normal_raw"]) / merged["Mean_normal_raw"]
+    merged["q_value"] = benjamini_hochberg_fdr(merged["p_value"].values)
+
+    return merged.rename(columns={"Source": "Region", "Difference": "Delta_z"})
