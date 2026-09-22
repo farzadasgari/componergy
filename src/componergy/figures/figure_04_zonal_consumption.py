@@ -142,3 +142,55 @@ def plot_event_choropleth(ax, regions_plot, event_name, comp, state_outline, cma
 
     ax.set_title(event_name, pad=6)
     ax.set_axis_off()
+
+
+def plot_bubble_matrix(ax, comp: pd.DataFrame, regions_order, events_order, cmap_bub="RdBu_r"):
+    mat = comp.pivot(index="Region", columns="Event", values="Delta_z").reindex(index=regions_order,
+                                                                                columns=events_order)
+    qmat = comp.pivot(index="Region", columns="Event", values="q_value").reindex(index=regions_order,
+                                                                                 columns=events_order)
+
+    max_abs = np.nanmax(np.abs(mat.values)) if np.isfinite(mat.values).any() else 1.0
+    max_abs = max(0.25, float(max_abs))
+    size_min, size_max = 50, 900
+
+    y_spacing = 1.15
+    ypos = (np.arange(len(regions_order))[::-1]) * y_spacing
+    region_to_y = {r: ypos[i] for i, r in enumerate(regions_order)}
+
+    norm_bub = Normalize(vmin=-max_abs, vmax=max_abs)
+
+    for r in regions_order:
+        for j, ev in enumerate(events_order):
+            val = mat.loc[r, ev]
+            q = qmat.loc[r, ev]
+            if pd.isna(val):
+                continue
+
+            s = size_min + (np.abs(val) / max_abs) ** 1.35 * (size_max - size_min)
+
+            if pd.notna(q) and q < Q_ALPHA_FDR:
+                ec, lw = "black", 1.6
+            elif pd.notna(q) and q < Q_ALPHA_FDR_MARGINAL:
+                ec, lw = "#444444", 1.2
+            else:
+                ec, lw = "none", 0.0
+
+            ax.scatter(j, region_to_y[r], s=s, c=[val], cmap=cmap_bub, norm=norm_bub,
+                       edgecolors=ec, linewidths=lw, alpha=0.95)
+
+    ax.set_yticks(list(region_to_y.values()))
+    ax.set_yticklabels(regions_order)
+    ax.set_xticks(np.arange(len(events_order)))
+    ax.set_xticklabels(events_order)
+    ax.set_xlim(-0.6, len(events_order) - 0.4)
+
+    y_min = -1.0 * y_spacing
+    y_max = (len(regions_order) - 1) * y_spacing + 1.0 * y_spacing
+    ax.set_ylim(y_min, y_max)
+
+    ax.grid(True, axis="both", alpha=0.15, linewidth=0.8)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+
+    return norm_bub, max_abs, size_min, size_max
