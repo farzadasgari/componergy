@@ -100,3 +100,16 @@ def compute_zonal_composites(data: dict) -> pd.DataFrame:
     merged["q_value"] = benjamini_hochberg_fdr(merged["p_value"].values)
 
     return merged.rename(columns={"Source": "Region", "Difference": "Delta_z"})
+
+
+def region_abbrev(name: str) -> str:
+    parts = [p for p in name.replace("-", " ").split() if p]
+    return "".join(p[0].upper() for p in parts[:3])
+
+
+def text_color_for_bg(value, norm, cmap_obj, light_thresh=0.55):
+    if value is None or (isinstance(value, float) and np.isnan(value)):
+        return "black"
+    r, g, b, _ = cmap_obj(norm(value))
+    lum = 0.2126 * r + 0.7152 * g + 0.0722 * b
+    return "black" if lum >= light_thresh else "white"
