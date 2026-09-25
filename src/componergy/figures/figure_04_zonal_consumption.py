@@ -194,3 +194,52 @@ def plot_bubble_matrix(ax, comp: pd.DataFrame, regions_order, events_order, cmap
     ax.spines["right"].set_visible(False)
 
     return norm_bub, max_abs, size_min, size_max
+
+
+def build_zonal_figure(comp: pd.DataFrame, regions_gdf, county_boundary_dissolved, regions_order,
+                       events_order=("Heatwave", "Drought", "Compound")):
+    regions_plot = regions_gdf.copy()
+    regions_plot["abbr"] = regions_plot["Region"].map(region_abbrev)
+    regions_plot["centroid"] = regions_plot.geometry.representative_point()
+
+    delta_pct_all = comp["Delta_pct"].replace([np.inf, -np.inf], np.nan).dropna().values
+    vmax_pct = np.nanpercentile(np.abs(delta_pct_all), 90) if len(delta_pct_all) else 10.0
+    vmax_pct = max(5.0, float(vmax_pct))
+
+    fig = plt.figure(figsize=(14.8, 10.2))
+    gs = GridSpec(nrows=2, ncols=4, figure=fig, height_ratios=[1.0, 1.35], width_ratios=[1, 1, 1, 0.10])
+
+    map_axes = [fig.add_subplot(gs[0, i]) for i in range(3)]
+    cax_map = fig.add_subplot(gs[0, 3])
+
+    cmap_map_obj = plt.get_cmap("RdBu_r")
+    norm_map = Normalize(vmin=-vmax_pct, vmax=vmax_pct)
+
+    for ax, ev in zip(map_axes, events_order):
+        plot_event_choropleth(ax, regions_plot, ev, comp, county_boundary_dissolved, cmap_map_obj, norm_map)
+
+    sm_map = ScalarMappable(norm=norm_map, cmap=cmap_map_obj)
+    sm_map.set_array([])
+    cb_map = fig.colorbar(sm_map, cax=cax_map, orientation="vertical")
+    cb_map.set_label("$\\Delta$% consumption", labelpad=8)
+
+    ax_bub = fig.add_subplot(gs[1, :])
+    norm_bub, max_abs, size_min, size_max = plot_bubble_matrix(ax_bub, comp, regions_order, list(events_order))
+
+    cax2 = ax_bub.inset_axes([1.01, 0.10, 0.02, 0.80])
+    sm_bub = ScalarMappable(norm=norm_bub, cmap="RdBu_r")
+    sm_bub.set_array([])
+    cb_bub = fig.colorbar(sm_bub, cax=cax2, orientation="vertical")
+    cb_bub.set_label("$\\Delta z$ consumption", labelpad=10)
+
+    legend_vals = [v for v in [0.25, 0.50, 1.00] if v <= max_abs + 1e-9]
+    handles = []
+    for v in legend_vals:
+        s = size_min + (np.abs(v) / max_abs) ** 1.35 * (size_max - size_min)
+        handles.append(ax_bub.scatter([], [], s=s, c="none", edgecolors="#333333", linewidths=1.0))
+    ax_bub.legend(handles, [f"|$\\Delta z$| = {v:.2f}" for v in legend_vals], title="Effect size",
+                  frameon=False, loc="upper left", bbox_to_anchor=(0.01, 0.99),
+                  labelspacing=1.6, handletextpad=0.8, borderaxespad=0.2)
+
+    fig.tight_layout(rect=[0.0, 0.0, 0.98, 0.98])
+    return fig
