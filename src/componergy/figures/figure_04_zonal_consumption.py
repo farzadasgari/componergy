@@ -243,3 +243,61 @@ def build_zonal_figure(comp: pd.DataFrame, regions_gdf, county_boundary_dissolve
 
     fig.tight_layout(rect=[0.0, 0.0, 0.98, 0.98])
     return fig
+
+
+def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
+    from componergy.download.climate_regions import get_california_climate_regions
+    from componergy.download.boundaries import get_california_counties
+    from componergy.analysis.regions import build_county_to_region_map
+    from componergy.preprocessing.consumption_cec import load_raw_consumption
+    from componergy.netcdf_io import atomic_to_csv
+    from componergy.paths import INDICES_FILE, COUNTY_CONSUMPTION_XLSX, FIGURES_DIR
+
+    out_dir = FIGURES_DIR / "figure_04"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    print("loading climate regions, counties, and consumption data...")
+    regions_gdf = get_california_climate_regions()
+    counties_gdf = get_california_counties()
+    county_region_map = build_county_to_region_map(counties_gdf, regions_gdf)
+    consumption_long_df = load_raw_consumption(COUNTY_CONSUMPTION_XLSX)
+    indices_ds = xr.open_dataset(INDICES_FILE)
+    county_boundary_dissolved = counties_gdf.dissolve().boundary
+
+    print("preparing zonal data...")
+    data = prepare_zonal_data(indices_ds, consumption_long_df, regions_gdf, county_region_map,
+                              sapei_var=sapei_var, scdhi_var=scdhi_var)
+
+    print("computing composites...")
+    comp = compute_zonal_composites(data)
+
+    print("saving figure...")
+    fig = build_zonal_figure(comp, regions_gdf, county_boundary_dissolved, data["regions_order"])
+    fig.savefig(out_dir / "figure_04_zonal_consumption.jpg", bbox_inches="tight")
+    plt.close(fig)
+
+    atomic_to_csv(comp, out_dir / "figure_04_event_composites.csv", index=False)
+
+    log_sections = {
+        "Overview": {
+            "sapei_variable": sapei_var, "scdhi_variable": scdhi_var,
+            "n_regions": len(data["regions_order"]),
+            "period_start": str(data["period_start"].date()),
+            "period_end": str(data["period_end"].date()),
+        },
+        "Event counts (statewide classification)": {k: int(v.sum()) for k, v in data["event_masks"].items()},
+        "Normal period count": int(data["normal"].sum()),
+        "Event composites (FDR-corrected)": comp.to_string(index=False),
+        "Note": (
+            "Significance markers (map outline thickness, bubble edge) use "
+            "Benjamini-Hochberg FDR-corrected q-values across all region x "
+            "event tests, not raw p-values, given the number of comparisons "
+            "involved (regions x event types)."
+        ),
+    }
+    write_figure_log(out_dir / "figure_04_zonal_consumption", log_sections)
+    print(f"wrote outputs to {out_dir}")
+
+
+if __name__ == "__main__":
+    main()
