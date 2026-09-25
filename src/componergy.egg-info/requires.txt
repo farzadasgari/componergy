@@ -1,6 +1,0 @@
-numpy
-pandas
-xarray
-scipy
-matplotlib
-geopandas

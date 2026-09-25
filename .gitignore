@@ -1,28 +1,30 @@
-# Virtual environments
-venv/
-
-# IDE
-.idea/
-.vscode/
-
-# Python cache
+# Byte-compiled / cache
 __pycache__/
 *.pyc
 
-# Local configuration
-config.py
+# Virtual environments
+venv/
+.venv/
+
+# IDE
+.idea/
+
+# Packaging
+*.egg-info/
+build/
+dist/
+
+# Data
+data/
+!data/raw/.gitkeep
+!data/intermediate/.gitkeep
+!data/processed/.gitkeep
+
+# Figures
+figures/
+
+# Env / secrets
 .env
 
-# Large datasets
-data/raw/
-data/intermediate/
-data/processed/
-
-# Generated outputs
-outputs/
-plots/
-/figures/
-
-# OS files
+# OS
 .DS_Store
-Thumbs.db
