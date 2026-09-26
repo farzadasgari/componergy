@@ -64,3 +64,22 @@ def placebo_test(values, event_mask, normal_mask, n_perm=DEFAULT_N_PERM,
         "p_value": p,
         "n_perm_valid": int(len(good)),
     }
+
+
+def placebo_table(df, event_masks, normal_mask, n_perm=DEFAULT_N_PERM, seed=42, label="Source"):
+    """Run placebo_test for every (column, event) pair, FDR-corrected across all of them."""
+    from componergy.figures.composite_stats import benjamini_hochberg_fdr
+
+    normal = normal_mask.reindex(df.index).fillna(False).values
+    rows = []
+    for i, col in enumerate(df.columns):
+        values = df[col].values
+        for j, (event_name, mask) in enumerate(sorted(event_masks.items())):
+            ev = mask.reindex(df.index).fillna(False).values
+            res = placebo_test(values, ev, normal, n_perm=n_perm, seed=seed + i * 10 + j)
+            rows.append({label: col, "Event": event_name, **res})
+
+    out = pd.DataFrame(rows)
+    if len(out):
+        out["q_value"] = benjamini_hochberg_fdr(out["p_value"].values)
+    return out
