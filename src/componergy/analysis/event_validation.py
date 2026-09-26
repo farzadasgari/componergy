@@ -47,3 +47,23 @@ def validate_against_known_events(risk_series: pd.Series, known_events=None,
                      "Flagged_High_Risk": bool(value >= thr)})
 
     return pd.DataFrame(rows)
+
+
+def summarize_validation(validation_df: pd.DataFrame, high_risk_q=0.90) -> dict:
+    """Aggregate the per-event table into a hit rate against the chance baseline."""
+    present = validation_df[validation_df["In_Record"]]
+    n_present = len(present)
+    if n_present == 0:
+        return {"n_known_events": len(validation_df), "n_in_record": 0, "n_flagged": 0,
+                "hit_rate": np.nan, "expected_by_chance": 1.0 - high_risk_q,
+                "median_percentile": np.nan}
+
+    n_flagged = int(present["Flagged_High_Risk"].sum())
+    return {
+        "n_known_events": int(len(validation_df)),
+        "n_in_record": int(n_present),
+        "n_flagged": n_flagged,
+        "hit_rate": float(n_flagged / n_present),
+        "expected_by_chance": float(1.0 - high_risk_q),
+        "median_percentile": float(present["Percentile"].median()),
+    }
