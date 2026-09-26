@@ -1,4 +1,5 @@
 """Structured, dual-format (human-readable + machine-readable) figure summary logging."""
+
 from __future__ import annotations
 
 import json

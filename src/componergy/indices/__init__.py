@@ -1,0 +1,1 @@
+"""Climate index construction: PET, STI, SAPEI, SCDHI (monthly, per HESS 2021 framework)."""

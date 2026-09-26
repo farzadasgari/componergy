@@ -1,3 +1,5 @@
+"""Area-weighted spatial aggregation and linear trend statistics for gridded time series."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -7,25 +9,35 @@ from scipy import stats
 
 
 def compute_area_weights(lat: xr.DataArray) -> xr.DataArray:
+    """Latitude weights proportional to cos(latitude), normalized to a mean of 1."""
     weights = np.cos(np.deg2rad(lat))
     return weights / weights.mean()
 
 
 def compute_statewide_mean(da: xr.DataArray, weights: xr.DataArray) -> xr.DataArray:
+    """
+    Area-weighted mean over lat/lon, preserving the time dimension.
+
+    NaN cells are excluded from both the weighted sum and the weight
+    total, so they don't bias the result toward zero.
+    """
     numerator = (da * weights).sum(dim=["lat", "lon"], skipna=True)
     valid_weight = xr.where(np.isfinite(da), weights, 0).sum(dim=["lat", "lon"])
     return numerator / valid_weight
 
 
 def compute_footprint_fraction(is_extreme: xr.DataArray) -> xr.DataArray:
+    """Fraction of grid cells where `is_extreme` is True, per timestep."""
     return is_extreme.mean(dim=["lat", "lon"], skipna=True)
 
 
 def annualize_monthly(da: xr.DataArray) -> xr.DataArray:
+    """Mean of monthly values within each calendar year."""
     return da.groupby("time.year").mean("time")
 
 
 def compute_trend_per_decade(da_annual: xr.DataArray) -> tuple[xr.DataArray, xr.DataArray]:
+    """Ordinary least-squares linear trend per decade, per grid cell, with a two-tailed p-value."""
     years = da_annual["year"].astype(float)
     x = years - years.mean("year")
     n = da_annual.sizes["year"]
@@ -54,6 +66,7 @@ def compute_trend_per_decade(da_annual: xr.DataArray) -> tuple[xr.DataArray, xr.
 
 
 def compute_linear_trend_with_ci(series: pd.Series, confidence: float = 0.95) -> tuple[pd.Series, pd.Series]:
+    """Fit an OLS line to a 1-D time series and return the fitted values and confidence-interval half-width."""
     valid = series.notna()
     idx = series.index[valid]
     y = series.values[valid].astype(float)
