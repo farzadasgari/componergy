@@ -79,3 +79,21 @@ def fit_pot_gpd(series: pd.Series, threshold_q=0.90, return_periods_years=(2, 5,
             "n_exceedances": int(len(exc)), "shape": float(c), "scale": float(scale),
             "exceedance_rate_per_month": float(rate_per_month),
             "return_levels": levels, "note": ""}
+
+
+def return_period_of_value(value, gev_fit=None, pot_fit=None):
+    """Fitted return period, in years, of one specific observed value under either model."""
+    out = {"value": float(value), "gev_return_period_years": np.nan, "pot_return_period_years": np.nan}
+
+    if gev_fit and np.isfinite(gev_fit.get("shape", np.nan)):
+        cdf = stats.genextreme.cdf(value, c=gev_fit["shape"], loc=gev_fit["loc"], scale=gev_fit["scale"])
+        if cdf < 1.0:
+            out["gev_return_period_years"] = float(1.0 / (1.0 - cdf))
+
+    if pot_fit and np.isfinite(pot_fit.get("shape", np.nan)) and value > pot_fit["threshold"]:
+        surv = stats.genpareto.sf(value - pot_fit["threshold"], c=pot_fit["shape"], loc=0, scale=pot_fit["scale"])
+        rate = pot_fit["exceedance_rate_per_month"]
+        if surv > 0 and rate > 0:
+            out["pot_return_period_years"] = float(1.0 / (surv * rate * MONTHS_PER_YEAR))
+
+    return out
