@@ -285,3 +285,29 @@ def apply_fdr_to_grid(pvals: xr.DataArray) -> xr.DataArray:
     q_flat = benjamini_hochberg_fdr(flat)
     q_grid = q_flat.reshape(pvals.shape)
     return xr.DataArray(q_grid, dims=pvals.dims, coords=pvals.coords)
+
+
+def vectorized_welch_ttest_grid(da: xr.DataArray, mask_event: xr.DataArray, mask_normal: xr.DataArray) -> xr.DataArray:
+    """Welch's t-test computed independently at every grid cell, vectorized (no per-cell Python loop)."""
+    event_vals = da.where(mask_event)
+    normal_vals = da.where(mask_normal)
+
+    n_e = mask_event.sum(dim="time")
+    n_n = mask_normal.sum(dim="time")
+    mean_e = event_vals.mean(dim="time", skipna=True)
+    mean_n = normal_vals.mean(dim="time", skipna=True)
+    var_e = event_vals.var(dim="time", skipna=True, ddof=1)
+    var_n = normal_vals.var(dim="time", skipna=True, ddof=1)
+
+    se2 = var_e / n_e + var_n / n_n
+    tstat = (mean_e - mean_n) / np.sqrt(se2)
+
+    df = (se2 ** 2) / ((var_e / n_e) ** 2 / (n_e - 1) + (var_n / n_n) ** 2 / (n_n - 1))
+
+    tstat_v = tstat.values
+    df_v = df.values
+    pval_v = np.full(tstat_v.shape, np.nan)
+    valid = np.isfinite(tstat_v) & np.isfinite(df_v) & (df_v > 0)
+    pval_v[valid] = 2 * stats.t.sf(np.abs(tstat_v[valid]), df_v[valid])
+
+    return xr.DataArray(pval_v, dims=da.dims[1:], coords={d: da.coords[d] for d in da.dims[1:]})
