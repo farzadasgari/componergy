@@ -79,7 +79,7 @@ def compute_composite_table(signal_df: pd.DataFrame, event_masks: dict, normal_m
 def best_lag_slope(x: pd.Series, y: pd.Series, lags=range(-6, 7), min_n=60):
     """
     Scan a range of lags (in the series' own time step) and return the
-    one with the highest R^2 for a simple OLS fit of y on lagged x.
+    one with the highest R² for a simple OLS fit of y on lagged x.
 
     A positive lag means x is shifted to lead y by that many steps.
 
@@ -98,7 +98,7 @@ def best_lag_slope(x: pd.Series, y: pd.Series, lags=range(-6, 7), min_n=60):
     dict or None
         {"lag", "slope", "r2", "n", "p_value"} for the best lag, or None
         if no lag met min_n. p_value tests H0: slope == 0 at that lag
-        (standard OLS slope t-test) -- reported because R² alone is
+        (standard OLS slope t-test), reported because R² alone is
         descriptive; whether the best-fit slope is distinguishable from
         no relationship is a separate question a bare R² doesn't answer.
         When comparing this p-value across many regions/drivers/sectors,
@@ -237,3 +237,11 @@ def compute_incremental_r2(y, x_base, x_additional):
         "p_value": float(p_value) if np.isfinite(p_value) else np.nan,
         "n": int(n),
     }
+
+
+def zscore(series: pd.Series) -> pd.Series:
+    """Standardize a pandas Series to zero mean, unit variance. Returns all-zero if std is 0 or non-finite."""
+    std = series.std(ddof=0)
+    if not std or not np.isfinite(std):
+        return series * 0.0
+    return (series - series.mean()) / std

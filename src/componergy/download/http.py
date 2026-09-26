@@ -14,14 +14,7 @@ CHUNK_SIZE = 1024 * 1024  # 1 MB
 
 
 class DatasetNotAvailableError(Exception):
-    """
-    Raised when a dataset URL returns HTTP 404.
-
-    Distinct from other failures: this generally means the source hasn't
-    published the file yet (e.g. a very recent month still in QC), not
-    that something is broken. Callers can treat this as "try again later"
-    rather than a hard failure.
-    """
+    """Raised when a dataset URL returns HTTP 404."""
 
 
 def download_file(
