@@ -277,3 +277,11 @@ def remove_linear_trend(series: pd.Series) -> pd.Series:
     residuals = pd.Series(np.nan, index=series.index)
     residuals.loc[idx] = y - fitted
     return residuals
+
+
+def apply_fdr_to_grid(pvals: xr.DataArray) -> xr.DataArray:
+    """Benjamini-Hochberg FDR correction across every cell of a gridded p-value field."""
+    flat = pvals.values.flatten()
+    q_flat = benjamini_hochberg_fdr(flat)
+    q_grid = q_flat.reshape(pvals.shape)
+    return xr.DataArray(q_grid, dims=pvals.dims, coords=pvals.coords)
