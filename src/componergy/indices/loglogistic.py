@@ -1,19 +1,16 @@
 """
 Log-logistic distribution fitting via L-moments (Hosking, 1990).
-
-Used for SAPEI's water-balance marginal. Generic and reusable
--- not SAPEI-specific by construction, just used by it.
 """
 
 from __future__ import annotations
 
 import numpy as np
-from numpy import complex128, float64
 from scipy.special import gamma as gamma_func
 
 
-def fit_loglogistic_lmoments(x: np.ndarray) -> tuple[float64 | complex128, float64 | complex128, float64 | complex128]:
-    """Fit a 3-parameter log-logistic distribution via L-moments.
+def fit_loglogistic_lmoments(x: np.ndarray) -> tuple[float, float, float]:
+    """
+    Fit a 3-parameter log-logistic distribution via L-moments.
 
     Parameters
     ----------

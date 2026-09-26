@@ -1,19 +1,6 @@
 """
 Monthly potential evapotranspiration (PET) via the Hargreaves-Samani
 equation, applied to monthly-mean temperature.
-
-Per the "monthly-native" design: PET is estimated directly from
-monthly-mean tavg/tmax/tmin (as produced by
-preprocessing.aggregate_monthly), not by aggregating a daily PET series.
-The daily-equivalent PET rate is scaled by the actual number of days in
-each calendar month to give a monthly total (mm/month), comparable to
-monthly total precipitation for the SAPEI water balance.
-
-Ra (extraterrestrial radiation) uses the standard FAO-56 formulation
-(Allen et al., 1998), not a simplified variant -- an earlier version of
-this used a more compact approximation that produces negative (physically
-invalid) Ra for California in Oct-Mar; verified below to stay
-non-negative across all months and latitudes.
 """
 
 from __future__ import annotations
@@ -31,13 +18,7 @@ HARGREAVES_TEMP_OFFSET = 17.8
 
 
 def _extraterrestrial_radiation(lat_deg: float, day_of_year: float) -> float:
-    """
-    Ra (extraterrestrial radiation, MJ/m^2/day), standard FAO-56 formula.
-
-    Depends only on latitude and day-of-year, not on temperature or year,
-    so it's computed once per (month, lat) and reused across all years/lon.
-    Always non-negative by construction.
-    """
+    """Ra (extraterrestrial radiation, MJ/m^2/day), standard FAO-56 formula."""
     lat_rad = radians(lat_deg)
     dr = 1 + 0.033 * cos(2 * pi * day_of_year / 365)
     sol_dec = 0.409 * sin(2 * pi * day_of_year / 365 - 1.39)
@@ -65,12 +46,9 @@ def _ra_by_month_lat(lats: np.ndarray) -> np.ndarray:
     return ra
 
 
-def hargreaves_pet_monthly(lat_deg, month, tavg, tmax, tmin, days_in_month) -> float:
-    """
-    Monthly total PET (mm/month) for a single (lat, month, year) value.
-
-    Scalar reference implementation.
-    """
+def hargreaves_pet_monthly(lat_deg: float, month: int, tavg: float, tmax: float, tmin: float,
+                           days_in_month: int) -> float:
+    """Monthly total PET (mm/month) for a single (lat, month, year) value. """
     if np.isnan(tavg) or np.isnan(tmax) or np.isnan(tmin):
         return np.nan
 
@@ -84,18 +62,15 @@ def hargreaves_pet_monthly(lat_deg, month, tavg, tmax, tmin, days_in_month) -> f
 
 
 def add_pet(monthly_ds: xr.Dataset) -> xr.Dataset:
-    """
-    Add a 'pet' variable (mm/month) to a monthly climate dataset.
-
-    Vectorized over the full (time, lat, lon) grid -- no per-cell Python loop.
-    """
+    """Add a 'pet' variable (mm/month) to a monthly climate dataset."""
     lats = monthly_ds["lat"].values
     times = pd.DatetimeIndex(monthly_ds["time"].values)
     months = times.month
     days_in_month = np.array([calendar.monthrange(t.year, t.month)[1] for t in times])
 
-    ra_lookup = _ra_by_month_lat(lats)
-    ra_per_time = ra_lookup[months - 1, :][:, :, None]
+    ra_lookup = _ra_by_month_lat(lats)  # (12, n_lat)
+    ra_per_time = ra_lookup[months - 1, :]  # (time, n_lat)
+    ra_per_time = ra_per_time[:, :, None]  # (time, n_lat, 1) -- broadcast over lon
 
     tavg = monthly_ds["tavg"].values
     tmax = monthly_ds["tmax"].values

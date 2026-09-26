@@ -1,16 +1,4 @@
-"""
-Standardized Antecedent Precipitation Evapotranspiration Index (SAPEI), monthly.
-
-"Water balance + log-logistic fit."
-Water balance = precipitation - PET (both monthly totals). SAPEI is
-computed at 4 antecedent timescales (3/6/9/12 months, per HESS 2021)
-as separate columns: sapei_3m, sapei_6m, sapei_9m, sapei_12m.
-
-For each timescale, the antecedent water balance is fit to a log-logistic
-distribution PER CALENDAR MONTH (pooling all years), then transformed to
-a standard-normal quantile -- matching HESS's per-specific-calendar-day
-fitting, translated to monthly resolution.
-"""
+"""Standardized Antecedent Precipitation Evapotranspiration Index (SAPEI), monthly."""
 
 from __future__ import annotations
 
@@ -33,11 +21,7 @@ def water_balance(monthly_ds: xr.Dataset) -> xr.DataArray:
 
 
 def antecedent_water_balance(wb: xr.DataArray, n_months: int) -> xr.DataArray:
-    """
-    Rolling n-month sum of water balance, vectorized grid-wide.
-
-    The first (n_months - 1) timesteps are NaN (incomplete window).
-    """
+    """Rolling n-month sum of water balance, vectorized grid-wide."""
     return wb.rolling(time=n_months, min_periods=n_months).sum()
 
 
@@ -90,7 +74,6 @@ def add_sapei(monthly_ds: xr.Dataset, n_jobs: int = -1) -> xr.Dataset:
     monthly_ds : xr.Dataset
         Must contain 'prcp' and 'pet' on a monthly time dimension.
     n_jobs : int
-        Passed to joblib.Parallel; -1 uses all available cores.
 
     Returns
     -------
@@ -108,17 +91,18 @@ def add_sapei(monthly_ds: xr.Dataset, n_jobs: int = -1) -> xr.Dataset:
     valid_cell = ~np.isnan(wb.values).all(axis=0)
     cell_indices = [(i, j) for i in range(len(lats)) for j in range(len(lons)) if valid_cell[i, j]]
 
-    def process_cell(i_lat, i_lon):
-        wsd_by_timescale = {n: wsd_grids[n].values[:, i_lat, i_lon] for n in SAPEI_TIMESCALES_MONTHS}
-        return i_lat, i_lon, compute_sapei_for_cell(wsd_by_timescale, months)
+    cell_inputs = [
+        {n: wsd_grids[n].values[:, i, j] for n in SAPEI_TIMESCALES_MONTHS}
+        for i, j in cell_indices
+    ]
 
-    results = Parallel(n_jobs=n_jobs)(
-        delayed(process_cell)(i, j)
-        for i, j in tqdm(cell_indices, desc="fitting SAPEI per cell", unit="cell")
+    cell_results = Parallel(n_jobs=n_jobs)(
+        delayed(compute_sapei_for_cell)(wsd_by_timescale, months)
+        for wsd_by_timescale in tqdm(cell_inputs, desc="fitting SAPEI per cell", unit="cell")
     )
 
     sapei_arrays = {n: np.full((len(times), len(lats), len(lons)), np.nan) for n in SAPEI_TIMESCALES_MONTHS}
-    for i_lat, i_lon, cell_result in results:
+    for (i_lat, i_lon), cell_result in zip(cell_indices, cell_results):
         for n in SAPEI_TIMESCALES_MONTHS:
             sapei_arrays[n][:, i_lat, i_lon] = cell_result[n]
 
