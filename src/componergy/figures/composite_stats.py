@@ -251,3 +251,29 @@ def deseasonalize_monthly(series: pd.Series) -> pd.Series:
     """Remove each calendar month's own climatological mean from a monthly series."""
     clim = series.groupby(series.index.month).mean()
     return series - series.index.month.map(clim)
+
+
+def remove_linear_trend(series: pd.Series) -> pd.Series:
+    """Fit and remove a linear trend over calendar time, returning the residuals."""
+    valid = series.notna()
+    idx = series.index[valid]
+    y = series.values[valid].astype(float)
+
+    years = idx.year.to_numpy(dtype=float) + (idx.month.to_numpy(dtype=float) - 0.5) / 12.0
+    x = years
+
+    xbar = x.mean()
+    ybar = y.mean()
+    sxx = np.sum((x - xbar) ** 2)
+    if sxx == 0:
+        residuals = pd.Series(np.nan, index=series.index)
+        residuals.loc[idx] = y - ybar
+        return residuals
+
+    slope = np.sum((x - xbar) * (y - ybar)) / sxx
+    intercept = ybar - slope * xbar
+    fitted = intercept + slope * x
+
+    residuals = pd.Series(np.nan, index=series.index)
+    residuals.loc[idx] = y - fitted
+    return residuals
