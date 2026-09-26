@@ -73,7 +73,7 @@ def compute_regional_mean(da: xr.DataArray, regions_gdf: gpd.GeoDataFrame) -> pd
     regions = regionmask.Regions(
         outlines=list(regions_gdf.geometry),
         names=list(regions_gdf["Region"]),
-        abbrevs=[f"R{i + 1:02d}" for i in range(len(regions_gdf))],
+        abbrevs=[f"R{i+1:02d}" for i in range(len(regions_gdf))],
         overlap=True,
     )
 
