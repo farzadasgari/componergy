@@ -16,20 +16,17 @@ dependencies = [
     "geopandas",
     "requests",
     "tqdm",
-    "rioxarray",
     "netCDF4",
+    "rioxarray",
     "dask",
     "joblib",
     "cartopy",
-    "openpyxl",
     "regionmask",
 ]
 
 [project.optional-dependencies]
-dev = [
-    "pytest",
-    "statsmodels",
-]
+dev = ["pytest", "statsmodels"]
+notebooks = ["jupyterlab", "ipykernel", "pillow"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
