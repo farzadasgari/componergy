@@ -1,3 +1,8 @@
+"""
+Bivariate copula library: Frank, Gaussian, Clayton, and Gumbel, used to
+model the dependence between SAPEI and STI for SCDHI construction.
+"""
+
 from __future__ import annotations
 
 import numpy as np
@@ -8,10 +13,12 @@ EPS = 1e-6
 
 
 def _clip(u, v):
+    """Keep uniform marginals strictly inside (0,1) to avoid log(0)/div-by-0."""
     return np.clip(u, EPS, 1 - EPS), np.clip(v, EPS, 1 - EPS)
 
 
 def _frank_density(u, v, theta):
+    """Frank copula density c(u,v; theta)."""
     if abs(theta) < 1e-6:
         return np.ones_like(u)
     num = theta * (1 - np.exp(-theta)) * np.exp(-theta * (u + v))
@@ -20,6 +27,7 @@ def _frank_density(u, v, theta):
 
 
 def frank_cdf(u, v, params):
+    """Frank copula CDF C(u,v; theta)."""
     theta = params["theta"]
     u, v = _clip(u, v)
     if abs(theta) < 1e-6:
@@ -30,12 +38,14 @@ def frank_cdf(u, v, params):
 
 
 def frank_loglik(u, v, params):
+    """Log-likelihood of the Frank copula at the fitted theta."""
     u, v = _clip(u, v)
     d = np.clip(_frank_density(u, v, params["theta"]), 1e-300, None)
     return float(np.sum(np.log(d)))
 
 
 def frank_fit(u, v):
+    """Maximum-likelihood fit of the Frank copula's theta parameter."""
     u, v = _clip(u, v)
 
     def neg_ll(theta):
@@ -49,6 +59,7 @@ FRANK = {"fit": frank_fit, "loglik": frank_loglik, "cdf": frank_cdf, "n_params":
 
 
 def gaussian_cdf(u, v, params):
+    """Gaussian copula CDF C(u,v; rho), via the bivariate normal CDF."""
     rho = params["rho"]
     u, v = _clip(u, v)
     x, y = norm.ppf(u), norm.ppf(v)
@@ -58,6 +69,7 @@ def gaussian_cdf(u, v, params):
 
 
 def gaussian_loglik(u, v, params):
+    """Log-likelihood of the Gaussian copula at the fitted rho."""
     rho = params["rho"]
     u, v = _clip(u, v)
     x, y = norm.ppf(u), norm.ppf(v)
@@ -68,6 +80,7 @@ def gaussian_loglik(u, v, params):
 
 
 def gaussian_fit(u, v):
+    """Fit the Gaussian copula's rho via the sample correlation of the normal scores."""
     u, v = _clip(u, v)
     x, y = norm.ppf(u), norm.ppf(v)
     rho = float(np.corrcoef(x, y)[0, 1])
@@ -79,10 +92,12 @@ GAUSSIAN = {"fit": gaussian_fit, "loglik": gaussian_loglik, "cdf": gaussian_cdf,
 
 
 def _clayton_cdf_base(u, v, theta):
+    """Clayton copula CDF in its base (positive-dependence) form."""
     return np.maximum(u ** (-theta) + v ** (-theta) - 1, 1e-12) ** (-1 / theta)
 
 
 def _clayton_density_base(u, v, theta):
+    """Clayton copula density in its base (positive-dependence) form."""
     return (
             (theta + 1)
             * (u * v) ** (-theta - 1)
@@ -91,27 +106,39 @@ def _clayton_density_base(u, v, theta):
 
 
 def _clayton_tau_to_theta(tau):
+    """Kendall's tau to Clayton theta, used only as an optimizer starting value."""
     return 2 * tau / max(1 - tau, 1e-6)
 
 
 def _gumbel_cdf_base(u, v, theta):
+    """Gumbel copula CDF in its base (positive-dependence) form."""
     A, B = -np.log(u), -np.log(v)
     w = A ** theta + B ** theta
     return np.exp(-(w ** (1 / theta)))
 
 
 def _gumbel_density_base(u, v, theta):
+    """Gumbel copula density in its base (positive-dependence) form."""
     A, B = -np.log(u), -np.log(v)
     w = A ** theta + B ** theta
     C = np.exp(-(w ** (1 / theta)))
-    return C / (u * v) * (A * B) ** (theta - 1) * w ** (1 / theta - 2) * (w ** (1 / theta) + theta - 1)
+    return (
+            C / (u * v) * (A * B) ** (theta - 1) * w ** (1 / theta - 2) * (w ** (1 / theta) + theta - 1)
+    )
 
 
 def _gumbel_tau_to_theta(tau):
+    """Kendall's tau to Gumbel theta, used only as an optimizer starting value."""
     return 1 / max(1 - tau, 1e-6)
 
 
 def _make_rotated_family(base_cdf, base_density, tau_to_theta_start):
+    """
+    Build a {fit, loglik, cdf, n_params} family from a base (positive-
+    dependence-only) copula, adding a 90-degree rotation to also capture
+    negative dependence.
+    """
+
     def cdf(u, v, params):
         u, v = _clip(u, v)
         theta = params["theta"]
@@ -149,6 +176,7 @@ FAMILIES = {"frank": FRANK, "gaussian": GAUSSIAN, "clayton": CLAYTON, "gumbel": 
 
 
 def _rosenblatt_transform(u, v, cdf_func, params, delta=1e-4):
+    """Numerical dC/du at each data point."""
     u_hi = np.clip(u + delta, delta, 1 - delta)
     u_lo = np.clip(u - delta, delta, 1 - delta)
     c_hi = cdf_func(u_hi, v, params)
@@ -157,6 +185,7 @@ def _rosenblatt_transform(u, v, cdf_func, params, delta=1e-4):
 
 
 def compare_families(u: np.ndarray, v: np.ndarray, families: dict = None) -> list:
+    """Fit each copula family to (u, v) and rank by AIC."""
     families = families or FAMILIES
     n = len(u)
     results = []
