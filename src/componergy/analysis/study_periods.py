@@ -17,3 +17,25 @@ def _find_period(obj):
             if found is not None:
                 return found
     return None
+
+
+def collect_study_periods(figures_dir) -> pd.DataFrame:
+    rows = []
+    for json_path in sorted(pd.Series(list(figures_dir.rglob("*.json")))):
+        try:
+            with open(json_path) as f:
+                payload = json.load(f)
+        except (json.JSONDecodeError, OSError):
+            continue
+
+        period = _find_period(payload)
+        rows.append({
+            "Figure": json_path.stem,
+            "period_start": (period or {}).get("period_start"),
+            "period_end": (period or {}).get("period_end"),
+            "n_months": (period or {}).get("n_months"),
+            "log_file": str(json_path.relative_to(figures_dir)),
+        })
+
+    df = pd.DataFrame(rows)
+    return df.sort_values("Figure").reset_index(drop=True) if len(df) else df
