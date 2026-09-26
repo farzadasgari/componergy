@@ -72,3 +72,24 @@ def superadditivity_test(values, heat_mask, drought_mask, compound_mask, normal_
         "p_value": float(p), "dz_heat": dz_h, "dz_drought": dz_d, "dz_compound": dz_c,
         "additive_expectation": float(dz_h + dz_d), "n_boot": int(len(good)),
     }
+
+
+def superadditivity_table(df, event_masks, normal_mask, n_boot=5000, seed=42, label="Source"):
+    """Run superadditivity_test on every column of `df`, FDR-corrected across columns."""
+    from componergy.figures.composite_stats import benjamini_hochberg_fdr
+
+    heat = event_masks["Heatwave"].reindex(df.index).fillna(False).values
+    drought = event_masks["Drought"].reindex(df.index).fillna(False).values
+    compound = event_masks["Compound"].reindex(df.index).fillna(False).values
+    normal = normal_mask.reindex(df.index).fillna(False).values
+
+    rows = []
+    for i, col in enumerate(df.columns):
+        res = superadditivity_test(df[col].values, heat, drought, compound, normal,
+                                   n_boot=n_boot, seed=seed + i)
+        rows.append({label: col, **res})
+
+    out = pd.DataFrame(rows)
+    if len(out):
+        out["q_value"] = benjamini_hochberg_fdr(out["p_value"].values)
+    return out
