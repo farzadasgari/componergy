@@ -17,7 +17,6 @@ CA_CLIMATE_REGIONS_DIR = RAW_DATA_DIR / "boundaries" / "california_climate_regio
 CA_COUNTIES_DIR = RAW_DATA_DIR / "boundaries" / "california_counties"
 
 # California-cropped copies of the raw NOAA nClimGrid-Daily files
-# (still one file per month, not yet aggregated -- see preprocessing/crop_nclimgrid.py)
 NOAA_CA_DIR = INTERMEDIATE_DATA_DIR / "nclimgrid-ca"
 
 # Single combined monthly-resolution climate dataset spanning the full
@@ -26,7 +25,6 @@ NOAA_CA_DIR = INTERMEDIATE_DATA_DIR / "nclimgrid-ca"
 NOAA_MONTHLY_FILE = PROCESSED_DATA_DIR / "california_monthly_climate.nc"
 
 # Final combined dataset: climate + PET + STI + SAPEI + SCDHI, all months
-# from the full record
 INDICES_FILE = PROCESSED_DATA_DIR / "california_monthly_indices.nc"
 
 # Output directory for generated figures
@@ -46,15 +44,24 @@ COUNTY_CONSUMPTION_XLSX = RAW_DATA_ELECTRICITY_DIR / "county_electricity_consump
 # Processed long-format monthly county consumption table (Date, CountyName, Sector, Consumption (MWh))
 COUNTY_CONSUMPTION_MONTHLY_FILE = PROCESSED_DATA_DIR / "california_county_consumption_monthly.csv"
 
+# Raw EIA-861M state-level monthly sales/revenue workbooks (two eras, different
+# sheet names and sector-group sets)
+EIA_DEMAND_RAW_FILE_1990_2009 = RAW_DATA_ELECTRICITY_DIR / "HS861M_1990-2009.xlsx"
+EIA_DEMAND_RAW_FILE_2010_PRESENT = RAW_DATA_ELECTRICITY_DIR / "HS861M_2010-.xlsx"
+
+# Processed statewide monthly total electricity sales (demand), combined across both eras
+DEMAND_MONTHLY_FILE = PROCESSED_DATA_DIR / "california_demand_monthly.csv"
+
 MANIFEST_PATH = DATA_DIR / "download_manifest.json"
 
-# Directories the pipeline needs to exist
 _PIPELINE_DIRS = (
     RAW_DATA_DIR,
     INTERMEDIATE_DATA_DIR,
     PROCESSED_DATA_DIR,
     RAW_DATA_CLIMATE_DIR,
     CA_BOUNDARY_DIR,
+    CA_CLIMATE_REGIONS_DIR,
+    CA_COUNTIES_DIR,
     NOAA_CA_DIR,
     FIGURES_DIR,
 )
