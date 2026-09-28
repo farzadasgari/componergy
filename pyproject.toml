@@ -22,6 +22,7 @@ dependencies = [
     "joblib",
     "cartopy",
     "regionmask",
+    "shapely",
 ]
 
 [project.optional-dependencies]

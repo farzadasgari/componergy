@@ -1,19 +1,5 @@
 """
 Download and cache California's climate regions from Cal-Adapt's API.
-
-The API paginates via a "next" link in each response; results are
-followed until exhausted. Geometry arrives as either a WKT string or a
-GeoJSON geometry dict depending on the endpoint/version, so both are
-handled. Coordinates are assumed to be EPSG:3857 (Web Mercator) on
-arrival and reprojected to EPSG:4326 -- verified against a known
-geometry round-tripped through the same transform; if this assumption
-ever turns out to be wrong for a particular API response, the fix is to
-read the response's own "crs" field instead of asserting EPSG:3857.
-
-Region names come from whichever of a few candidate property keys is
-present (name/title/label/region/abbr/code), since the exact key isn't
-guaranteed stable across API versions. REGION_RENAME fixes one known
-naming inconsistency ("Sonora Desert" vs "Sonoran Desert").
 """
 
 from __future__ import annotations
@@ -85,13 +71,7 @@ def _extract_region_names(gdf):
 
 
 def get_california_climate_regions(cache_path=None) -> gpd.GeoDataFrame:
-    """
-    Return California's climate regions as a GeoDataFrame (Region, geometry).
-
-    Downloads and caches to `cache_path` (default: a fixed location under
-    CA_CLIMATE_REGIONS_DIR) on first use; later calls read the cache
-    without hitting the network again.
-    """
+    """Return California's climate regions as a GeoDataFrame (Region, geometry)."""
     cache_path = cache_path or _CACHE_PATH
     if cache_path.exists():
         return gpd.read_file(cache_path)
