@@ -214,3 +214,24 @@ def plot_gridded_vulnerability_panel(ax, gridded: xr.DataArray, is_significant: 
     ax.scatter(lon2[mask], lat2[mask], s=2, c="k", alpha=0.25, linewidths=0)
 
     ax.set_axis_off()
+
+
+def plot_regional_evi_panel(ax, evi: pd.Series, regions_gdf, county_boundary_dissolved, cmap_obj, norm):
+    regions_plot = regions_gdf.copy()
+    regions_plot["abbr"] = regions_plot["Region"].map(region_abbrev)
+    regions_plot["centroid"] = regions_plot.geometry.representative_point()
+    regions_plot["EVI"] = regions_plot["Region"].map(evi.to_dict())
+
+    regions_plot.plot(ax=ax, column="EVI", cmap=cmap_obj, norm=norm, linewidth=1.0, edgecolor="white")
+    county_boundary_dissolved.plot(ax=ax, color="black", linewidth=1.2)
+
+    for _, r in regions_plot.iterrows():
+        if r["centroid"] is None or r["centroid"].is_empty:
+            continue
+        tcol = text_color_for_bg(r["EVI"], norm, cmap_obj, light_thresh=0.55)
+        stroke_col = "black" if tcol == "white" else "white"
+        ax.text(r["centroid"].x, r["centroid"].y, r["abbr"], ha="center", va="center",
+                fontsize=16, fontweight="bold", color=tcol, alpha=0.98,
+                path_effects=[pe.withStroke(linewidth=1.6, foreground=stroke_col), pe.Normal()])
+
+    ax.set_axis_off()
