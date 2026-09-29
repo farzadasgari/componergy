@@ -278,3 +278,49 @@ def plot_return_period_panel(ax, rp_df: pd.DataFrame):
                 xytext=(max_rp * 0.65, max_risk * 1.18), fontsize=17, color="#8B0000",
                 arrowprops=dict(arrowstyle="->", color="#8B0000", lw=1.9))
     ax.grid(True, alpha=0.15)
+
+
+def build_vulnerability_figure(gridded: xr.DataArray, is_significant: xr.DataArray, evi: pd.Series,
+                               risk_df: pd.DataFrame, rp_df: pd.DataFrame,
+                               regions_gdf, county_boundary_dissolved, comp: pd.DataFrame):
+    delta_z_all = comp["Delta_z"].dropna().values
+    grid_abs = np.abs(gridded.values.flatten())
+    grid_abs = grid_abs[np.isfinite(grid_abs)]
+    vmax_evi = max(0.5, float(np.nanpercentile(np.abs(delta_z_all), 90)),
+                   float(np.nanpercentile(grid_abs, 90)) if len(grid_abs) > 0 else 0.5)
+
+    cmap_obj = plt.get_cmap("RdBu_r")
+    norm_map = Normalize(vmin=-vmax_evi, vmax=vmax_evi)
+
+    fig = plt.figure(figsize=(16.2, 11.8))
+    gs = GridSpec(nrows=2, ncols=2, figure=fig, width_ratios=[1.08, 1.0], height_ratios=[1.05, 1.0], wspace=0.55,
+                  hspace=0.12)
+    fig.subplots_adjust(left=0.04, right=0.90, top=0.96, bottom=0.07)
+
+    axA = fig.add_subplot(gs[0, 0])
+    plot_gridded_vulnerability_panel(axA, gridded, is_significant, county_boundary_dissolved, regions_gdf, cmap_obj,
+                                     norm_map)
+    add_letter(axA, "A", x=-0.08)
+    cax_A = fig.add_axes([0.455, 0.57, 0.013, 0.36])
+    sm_A = ScalarMappable(norm=Normalize(vmin=float(gridded.min()), vmax=float(gridded.max())), cmap=cmap_obj)
+    fig.colorbar(sm_A, cax=cax_A).set_label("Climate vulnerability")
+
+    axB = fig.add_subplot(gs[0, 1])
+    plot_regional_evi_panel(axB, evi, regions_gdf, county_boundary_dissolved, cmap_obj, norm_map)
+    add_letter(axB, "B", x=-0.08)
+    cax_B = fig.add_axes([0.905, 0.57, 0.013, 0.36])
+    sm_B = ScalarMappable(norm=Normalize(vmin=float(evi.min()), vmax=float(evi.max())), cmap=cmap_obj)
+    fig.colorbar(sm_B, cax=cax_B).set_label("Demand vulnerability")
+
+    axC = fig.add_subplot(gs[1, 0])
+    monthly_risk = plot_risk_surface_panel(axC, risk_df)
+    add_letter(axC, "C", x=0.02)
+    cax_risk = axC.inset_axes([1.07, 0.08, 0.028, 0.75])
+    sm_risk = ScalarMappable(norm=Normalize(monthly_risk.min(), monthly_risk.max()), cmap="RdBu_r")
+    fig.colorbar(sm_risk, cax=cax_risk).set_label("System risk", labelpad=8)
+
+    axD = fig.add_subplot(gs[1, 1])
+    plot_return_period_panel(axD, rp_df)
+    add_letter(axD, "D", x=0.02)
+
+    return fig
