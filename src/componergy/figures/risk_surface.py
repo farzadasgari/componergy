@@ -194,3 +194,23 @@ def text_color_for_bg(value, norm, cmap_obj, light_thresh=0.55):
     r, g, b, _ = cmap_obj(norm(value))
     lum = 0.2126 * r + 0.7152 * g + 0.0722 * b
     return "black" if lum >= light_thresh else "white"
+
+
+def plot_gridded_vulnerability_panel(ax, gridded: xr.DataArray, is_significant: xr.DataArray, county_boundary_dissolved,
+                                     regions_gdf, cmap_obj, norm):
+    """Composite climate stress map with FDR-corrected significance stippling."""
+    lons = gridded["lon"].values
+    lats = gridded["lat"].values
+    XX, YY = np.meshgrid(lons, lats)
+
+    ax.pcolormesh(XX, YY, gridded.values, cmap=cmap_obj, norm=norm, shading="auto", rasterized=True)
+    county_boundary_dissolved.plot(ax=ax, color="black", linewidth=1.2)
+    regions_gdf.plot(ax=ax, facecolor="none", edgecolor="#333333", linewidth=0.75, alpha=0.45)
+
+    step = 3
+    sig_sub = is_significant.isel(lat=slice(None, None, step), lon=slice(None, None, step))
+    lon2, lat2 = np.meshgrid(sig_sub["lon"].values, sig_sub["lat"].values)
+    mask = np.asarray(sig_sub.values, dtype=bool)
+    ax.scatter(lon2[mask], lat2[mask], s=2, c="k", alpha=0.25, linewidths=0)
+
+    ax.set_axis_off()
