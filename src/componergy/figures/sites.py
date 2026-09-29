@@ -131,3 +131,69 @@ def plot_site_scatter(site_df: pd.DataFrame, sites=None, figsize=(16, 11)):
     cbar.set_label("SCDHI (compound intensity)", fontsize=14)
     cbar.ax.tick_params(labelsize=12)
     return fig
+
+
+def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
+    """Build the site series, site locations, and correlation CSVs."""
+    from componergy.netcdf_io import atomic_to_csv
+    from componergy.paths import INDICES_FILE, FIGURES_DIR
+    from componergy.figures.stats_log import write_figure_log
+
+    out_dir = FIGURES_DIR / "supplementary"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    print(f"loading {INDICES_FILE}...")
+    ds = xr.open_dataset(INDICES_FILE)
+
+    site_df = extract_site_series(ds, {"STI": "sti", "SAPEI": sapei_var, "SCDHI": scdhi_var})
+    atomic_to_csv(site_df, out_dir / "figure_S6_S7_site_series.csv", index=False)
+
+    print("building S6 (site time series)...")
+    fig6 = plot_site_timeseries(site_df)
+    fig6.savefig(out_dir / "figure_S6_site_timeseries.jpg", bbox_inches="tight")
+    plt.close(fig6)
+
+    print("building S7 (site scatter)...")
+    fig7 = plot_site_scatter(site_df)
+    fig7.savefig(out_dir / "figure_S7_site_scatter.jpg", bbox_inches="tight")
+    plt.close(fig7)
+
+    site_meta = (site_df.groupby("Site")[["Requested_Lat", "Requested_Lon", "Grid_Lat", "Grid_Lon"]]
+                 .first().reset_index())
+    site_meta["Offset_deg"] = np.hypot(site_meta["Grid_Lat"] - site_meta["Requested_Lat"],
+                                       site_meta["Grid_Lon"] - site_meta["Requested_Lon"])
+    atomic_to_csv(site_meta, out_dir / "figure_S6_S7_site_locations.csv", index=False)
+
+    corr_rows = []
+    for name in site_meta["Site"]:
+        sub = site_df[site_df["Site"] == name]
+        corr_rows.append({
+            "Site": name,
+            "corr_STI_SAPEI": float(sub["STI"].corr(sub["SAPEI"])),
+            "corr_STI_SCDHI": float(sub["STI"].corr(sub["SCDHI"])),
+            "corr_SAPEI_SCDHI": float(sub["SAPEI"].corr(sub["SCDHI"])),
+            "n_months": int(len(sub)),
+        })
+    corr_df = pd.DataFrame(corr_rows)
+    atomic_to_csv(corr_df, out_dir / "figure_S7_site_correlations.csv", index=False)
+
+    log_sections = {
+        "Overview": {
+            "sapei_variable": sapei_var, "scdhi_variable": scdhi_var,
+            "n_sites": len(REPRESENTATIVE_SITES),
+            "period_start": str(site_df["Date"].min().date()),
+            "period_end": str(site_df["Date"].max().date()),
+        },
+        "Site locations (requested vs nearest grid cell)": site_meta.to_string(index=False),
+        "Index correlations per site": corr_df.to_string(index=False),
+        "Note": (
+            "Sites are sampled with sel(method='nearest'), so each series "
+            "comes from the grid cell nearest the requested coordinate."
+        ),
+    }
+    write_figure_log(out_dir / "supplementary_sites", log_sections)
+    print(f"wrote outputs to {out_dir}")
+
+
+if __name__ == "__main__":
+    main()
