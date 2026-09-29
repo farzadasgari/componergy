@@ -127,3 +127,71 @@ def plot_cooccurrence_heatmap(freq_df: pd.DataFrame, sectors=None, figsize=(11, 
     ax.set_xlabel("Electricity demand sector", fontsize=15)
     ax.set_ylabel("Climate region", fontsize=15)
     return fig
+
+
+def main(scdhi_var: str = "scdhi_3m") -> None:
+    """Build figure with its frequency CSV and log."""
+    from componergy.download.climate_regions import get_california_climate_regions
+    from componergy.download.boundaries import get_california_counties
+    from componergy.analysis.regions import build_county_to_region_map, compute_regional_mean
+    from componergy.preprocessing.consumption_cec import load_raw_consumption
+    from componergy.netcdf_io import atomic_to_csv
+    from componergy.paths import INDICES_FILE, COUNTY_CONSUMPTION_XLSX, FIGURES_DIR
+    from componergy.figures.stats_log import write_figure_log
+
+    out_dir = FIGURES_DIR / "supplementary"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    print("loading regions, counties, consumption, and climate data...")
+    regions_gdf = get_california_climate_regions()
+    counties_gdf = get_california_counties()
+    county_region_map = build_county_to_region_map(counties_gdf, regions_gdf)
+    consumption_long_df = load_raw_consumption(COUNTY_CONSUMPTION_XLSX)
+    ds = xr.open_dataset(INDICES_FILE)
+
+    print("computing regional SCDHI and region-sector consumption...")
+    regional_scdhi = compute_regional_mean(ds[scdhi_var], regions_gdf)
+    region_sector_gwh = aggregate_consumption_to_region_sector(consumption_long_df, county_region_map)
+
+    common = regional_scdhi.index.intersection(region_sector_gwh.index)
+    regional_scdhi = regional_scdhi.loc[common]
+    region_sector_gwh = region_sector_gwh.loc[common]
+
+    print("computing co-occurrence frequencies...")
+    freq_df = compute_cooccurrence_frequency(regional_scdhi, region_sector_gwh)
+    atomic_to_csv(freq_df, out_dir / "figure_S1_cooccurrence_frequency.csv", index=False)
+
+    print("building S1...")
+    fig = plot_cooccurrence_heatmap(freq_df)
+    fig.savefig(out_dir / "figure_S1_cooccurrence.jpg", bbox_inches="tight")
+    plt.close(fig)
+
+    valid = freq_df["Cooccurrence_Frequency"].dropna()
+    log_sections = {
+        "Overview": {
+            "scdhi_variable": scdhi_var,
+            "demand_high_quantile": DEMAND_HIGH_Q,
+            "n_regions": int(freq_df["Region"].nunique()),
+            "n_sectors": int(freq_df["Sector"].nunique()),
+            "period_start": str(common.min().date()),
+            "period_end": str(common.max().date()),
+        },
+        "Co-occurrence frequency by region and sector": freq_df.to_string(index=False),
+        "Summary": {
+            "mean_frequency": float(valid.mean()) if len(valid) else np.nan,
+            "max_frequency": float(valid.max()) if len(valid) else np.nan,
+            "expected_by_chance": float(1.0 - DEMAND_HIGH_Q),
+        },
+        "Note": (
+            "Frequency is defined as the fraction of that "
+            "region's CDHE months during which the given sector also shows "
+            "elevated demand, where 'elevated' is the top decile of that "
+            "region-sector's deseasonalized, z-scored demand."
+        ),
+    }
+    write_figure_log(out_dir / "supplementary_cooccurrence", log_sections)
+    print(f"wrote outputs to {out_dir}")
+
+
+if __name__ == "__main__":
+    main()
