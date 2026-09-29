@@ -86,3 +86,48 @@ def plot_site_timeseries(site_df: pd.DataFrame, sites=None, figsize=(16, 18)):
     axes[0].legend(frameon=False, ncol=3, fontsize=13, loc="upper left")
     axes[-1].set_xlabel("Time (year)", fontsize=15)
     return fig
+
+
+def plot_site_scatter(site_df: pd.DataFrame, sites=None, figsize=(16, 11)):
+    """Figure S7: per-site STI vs SAPEI scatter, SCDHI shown by colour and marker size."""
+    if sites is None:
+        sites = REPRESENTATIVE_SITES
+    names = [s[0] for s in sites]
+
+    scdhi_all = site_df["SCDHI"].values
+    finite = scdhi_all[np.isfinite(scdhi_all)]
+    vmax = float(np.percentile(np.abs(finite), 98)) if len(finite) else 1.0
+    vmax = max(vmax, 1e-6)
+    norm = Normalize(vmin=-vmax, vmax=vmax)
+    cmap = plt.get_cmap("RdBu")
+
+    n_cols = 3
+    n_rows = int(np.ceil(len(names) / n_cols))
+    fig, axes = plt.subplots(nrows=n_rows, ncols=n_cols, figsize=figsize, constrained_layout=True)
+    axes = np.atleast_1d(axes).ravel()
+
+    for ax, name in zip(axes, names):
+        sub = site_df[site_df["Site"] == name]
+        sti, sapei, scdhi = sub["STI"].values, sub["SAPEI"].values, sub["SCDHI"].values
+        sizes = 18 + 160 * (np.abs(scdhi) / vmax).clip(0, 1) ** 1.3
+
+        ax.scatter(sti, sapei, c=scdhi, cmap=cmap, norm=norm, s=sizes,
+                   alpha=0.72, edgecolors="none")
+        ax.axvline(0, color="k", lw=0.9, alpha=0.35, zorder=0)
+        ax.axhline(0, color="k", lw=0.9, alpha=0.35, zorder=0)
+        ax.set_title(name, fontsize=14, pad=4)
+        ax.set_xlabel("STI (heat)", fontsize=13)
+        ax.set_ylabel("SAPEI (drought)", fontsize=13)
+        ax.spines["top"].set_visible(False)
+        ax.spines["right"].set_visible(False)
+        ax.tick_params(labelsize=11)
+
+    for ax in axes[len(names):]:
+        ax.set_visible(False)
+
+    sm = ScalarMappable(norm=norm, cmap=cmap)
+    sm.set_array([])
+    cbar = fig.colorbar(sm, ax=axes.tolist(), orientation="vertical", shrink=0.85, pad=0.02)
+    cbar.set_label("SCDHI (compound intensity)", fontsize=14)
+    cbar.ax.tick_params(labelsize=12)
+    return fig
