@@ -129,3 +129,123 @@ def compute_sector_composites(data: dict) -> pd.DataFrame:
     merged["q_value"] = benjamini_hochberg_fdr(merged["p_value"].values)
 
     return merged.rename(columns={"Source": "Sector", "Difference": "Delta_z"})
+
+
+def build_sector_wheel_figure(comp: pd.DataFrame, sectors_order, events_order=("Heatwave", "Drought", "Compound")):
+    """Polar wheel: one angular wedge per sector, one concentric ring per event."""
+    mat_g = comp.pivot(index="Sector", columns="Event", values="Delta_GWh").reindex(index=sectors_order,
+                                                                                    columns=events_order)
+    mat_z = comp.pivot(index="Sector", columns="Event", values="Delta_z").reindex(index=sectors_order,
+                                                                                  columns=events_order)
+    mat_q = comp.pivot(index="Sector", columns="Event", values="q_value").reindex(index=sectors_order,
+                                                                                  columns=events_order)
+
+    abs_g = np.abs(mat_g.values)
+    gmax = float(np.nanpercentile(abs_g[np.isfinite(abs_g)], 95)) if np.isfinite(abs_g).any() else 1.0
+    gmax = max(1e-6, gmax)
+
+    vals_z = mat_z.values
+    vmax_z = float(np.nanpercentile(np.abs(vals_z[np.isfinite(vals_z)]), 90)) if np.isfinite(vals_z).any() else 1.0
+    vmax_z = max(0.5, vmax_z)
+
+    cmap_obj = plt.get_cmap("RdBu_r")
+    normz = Normalize(vmin=-vmax_z, vmax=vmax_z)
+
+    n_sec = len(sectors_order)
+    theta = np.linspace(0, 2 * np.pi, n_sec, endpoint=False)
+    width = (2 * np.pi / n_sec) * 0.88
+
+    ring_gap, ring_thick_max, ring_base = 0.12, 0.55, 0.80
+    ring_start = {
+        "Heatwave": ring_base,
+        "Drought": ring_base + (ring_thick_max + ring_gap),
+        "Compound": ring_base + 2 * (ring_thick_max + ring_gap),
+    }
+
+    fig = plt.figure(figsize=(13.8, 9.0))
+    gs = GridSpec(nrows=1, ncols=2, width_ratios=[1.22, 0.24], figure=fig)
+    ax = fig.add_subplot(gs[0, 0], projection="polar")
+    ax_leg = fig.add_subplot(gs[0, 1])
+    ax_leg.axis("off")
+
+    ax.set_theta_direction(-1)
+    ax.set_theta_offset(np.pi / 2)
+    ax.set_yticklabels([])
+    ax.set_xticklabels([])
+    ax.grid(alpha=0.12, linewidth=0.8)
+    ax.spines["polar"].set_visible(False)
+
+    for ev in events_order:
+        base = ring_start[ev]
+        for i, sec in enumerate(sectors_order):
+            dg, dz, q = mat_g.loc[sec, ev], mat_z.loc[sec, ev], mat_q.loc[sec, ev]
+            if pd.isna(dg) or pd.isna(dz):
+                continue
+
+            thick = (min(abs(dg) / gmax, 1.0) ** 0.85) * ring_thick_max
+            face = cmap_obj(normz(dz))
+
+            if pd.notna(q) and q < Q_ALPHA_FDR:
+                ec, lw = "black", 1.4
+            elif pd.notna(q) and q < Q_ALPHA_FDR_MARGINAL:
+                ec, lw = "#444444", 1.1
+            else:
+                ec, lw = "none", 0.0
+
+            ax.bar(theta[i], thick, width=width, bottom=base, color=face,
+                   edgecolor=ec, linewidth=lw, align="edge", alpha=0.97)
+
+    r_outer_ring = ring_start["Compound"] + ring_thick_max
+    outer = r_outer_ring + 0.06
+    ax.set_ylim(0, outer + 0.10)
+
+    for i, sec in enumerate(sectors_order):
+        lab = SECTOR_ABBREV.get(sec, str(sec)[:7])
+        ang = theta[i] + width / 2
+        ha = "right" if 90 < np.degrees(ang) < 270 else "left"
+        ax.text(ang, outer, lab, fontsize=14, fontweight="bold", ha=ha, va="center", clip_on=False)
+
+    for ev in events_order:
+        ax.text(np.deg2rad(2), ring_start[ev] + ring_thick_max * 0.55, ev, fontsize=16,
+                ha="left", va="center", color="white",
+                path_effects=[pe.withStroke(linewidth=2, foreground="black")])
+
+    totals = comp.groupby("Event")["Delta_GWh"].sum().reindex(events_order)
+    center_txt = "Total $\\Delta$GWh vs normal\n" + "\n".join([f"{ev}: {totals[ev]:+.1f}" for ev in events_order])
+    ax.text(0.5, 0.5, center_txt, transform=ax.transAxes, ha="center", va="center", fontsize=14)
+
+    ref = np.nanpercentile(abs_g[np.isfinite(abs_g)], [50, 80, 95]) if np.isfinite(abs_g).any() else [1, 2, 3]
+    ref = np.unique(np.round(ref, 1))
+    ax_leg.text(0.02, 0.97, "Contribution magnitude", transform=ax_leg.transAxes, fontsize=14, va="top")
+
+    y = 0.88
+    for r in ref[:3]:
+        thick = (min(r / gmax, 1.0) ** 0.85) * ring_thick_max
+        ax_leg.add_patch(plt.Rectangle((0.06, y - 0.018), 0.25, 0.036, transform=ax_leg.transAxes,
+                                       facecolor="#dddddd", edgecolor="#333333", linewidth=1.0))
+        ax_leg.add_patch(plt.Rectangle((0.06, y - 0.018), 0.25, 0.036 * (thick / ring_thick_max),
+                                       transform=ax_leg.transAxes, facecolor="#777777", edgecolor="none"))
+        ax_leg.text(0.34, y, f"|$\\Delta$GWh| $\\approx$ {r:.1f}", transform=ax_leg.transAxes, va="center", fontsize=14)
+        y -= 0.075
+
+    y -= 0.03
+    ax_leg.text(0.02, y, "Significance (FDR-corrected)", transform=ax_leg.transAxes, fontsize=14, va="top")
+    y -= 0.09
+    ax_leg.add_patch(plt.Rectangle((0.06, y - 0.018), 0.10, 0.036, transform=ax_leg.transAxes,
+                                   facecolor="white", edgecolor="black", linewidth=1.4))
+    ax_leg.text(0.20, y, "q < 0.05", transform=ax_leg.transAxes, va="center", fontsize=13)
+    y -= 0.075
+    ax_leg.add_patch(plt.Rectangle((0.06, y - 0.018), 0.10, 0.036, transform=ax_leg.transAxes,
+                                   facecolor="white", edgecolor="#444444", linewidth=1.1))
+    ax_leg.text(0.20, y, "0.05 $\\leq$ q < 0.10", transform=ax_leg.transAxes, va="center", fontsize=13)
+
+    sm = ScalarMappable(norm=normz, cmap="RdBu_r")
+    sm.set_array([])
+    cax = ax_leg.inset_axes([0.08, 0.03, 0.18, 0.20])
+    cbar = fig.colorbar(sm, cax=cax, orientation="vertical")
+    cbar.set_label("$\\Delta z$ sector anomaly", labelpad=8, fontsize=16)
+    cbar.outline.set_linewidth(0.8)
+    cbar.ax.tick_params(width=0.8, length=3, labelsize=14)
+
+    fig.subplots_adjust(left=0.03, right=0.97, top=0.97, bottom=0.05, wspace=0.02)
+    return fig
