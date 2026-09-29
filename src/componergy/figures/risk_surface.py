@@ -104,3 +104,45 @@ def prepare_vulnerability_data(indices_ds: xr.Dataset, consumption_long_df: pd.D
         "indices_ds": indices_ds,
         "period_start": start, "period_end": end,
     }
+
+
+def compute_gridded_vulnerability(data: dict, sapei_var="sapei_3m", scdhi_var="scdhi_3m") -> tuple:
+    """Per-grid-cell composite climate stress: mean of STI-heat, -SAPEI-drought, -SCDHI-compound event anomalies."""
+    indices_ds = data["indices_ds"]
+    heat_mask, drought_mask = data["event_masks"]["Heatwave"], data["event_masks"]["Drought"]
+    compound_mask, normal_mask = data["event_masks"]["Compound"], data["normal"]
+
+    common_times = indices_ds["time"].to_index().intersection(heat_mask.index)
+
+    sti_grid = indices_ds["sti"].sel(time=common_times)
+    sapei_grid = indices_ds[sapei_var].sel(time=common_times)
+    scdhi_grid = indices_ds[scdhi_var].sel(time=common_times)
+
+    def as_time_da(mask):
+        return xr.DataArray(mask.reindex(common_times).fillna(False).values, dims="time", coords={"time": common_times})
+
+    heat_da, drought_da = as_time_da(heat_mask), as_time_da(drought_mask)
+    compound_da, normal_da = as_time_da(compound_mask), as_time_da(normal_mask)
+
+    def mean_over_mask(da, mask_da):
+        if int(mask_da.sum()) == 0:
+            return da.mean(dim="time") * np.nan
+        return da.where(mask_da).mean(dim="time")
+
+    delta_heat = mean_over_mask(sti_grid, heat_da) - mean_over_mask(sti_grid, normal_da)
+    delta_drought = -(mean_over_mask(sapei_grid, drought_da) - mean_over_mask(sapei_grid, normal_da))
+    delta_compound = -(mean_over_mask(scdhi_grid, compound_da) - mean_over_mask(scdhi_grid, normal_da))
+
+    gridded = (delta_heat + delta_drought + delta_compound) / 3
+
+    p_heat = vectorized_welch_ttest_grid(sti_grid, heat_da, normal_da)
+    p_drought = vectorized_welch_ttest_grid(sapei_grid, drought_da, normal_da)
+    p_compound = vectorized_welch_ttest_grid(scdhi_grid, compound_da, normal_da)
+
+    q_heat = apply_fdr_to_grid(p_heat)
+    q_drought = apply_fdr_to_grid(p_drought)
+    q_compound = apply_fdr_to_grid(p_compound)
+
+    is_significant = (q_heat < ALPHA_SIG) | (q_drought < ALPHA_SIG) | (q_compound < ALPHA_SIG)
+
+    return gridded, is_significant
