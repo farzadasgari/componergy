@@ -52,3 +52,55 @@ plt.rcParams.update({
 import logging
 
 logging.getLogger("matplotlib.font_manager").setLevel(logging.ERROR)
+
+
+def prepare_vulnerability_data(indices_ds: xr.Dataset, consumption_long_df: pd.DataFrame, regions_gdf,
+                               county_region_map: pd.DataFrame,
+                               sapei_var="sapei_3m", scdhi_var="scdhi_3m", smooth_months=SMOOTH_MONTHS):
+    """Align regional demand, statewide demand, and statewide climate signals; classify events."""
+    from componergy.figures.regional import aggregate_consumption_to_regional
+
+    electricity_raw = aggregate_consumption_to_regional(consumption_long_df, county_region_map)
+    regions_order = [r for r in regions_gdf["Region"] if r in electricity_raw.columns]
+    electricity_raw = electricity_raw[regions_order]
+
+    weights = compute_area_weights(indices_ds["lat"])
+    sti = zscore(compute_statewide_mean(indices_ds["sti"], weights).to_series())
+    sapei = zscore(compute_statewide_mean(indices_ds[sapei_var], weights).to_series())
+    scdhi = zscore(compute_statewide_mean(indices_ds[scdhi_var], weights).to_series())
+
+    start = max(electricity_raw.index.min(), sti.index.min(), sapei.index.min(), scdhi.index.min())
+    end = min(electricity_raw.index.max(), sti.index.max(), sapei.index.max(), scdhi.index.max())
+
+    electricity_raw = electricity_raw.loc[start:end]
+    sti = sti.loc[start:end].rolling(smooth_months, center=True, min_periods=1).mean()
+    sapei = sapei.loc[start:end].rolling(smooth_months, center=True, min_periods=1).mean()
+    scdhi = scdhi.loc[start:end].rolling(smooth_months, center=True, min_periods=1).mean()
+
+    electricity_sm = electricity_raw.rolling(smooth_months, center=True, min_periods=1).mean()
+    electricity_local = electricity_sm.apply(deseasonalize_monthly, axis=0)
+    electricity_z = electricity_local.apply(zscore, axis=0)
+
+    demand_state_gwh = electricity_sm.sum(axis=1)
+    demand_state_z = zscore(deseasonalize_monthly(demand_state_gwh))
+
+    heat = classify_heatwave(series_to_data_array(sti)).to_series()
+    drought = classify_drought(series_to_data_array(sapei)).to_series()
+    compound = classify_compound(series_to_data_array(scdhi)).to_series()
+    normal = ~(heat | drought | compound)
+
+    event_masks = {
+        "Heatwave": heat & (~drought),
+        "Drought": drought & (~heat),
+        "Compound": compound,
+    }
+
+    return {
+        "regions_order": regions_order,
+        "electricity_z": electricity_z,
+        "demand_state_z": demand_state_z,
+        "sti": sti, "sapei": sapei, "scdhi": scdhi,
+        "event_masks": event_masks, "normal": normal,
+        "indices_ds": indices_ds,
+        "period_start": start, "period_end": end,
+    }
