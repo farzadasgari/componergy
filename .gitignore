@@ -21,7 +21,7 @@ data/
 !data/processed/.gitkeep
 
 # Figures
-figures/
+/figures/
 
 # Env / secrets
 .env
