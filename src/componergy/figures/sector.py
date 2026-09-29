@@ -249,3 +249,70 @@ def build_sector_wheel_figure(comp: pd.DataFrame, sectors_order, events_order=("
 
     fig.subplots_adjust(left=0.03, right=0.97, top=0.97, bottom=0.05, wspace=0.02)
     return fig
+
+
+def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
+    """
+    Build the sector wheel figure, its composite CSV, and the log/json.
+
+    Requires COUNTY_CONSUMPTION_XLSX to already exist locally (restricted
+    CEC data).
+    """
+    from componergy.preprocessing.consumption_cec import load_raw_consumption
+    from componergy.netcdf_io import atomic_to_csv
+    from componergy.paths import INDICES_FILE, COUNTY_CONSUMPTION_XLSX, FIGURES_DIR
+
+    out_dir = FIGURES_DIR / "figure_05"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    print("loading consumption and climate data...")
+    consumption_long_df = load_raw_consumption(COUNTY_CONSUMPTION_XLSX)
+    indices_ds = xr.open_dataset(INDICES_FILE)
+
+    print("preparing sector data...")
+    data = prepare_sector_data(indices_ds, consumption_long_df, sapei_var=sapei_var, scdhi_var=scdhi_var)
+
+    print("computing composites...")
+    comp = compute_sector_composites(data)
+
+    print("saving figure...")
+    fig = build_sector_wheel_figure(comp, data["sectors_order"])
+    fig.savefig(out_dir / "figure_05_sector_fingerprint.jpg", bbox_inches="tight")
+    plt.close(fig)
+
+    atomic_to_csv(comp, out_dir / "figure_05_sector_composites.csv", index=False)
+
+    superadd_df = superadditivity_table(
+        data["sector_z"], data["event_masks"], data["normal"], label="Sector",
+    )
+    atomic_to_csv(superadd_df, out_dir / "figure_05_superadditivity.csv", index=False)
+
+    placebo_df = placebo_table(
+        data["sector_z"], data["event_masks"], data["normal"], label="Sector",
+    )
+    atomic_to_csv(placebo_df, out_dir / "figure_05_placebo.csv", index=False)
+
+    log_sections = {
+        "Overview": {
+            "sapei_variable": sapei_var, "scdhi_variable": scdhi_var,
+            "n_sectors": len(data["sectors_order"]),
+            "period_start": str(data["period_start"].date()),
+            "period_end": str(data["period_end"].date()),
+        },
+        "Event counts (statewide classification)": {k: int(v.sum()) for k, v in data["event_masks"].items()},
+        "Normal period count": int(data["normal"].sum()),
+        "Sector composites (FDR-corrected)": comp.to_string(index=False),
+        "Super-additivity by sector (FDR-corrected)": superadd_df.to_string(index=False),
+        "Placebo test (shifted event timing, FDR-corrected)": placebo_df.to_string(index=False),
+        "Note": (
+            "Significance (ring outline, legend) uses Benjamini-Hochberg "
+            "FDR-corrected q-values across all sector x event tests, not raw "
+            "p-values, given the number of comparisons."
+        ),
+    }
+    write_figure_log(out_dir / "figure_05_sector_fingerprint", log_sections)
+    print(f"wrote outputs to {out_dir}")
+
+
+if __name__ == "__main__":
+    main()
