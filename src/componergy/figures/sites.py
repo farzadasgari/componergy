@@ -56,3 +56,33 @@ def extract_site_series(ds: xr.Dataset, var_names, sites=None) -> pd.DataFrame:
         frames.append(df.reset_index().rename(columns={"index": "Date", "time": "Date"}))
 
     return pd.concat(frames, ignore_index=True)
+
+
+def plot_site_timeseries(site_df: pd.DataFrame, sites=None, figsize=(16, 18)):
+    """Figure S6: stacked per-site monthly time series of STI, SAPEI and SCDHI."""
+    if sites is None:
+        sites = REPRESENTATIVE_SITES
+    names = [s[0] for s in sites]
+
+    colors = {"STI": "#c1272d", "SAPEI": "#0b6fa4", "SCDHI": "#6a3d9a"}
+    fig, axes = plt.subplots(nrows=len(names), ncols=1, figsize=figsize,
+                             sharex=True, constrained_layout=True)
+    if len(names) == 1:
+        axes = [axes]
+
+    for ax, name in zip(axes, names):
+        sub = site_df[site_df["Site"] == name].sort_values("Date")
+        for label in ("STI", "SAPEI", "SCDHI"):
+            if label in sub.columns:
+                ax.plot(sub["Date"], sub[label], lw=1.5, alpha=0.9,
+                        color=colors[label], label=label)
+        ax.axhline(0, color="k", lw=0.9, alpha=0.35, zorder=0)
+        ax.set_ylabel("Index value", fontsize=14)
+        ax.set_title(name, fontsize=15, pad=4)
+        ax.spines["top"].set_visible(False)
+        ax.spines["right"].set_visible(False)
+        ax.tick_params(labelsize=12)
+
+    axes[0].legend(frameon=False, ncol=3, fontsize=13, loc="upper left")
+    axes[-1].set_xlabel("Time (year)", fontsize=15)
+    return fig
