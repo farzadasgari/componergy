@@ -49,3 +49,13 @@ def reduce_for_hovmoller(da: xr.DataArray, mode: str, space: str) -> xr.DataArra
         return annual.transpose("year", space)
 
     raise ValueError("mode must be 'annual' or 'monthly'")
+
+
+def symmetric_levels(da: xr.DataArray, n_levels=21, percentile=98) -> np.ndarray:
+    """Contour levels symmetric about zero, scaled to a high percentile of |value|."""
+    vals = np.abs(da.values[np.isfinite(da.values)])
+    if len(vals) == 0:
+        return np.linspace(-1.0, 1.0, n_levels)
+    vmax = float(np.percentile(vals, percentile))
+    vmax = max(vmax, 1e-6)
+    return np.linspace(-vmax, vmax, n_levels)
