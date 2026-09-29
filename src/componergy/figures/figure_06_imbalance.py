@@ -127,3 +127,46 @@ def bootstrap_raf(values_event, values_normal, thr, n_boot=N_BOOT, seed=BOOT_SEE
         boots[i] = pe / max(pn, EPS) - 1.0
     lo, hi = np.quantile(boots, [0.025, 0.975])
     return raf, lo, hi, p_e, p_n
+
+
+def compute_imbalance_composites(data: dict, risk_q=RISK_Q, n_boot=N_BOOT, seed=BOOT_SEED):
+    """Event-vs-normal composite (Delta_GWh/Delta_pct/Delta_z, FDR-corrected) plus bootstrap RAF, per event."""
+    imb_gwh = data["imb_gwh"]
+    normal = data["normal"]
+
+    thr_risk = np.nanquantile(imb_gwh[normal.values], risk_q) if normal.sum() > 5 else np.nan
+
+    z_table = compute_composite_table(imb_gwh.to_frame("Imbalance").apply(zscore), data["event_masks"], normal)
+    raw_table = compute_composite_table(imb_gwh.to_frame("Imbalance"), data["event_masks"], normal)
+    merged = z_table.merge(
+        raw_table[["Event", "Source", "Mean_event", "Mean_normal"]],
+        on=["Event", "Source"], suffixes=("_z", "_raw"),
+    )
+    merged["Delta_GWh"] = merged["Mean_event_raw"] - merged["Mean_normal_raw"]
+    merged["Delta_pct"] = 100.0 * merged["Delta_GWh"] / merged["Mean_normal_raw"]
+    merged["q_value"] = benjamini_hochberg_fdr(merged["p_value"].values)
+
+    x_nm = imb_gwh[normal.values].dropna().values
+    raf_rows = []
+    for i, event_name in enumerate(sorted(data["event_masks"])):
+        mask = data["event_masks"][event_name]
+        x_ev = imb_gwh[mask.values].dropna().values
+        raf, lo, hi, p_e, p_n = bootstrap_raf(x_ev, x_nm, thr_risk, n_boot=n_boot, seed=seed + i)
+
+        block_res = block_bootstrap_raf(
+            imb_gwh.values, mask.reindex(imb_gwh.index).fillna(False).values,
+            normal.reindex(imb_gwh.index).fillna(False).values,
+            thr_risk, n_boot=n_boot, seed=seed + i,
+        )
+
+        raf_rows.append({
+            "Event": event_name, "RiskThreshold_GWh_q90_normal": thr_risk,
+            "P_imbalance_gt_thr_event": p_e, "P_imbalance_gt_thr_normal": p_n,
+            "RAF": raf, "RAF_CI95_lo": lo, "RAF_CI95_hi": hi,
+            "RAF_block_CI95_lo": block_res["ci_lo"], "RAF_block_CI95_hi": block_res["ci_hi"],
+            "RAF_block_length_months": block_res["block"],
+        })
+    raf_df = pd.DataFrame(raf_rows)
+
+    result = merged.rename(columns={"Source": "Metric", "Difference": "Delta_z"}).merge(raf_df, on="Event")
+    return result.drop(columns=["Metric"])
