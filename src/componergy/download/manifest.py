@@ -1,13 +1,5 @@
 """
 Provenance log of every file downloaded by the pipeline.
-
-Kept as its own module (rather than living in registry.py) so that both
-registry.py and any individual dataset module (e.g. boundaries.py) can
-record downloads without those modules having to import each other.
-
-append_manifest() is called concurrently from multiple threads (see
-registry.download_all's ThreadPoolExecutor), so the read-modify-write on
-the manifest file is guarded by a lock to avoid corrupting it.
 """
 
 from __future__ import annotations
@@ -23,7 +15,8 @@ _lock = threading.Lock()
 
 
 def append_manifest(name: str, url: str, destination: Path, digest: str) -> None:
-    """Append a record of one downloaded file to the JSON manifest.
+    """
+    Append a record of one downloaded file to the JSON manifest.
 
     Thread-safe: safe to call from multiple worker threads concurrently.
     """
