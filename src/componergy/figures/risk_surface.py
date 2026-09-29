@@ -156,3 +156,14 @@ def compute_regional_evi(data: dict) -> tuple:
 
     evi = comp.pivot(index="Region", columns="Event", values="Delta_z").mean(axis=1).rename("EVI")
     return evi, comp
+
+
+def compute_risk_surface(data: dict) -> pd.DataFrame:
+    """System Risk = (-SCDHI) x (statewide demand z-score): a defined illustrative index, not a validated grid-reliability metric."""
+    gen_stress = -data["scdhi"]
+    demand_surge = data["demand_state_z"]
+    common = gen_stress.index.intersection(demand_surge.index)
+    gen_stress, demand_surge = gen_stress.loc[common], demand_surge.loc[common]
+
+    monthly_risk = gen_stress * demand_surge
+    return pd.DataFrame({"Gen_Stress": gen_stress, "Demand_Surge": demand_surge, "System_Risk": monthly_risk})
