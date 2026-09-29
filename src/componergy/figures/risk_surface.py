@@ -280,6 +280,10 @@ def plot_return_period_panel(ax, rp_df: pd.DataFrame):
     ax.grid(True, alpha=0.15)
 
 
+def add_letter(ax, letter, x=0.01, y=0.98, fs=19):
+    ax.text(x, y, letter, transform=ax.transAxes, ha="left", va="top", fontsize=fs, clip_on=False)
+
+
 def build_vulnerability_figure(gridded: xr.DataArray, is_significant: xr.DataArray, evi: pd.Series,
                                risk_df: pd.DataFrame, rp_df: pd.DataFrame,
                                regions_gdf, county_boundary_dissolved, comp: pd.DataFrame):
@@ -324,3 +328,133 @@ def build_vulnerability_figure(gridded: xr.DataArray, is_significant: xr.DataArr
     add_letter(axD, "D", x=0.02)
 
     return fig
+
+
+def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
+    """Build the 4-panel vulnerability figure, its four CSVs, and the log/json."""
+    from componergy.download.climate_regions import get_california_climate_regions
+    from componergy.download.boundaries import get_california_counties
+    from componergy.preprocessing.consumption_cec import load_raw_consumption
+    from componergy.netcdf_io import atomic_to_csv
+    from componergy.paths import INDICES_FILE, COUNTY_CONSUMPTION_XLSX, FIGURES_DIR
+
+    out_dir = FIGURES_DIR / "figure_07"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    print("loading climate regions, counties, and consumption data...")
+    regions_gdf = get_california_climate_regions()
+    counties_gdf = get_california_counties()
+    county_region_map = build_county_to_region_map(counties_gdf, regions_gdf)
+    consumption_long_df = load_raw_consumption(COUNTY_CONSUMPTION_XLSX)
+    indices_ds = xr.open_dataset(INDICES_FILE)
+    county_boundary_dissolved = counties_gdf.dissolve().boundary
+
+    print("preparing vulnerability data...")
+    data = prepare_vulnerability_data(indices_ds, consumption_long_df, regions_gdf, county_region_map,
+                                      sapei_var=sapei_var, scdhi_var=scdhi_var)
+
+    print("computing gridded vulnerability, EVI, risk surface, and return period...")
+    gridded, is_significant = compute_gridded_vulnerability(data, sapei_var=sapei_var, scdhi_var=scdhi_var)
+    evi, comp = compute_regional_evi(data)
+    risk_df = compute_risk_surface(data)
+    rp_df = compute_return_period(risk_df["System_Risk"])
+
+    print("saving figure...")
+    fig = build_vulnerability_figure(gridded, is_significant, evi, risk_df, rp_df, regions_gdf,
+                                     county_boundary_dissolved, comp)
+    fig.savefig(out_dir / "figure_07_systemic_vulnerability.jpg", bbox_inches="tight")
+    plt.close(fig)
+
+    atomic_to_csv(comp, out_dir / "figure_07_regional_evi_composites.csv", index=False)
+    atomic_to_csv(risk_df, out_dir / "figure_07_monthly_system_risk.csv")
+    atomic_to_csv(rp_df.head(10), out_dir / "figure_07_top_extremes.csv", index=False)
+
+    risk_series = risk_df["System_Risk"]
+    gev_fit = fit_gev_annual_maxima(risk_series)
+    pot_fit = fit_pot_gpd(risk_series)
+    observed_max = float(risk_series.max())
+    max_rp = return_period_of_value(observed_max, gev_fit, pot_fit)
+
+    ev_rows = []
+    for T, lvl in sorted(gev_fit.get("return_levels", {}).items()):
+        ev_rows.append({"Return_Period_Years": T, "Method": "GEV_annual_maxima", "Return_Level": lvl})
+    for T, lvl in sorted(pot_fit.get("return_levels", {}).items()):
+        ev_rows.append({"Return_Period_Years": T, "Method": "POT_GPD", "Return_Level": lvl})
+    if ev_rows:
+        atomic_to_csv(pd.DataFrame(ev_rows), out_dir / "figure_07_return_levels.csv", index=False)
+
+    validation_df = validate_against_known_events(risk_series)
+    validation_summary = summarize_validation(validation_df)
+    atomic_to_csv(validation_df, out_dir / "figure_07_known_event_validation.csv", index=False)
+
+    superadd_df = superadditivity_table(
+        data["electricity_z"], data["event_masks"], data["normal"], label="Region",
+    )
+    atomic_to_csv(superadd_df, out_dir / "figure_07_superadditivity.csv", index=False)
+
+    placebo_df = placebo_table(
+        data["electricity_z"], data["event_masks"], data["normal"], label="Region",
+    )
+    atomic_to_csv(placebo_df, out_dir / "figure_07_placebo.csv", index=False)
+
+    lons = gridded["lon"].values
+    lats = gridded["lat"].values
+    Lon, Lat = np.meshgrid(lons, lats)
+    gridded_df = pd.DataFrame(
+        {"lat": Lat.flatten(), "lon": Lon.flatten(), "gridded_vulnerability": gridded.values.flatten()})
+    atomic_to_csv(gridded_df, out_dir / "figure_07_gridded_vulnerability.csv", index=False)
+
+    log_sections = {
+        "Overview": {
+            "sapei_variable": sapei_var, "scdhi_variable": scdhi_var,
+            "smoothing_months": SMOOTH_MONTHS,
+            "period_start": str(data["period_start"].date()),
+            "period_end": str(data["period_end"].date()),
+        },
+        "Panel definitions": (
+            "A: gridded climate stress composite (STI heat, -SAPEI drought, "
+            "-SCDHI compound, averaged across event months). "
+            "B: regional EVI, mean demand Delta_z across the three events "
+            "per climate region -- see Note on averaging below. "
+            "C: risk surface, System_Risk = (-SCDHI) x (statewide demand z-score). "
+            "D: return period of System_Risk via Weibull plotting position."
+        ),
+        "Event counts": {k: int(v.sum()) for k, v in data["event_masks"].items()},
+        "Extreme-value return period of the observed maximum": {
+            "observed_max_system_risk": observed_max,
+            "empirical_return_period_years": float(rp_df["Return_Period_Years"].iloc[0]),
+            "GEV_fitted_return_period_years": max_rp["gev_return_period_years"],
+            "POT_fitted_return_period_years": max_rp["pot_return_period_years"],
+            "GEV_shape_scipy_c": gev_fit.get("shape"),
+            "GEV_n_annual_maxima": gev_fit.get("n_maxima"),
+            "POT_shape": pot_fit.get("shape"),
+            "POT_n_exceedances": pot_fit.get("n_exceedances"),
+            "caution": (
+                "The EMPIRICAL return period of the record maximum equals "
+                "(n+1)/12 years by construction and is therefore fixed by the "
+                "record length, not by how extreme the maximum is."
+            ),
+        },
+        "Validation against documented grid emergencies": validation_df.to_string(index=False),
+        "Validation summary": validation_summary,
+        "Regional super-additivity (demand)": superadd_df.to_string(index=False),
+        "Placebo test (shifted event timing, FDR-corrected)": placebo_df.to_string(index=False),
+        "Key numbers": {
+            "max_system_risk": float(risk_df["System_Risk"].max()),
+            "max_system_risk_date": str(risk_df["System_Risk"].idxmax().date()),
+            "max_return_period_years_EMPIRICAL": float(rp_df["Return_Period_Years"].iloc[0]),
+            "pct_months_positive_risk": float(100 * (risk_df["System_Risk"] > 0).mean()),
+            "evi_range": [float(evi.min()), float(evi.max())],
+            "highest_evi_region": str(evi.idxmax()),
+        },
+        "Note": (
+            "EVI averages Delta_z across Heatwave/Drought/Compound into one "
+            "per-region score."
+        ),
+    }
+    write_figure_log(out_dir / "figure_07_systemic_vulnerability", log_sections)
+    print(f"wrote outputs to {out_dir}")
+
+
+if __name__ == "__main__":
+    main()
