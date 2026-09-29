@@ -213,3 +213,31 @@ def plot_delta_bar_panel(ax, comp: pd.DataFrame, order=("Heatwave", "Drought", "
     ax.set_xticklabels(order, rotation=0)
     ax.set_ylabel("$\\Delta$ Imbalance vs normal (GWh)")
     style_axis(ax)
+
+
+def plot_distribution_panel(ax, data, comp: pd.DataFrame, order=("Heatwave", "Drought", "Compound")):
+    event_colors = {"Heatwave": C_HEAT, "Drought": C_DROUGHT, "Compound": C_COMP}
+    imb_gwh = data["imb_gwh"]
+
+    x_all = imb_gwh[np.isfinite(imb_gwh.values)].values
+    xmin, xmax = np.nanpercentile(x_all, [2, 98])
+    grid = np.linspace(xmin, xmax, 260)
+
+    x_nm = imb_gwh[data["normal"].values].dropna().values
+    if len(x_nm) > 10:
+        ax.plot(grid, gaussian_kde(x_nm)(grid), color="#6f6f6f", lw=2.2, ls="--", label="Normal")
+
+    for ev in order:
+        m = data["event_masks"][ev].values
+        x_ev = imb_gwh[m].dropna().values
+        if len(x_ev) > 10:
+            ax.plot(grid, gaussian_kde(x_ev)(grid), color=event_colors[ev], lw=2.2, alpha=0.95, label=ev)
+
+    thr_risk = comp["RiskThreshold_GWh_q90_normal"].iloc[0]
+    if np.isfinite(thr_risk):
+        ax.axvline(thr_risk, color="k", lw=1.0, alpha=0.55)
+
+    ax.set_xlabel("Imbalance (GWh)")
+    ax.set_ylabel("Probability density")
+    ax.legend(frameon=False, ncol=1, loc="upper left", bbox_to_anchor=(0.02, 0.98))
+    style_axis(ax)
