@@ -110,3 +110,62 @@ HOVMOLLER_VARIANTS = [
     ("S4", "monthly", "lat", "Seasonal and latitudinal variability of climate extremes"),
     ("S5", "monthly", "lon", "Seasonal and longitudinal variability of climate extremes"),
 ]
+
+
+def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
+    """Build S2-S5, one CSV of the reduced field per figure, and a shared log."""
+    from componergy.netcdf_io import atomic_to_csv
+    from componergy.paths import INDICES_FILE, FIGURES_DIR
+    from componergy.figures.stats_log import write_figure_log
+
+    out_dir = FIGURES_DIR / "supplementary"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    print(f"loading {INDICES_FILE}...")
+    ds = xr.open_dataset(INDICES_FILE)
+
+    fields = [
+        ("STI", ds["sti"], "RdBu_r"),
+        ("SAPEI", ds[sapei_var], "RdBu"),
+        ("SCDHI", ds[scdhi_var], "RdBu"),
+    ]
+
+    log_sections = {
+        "Overview": {
+            "sapei_variable": sapei_var, "scdhi_variable": scdhi_var,
+            "panels": "STI, SAPEI, SCDHI (matching the S2-S5 captions)",
+            "period_start": str(pd.Timestamp(ds["time"].values.min()).date()),
+            "period_end": str(pd.Timestamp(ds["time"].values.max()).date()),
+        },
+    }
+
+    for tag, mode, space, description in HOVMOLLER_VARIANTS:
+        print(f"building {tag} ({mode}, {space})...")
+        fig = plot_hovmoller(fields, mode=mode, space=space)
+        fig.savefig(out_dir / f"figure_{tag}_hovmoller_{mode}_{space}.jpg", bbox_inches="tight")
+        plt.close(fig)
+
+        frames = []
+        for title, da, _ in fields:
+            reduced = reduce_for_hovmoller(da, mode=mode, space=space)
+            df = reduced.to_dataframe(name="value").reset_index()
+            df["Index"] = title
+            frames.append(df)
+        atomic_to_csv(pd.concat(frames, ignore_index=True),
+                      out_dir / f"figure_{tag}_hovmoller_{mode}_{space}.csv", index=False)
+
+        log_sections[f"{tag}: {description}"] = {
+            "mode": mode,
+            "space": space,
+            "n_spatial_bins": int(ds["lat"].size if space == "lat" else ds["lon"].size),
+        }
+
+    log_sections["Note"] = (
+        "Panels show STI, SAPEI and SCDHI."
+    )
+    write_figure_log(out_dir / "supplementary_hovmoller", log_sections)
+    print(f"wrote outputs to {out_dir}")
+
+
+if __name__ == "__main__":
+    main()

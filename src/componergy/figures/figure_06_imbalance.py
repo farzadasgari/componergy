@@ -385,14 +385,7 @@ def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
         },
         "Note": (
             "Delta_pct divides by the normal-period mean imbalance and can "
-            "be extreme or uninterpretable if that baseline is near zero; "
-            "Delta_GWh and Delta_z are the more robust metrics for this "
-            "figure specifically. RAF (risk attributable fraction) bootstrap "
-            "uses a fixed, deterministic per-event seed offset, not a hash "
-            "of the event name -- Python's built-in hash() on strings is "
-            "randomized per-process (PYTHONHASHSEED) and would silently "
-            "give different confidence intervals on every re-run of this "
-            "script with identical data."
+            "be extreme or uninterpretable if that baseline is near zero."
         ),
     }
     write_figure_log(out_dir / "figure_06_imbalance", log_sections)
