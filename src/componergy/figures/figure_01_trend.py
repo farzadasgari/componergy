@@ -7,6 +7,7 @@ import matplotlib
 matplotlib.use("Agg")
 
 import numpy as np
+import pandas as pd
 import xarray as xr
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
@@ -21,12 +22,9 @@ from componergy.figures.trend_stats import (
     annualize_monthly, compute_trend_per_decade, compute_linear_trend_with_ci,
 )
 from componergy.figures.stats_log import write_figure_log
+from componergy.figures.composite_stats import apply_fdr_to_grid
 from componergy.analysis.events import classify_heatwave, classify_drought, classify_compound
 from componergy.paths import INDICES_FILE, FIGURES_DIR
-
-import logging
-
-logging.getLogger("matplotlib.font_manager").setLevel(logging.ERROR)
 
 PC = ccrs.PlateCarree()
 SMOOTH_MONTHS = 3
@@ -72,8 +70,7 @@ def style_timeseries(ax):
 
 
 def style_map(ax, extent, boundary):
-    """
-    Apply shared map styling: extent, coastline/borders/lakes/rivers, and the boundary outline.
+    """Apply shared map styling: extent, coastline/borders/lakes/rivers, and the boundary outline.
 
     Note: cfeature.COASTLINE/BORDERS/LAKES/RIVERS fetch Natural Earth
     shapefiles over the network on first use (cached locally afterward).
@@ -129,15 +126,14 @@ def plot_signal_panel(ax, z_series, foot_series, fitted, ci_band, color, ylabel,
         sp.set_visible(False)
 
 
-def plot_trend_map(ax, slope, pvals, vmin, vmax, cbar_label, letter, extent, boundary):
-    slope.plot(
-        ax=ax, transform=PC, cmap="RdBu_r", vmin=vmin, vmax=vmax, add_colorbar=True,
-        cbar_kwargs={"label": cbar_label, "shrink": 0.88, "fraction": 0.18, "pad": 0.03},
-    )
+def plot_trend_map(ax, slope, qvals, vmin, vmax, cbar_label, letter, extent, boundary):
+    im = slope.plot(ax=ax, transform=PC, cmap="RdBu_r", vmin=vmin, vmax=vmax, add_colorbar=False)
+    cbar = plt.colorbar(im, ax=ax, shrink=0.88, fraction=0.18, pad=0.06)
+    cbar.set_label(cbar_label, labelpad=14)
     style_map(ax, extent, boundary)
     add_letter(ax, letter, x=-0.12, y=1.02)
 
-    sig = pvals < ALPHA_SIG
+    sig = qvals < ALPHA_SIG
     step = 3
     sig_sub = sig.isel(lat=slice(None, None, step), lon=slice(None, None, step))
     lon2, lat2 = np.meshgrid(sig_sub["lon"].values, sig_sub["lat"].values)
@@ -197,6 +193,10 @@ def build_figure_01(indices_ds: xr.Dataset, sapei_var: str = "sapei_3m", scdhi_v
     sapei_slope, sapei_p = compute_trend_per_decade(sapei_annual)
     scdhi_slope, scdhi_p = compute_trend_per_decade(scdhi_annual)
 
+    sti_q = apply_fdr_to_grid(sti_p)
+    sapei_q = apply_fdr_to_grid(sapei_p)
+    scdhi_q = apply_fdr_to_grid(scdhi_p)
+
     fig = plt.figure(figsize=(16.5, 8.6))
     gs = fig.add_gridspec(nrows=3, ncols=3, width_ratios=[1.5, 1.5, 0.7],
                           height_ratios=[1.0, 1.0, 1.0], wspace=0.03, hspace=0.22)
@@ -236,13 +236,13 @@ def build_figure_01(indices_ds: xr.Dataset, sapei_var: str = "sapei_3m", scdhi_v
     vmin_scdhi, vmax_scdhi = sym_limits_robust(scdhi_slope)
 
     axD = fig.add_subplot(gs[0, 2], projection=PC)
-    plot_trend_map(axD, sti_slope, sti_p, vmin_sti, vmax_sti, "Trend per decade", "D", extent, boundary)
+    plot_trend_map(axD, sti_slope, sti_q, vmin_sti, vmax_sti, "STI trend per decade", "D", extent, boundary)
 
     axE = fig.add_subplot(gs[1, 2], projection=PC)
-    plot_trend_map(axE, sapei_slope, sapei_p, vmin_sapei, vmax_sapei, "Trend per decade", "E", extent, boundary)
+    plot_trend_map(axE, sapei_slope, sapei_q, vmin_sapei, vmax_sapei, "SAPEI trend per decade", "E", extent, boundary)
 
     axF = fig.add_subplot(gs[2, 2], projection=PC)
-    plot_trend_map(axF, scdhi_slope, scdhi_p, vmin_scdhi, vmax_scdhi, "Trend per decade", "F", extent, boundary)
+    plot_trend_map(axF, scdhi_slope, scdhi_q, vmin_scdhi, vmax_scdhi, "SCDHI trend per decade", "F", extent, boundary)
 
     log_sections = {
         "Overview": {
@@ -250,6 +250,9 @@ def build_figure_01(indices_ds: xr.Dataset, sapei_var: str = "sapei_3m", scdhi_v
             "scdhi_variable": scdhi_var,
             "smoothing_months": SMOOTH_MONTHS,
             "significance_alpha": ALPHA_SIG,
+            "period_start": str(pd.Timestamp(indices_ds["time"].values.min()).date()),
+            "period_end": str(pd.Timestamp(indices_ds["time"].values.max()).date()),
+            "n_months": int(indices_ds["time"].size),
             "year_start": int(indices_ds["time"].dt.year.min()),
             "year_end": int(indices_ds["time"].dt.year.max()),
         },
@@ -267,23 +270,32 @@ def build_figure_01(indices_ds: xr.Dataset, sapei_var: str = "sapei_3m", scdhi_v
                                                    "max_fraction": float(scdhi_foot.max())},
         "STI trend map": {
             "mean_slope_per_decade": float(np.nanmean(sti_slope.values)),
-            "fraction_significant": float(np.nanmean((sti_p < ALPHA_SIG).values)),
+            "fraction_significant_fdr": float(np.nanmean((sti_q < ALPHA_SIG).values)),
         },
         "SAPEI trend map": {
             "mean_slope_per_decade": float(np.nanmean(sapei_slope.values)),
-            "fraction_significant": float(np.nanmean((sapei_p < ALPHA_SIG).values)),
+            "fraction_significant_fdr": float(np.nanmean((sapei_q < ALPHA_SIG).values)),
         },
         "SCDHI trend map": {
             "mean_slope_per_decade": float(np.nanmean(scdhi_slope.values)),
-            "fraction_significant": float(np.nanmean((scdhi_p < ALPHA_SIG).values)),
+            "fraction_significant_fdr": float(np.nanmean((scdhi_q < ALPHA_SIG).values)),
         },
     }
 
-    return fig, log_sections
+    export_data = {
+        "sti_z": sti_z, "sapei_z": sapei_z, "scdhi_z": scdhi_z,
+        "sti_slope": sti_slope, "sti_q": sti_q,
+        "sapei_slope": sapei_slope, "sapei_q": sapei_q,
+        "scdhi_slope": scdhi_slope, "scdhi_q": scdhi_q,
+    }
+
+    return fig, log_sections, export_data
 
 
 def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
-    """Load INDICES_FILE, build the figure, and write the .jpg, .log, and .json outputs."""
+    """Load INDICES_FILE, build the figure, and write the .jpg, .log, .json, and CSV outputs."""
+    from componergy.netcdf_io import atomic_to_csv
+
     FIGURES_DIR.mkdir(parents=True, exist_ok=True)
     out_dir = FIGURES_DIR / "figure_01"
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -292,15 +304,34 @@ def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
     indices_ds = xr.open_dataset(INDICES_FILE)
 
     print("building figure 1...")
-    fig, log_sections = build_figure_01(indices_ds, sapei_var=sapei_var, scdhi_var=scdhi_var)
+    fig, log_sections, export_data = build_figure_01(indices_ds, sapei_var=sapei_var, scdhi_var=scdhi_var)
 
     fig_path = out_dir / "figure_01_trend.jpg"
     fig.savefig(fig_path, bbox_inches="tight", dpi=600)
     plt.close(fig)
     print(f"wrote {fig_path}")
 
+    signal_df = pd.DataFrame({
+        "STI_z": export_data["sti_z"], "SAPEI_z": export_data["sapei_z"], "SCDHI_z": export_data["scdhi_z"],
+    })
+    atomic_to_csv(signal_df, out_dir / "figure_01_statewide_signals.csv")
+
+    lat = export_data["sti_slope"]["lat"].values
+    lon = export_data["sti_slope"]["lon"].values
+    Lon, Lat = np.meshgrid(lon, lat)
+    gridded_df = pd.DataFrame({
+        "lat": Lat.flatten(), "lon": Lon.flatten(),
+        "STI_slope_per_decade": export_data["sti_slope"].values.flatten(),
+        "STI_q_value": export_data["sti_q"].values.flatten(),
+        "SAPEI_slope_per_decade": export_data["sapei_slope"].values.flatten(),
+        "SAPEI_q_value": export_data["sapei_q"].values.flatten(),
+        "SCDHI_slope_per_decade": export_data["scdhi_slope"].values.flatten(),
+        "SCDHI_q_value": export_data["scdhi_q"].values.flatten(),
+    })
+    atomic_to_csv(gridded_df, out_dir / "figure_01_gridded_trends.csv", index=False)
+
     write_figure_log(out_dir / "figure_01_trend", log_sections)
-    print(f"wrote {out_dir / 'figure_01_trend.log'} and .json")
+    print(f"wrote {out_dir / 'figure_01_trend.log'}, .json, and 2 CSVs")
 
 
 if __name__ == "__main__":
