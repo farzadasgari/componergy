@@ -1,3 +1,9 @@
+"""
+Zonal consumption-response figure: choropleth maps of percent consumption
+change by region for each statewide climate event type, plus a
+region x event bubble matrix of standardized effect sizes.
+"""
+
 from __future__ import annotations
 
 import matplotlib
@@ -15,11 +21,12 @@ import matplotlib.patheffects as pe
 
 from componergy.figures.trend_stats import compute_area_weights, compute_statewide_mean
 from componergy.figures.composite_stats import (
-    series_to_data_array, compute_composite_table, benjamini_hochberg_fdr,
+    series_to_data_array, compute_composite_table, benjamini_hochberg_fdr, zscore, deseasonalize_monthly,
 )
-from componergy.figures.regional import zscore
 from componergy.figures.stats_log import write_figure_log
 from componergy.analysis.events import classify_heatwave, classify_drought, classify_compound
+from componergy.analysis.superadditivity import superadditivity_table
+from componergy.analysis.placebo import placebo_table
 
 Q_ALPHA_FDR = 0.05
 Q_ALPHA_FDR_MARGINAL = 0.10
@@ -45,6 +52,7 @@ logging.getLogger("matplotlib.font_manager").setLevel(logging.ERROR)
 def prepare_zonal_data(indices_ds: xr.Dataset, consumption_long_df: pd.DataFrame, regions_gdf,
                        county_region_map: pd.DataFrame,
                        sapei_var="sapei_3m", scdhi_var="scdhi_3m", smooth_months=3):
+    """Classify statewide climate events, and prepare regional consumption in both raw (GWh) and z-scored form."""
     from componergy.figures.regional import aggregate_consumption_to_regional
 
     electricity_raw = aggregate_consumption_to_regional(consumption_long_df, county_region_map)
@@ -89,6 +97,7 @@ def prepare_zonal_data(indices_ds: xr.Dataset, consumption_long_df: pd.DataFrame
 
 
 def compute_zonal_composites(data: dict) -> pd.DataFrame:
+    """Event-vs-normal composite per region, in both Delta_z and Delta_pct, FDR-corrected."""
     z_table = compute_composite_table(data["electricity_z"], data["event_masks"], data["normal"])
     raw_table = compute_composite_table(data["electricity_raw"], data["event_masks"], data["normal"])
 
@@ -246,6 +255,7 @@ def build_zonal_figure(comp: pd.DataFrame, regions_gdf, county_boundary_dissolve
 
 
 def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
+    """Build the zonal figure, its composite CSV, and the log/json."""
     from componergy.download.climate_regions import get_california_climate_regions
     from componergy.download.boundaries import get_california_counties
     from componergy.analysis.regions import build_county_to_region_map
@@ -277,6 +287,15 @@ def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
     plt.close(fig)
 
     atomic_to_csv(comp, out_dir / "figure_04_event_composites.csv", index=False)
+    superadd_df = superadditivity_table(
+        data["electricity_z"], data["event_masks"], data["normal"], label="Region",
+    )
+    atomic_to_csv(superadd_df, out_dir / "figure_04_superadditivity.csv", index=False)
+
+    placebo_df = placebo_table(
+        data["electricity_z"], data["event_masks"], data["normal"], label="Region",
+    )
+    atomic_to_csv(placebo_df, out_dir / "figure_04_placebo.csv", index=False)
 
     log_sections = {
         "Overview": {
@@ -288,6 +307,8 @@ def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
         "Event counts (statewide classification)": {k: int(v.sum()) for k, v in data["event_masks"].items()},
         "Normal period count": int(data["normal"].sum()),
         "Event composites (FDR-corrected)": comp.to_string(index=False),
+        "Super-additivity by region (FDR-corrected)": superadd_df.to_string(index=False),
+        "Placebo test (shifted event timing, FDR-corrected)": placebo_df.to_string(index=False),
         "Note": (
             "Significance markers (map outline thickness, bubble edge) use "
             "Benjamini-Hochberg FDR-corrected q-values across all region x "

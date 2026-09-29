@@ -14,11 +14,9 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
 
 from componergy.analysis.regions import build_county_to_region_map, compute_regional_mean
-from componergy.figures.print_style import SOURCE_STYLE
-from componergy.figures.composite_stats import best_lag_slope, benjamini_hochberg_fdr, compute_incremental_r2
+from componergy.figures.composite_stats import best_lag_slope, benjamini_hochberg_fdr, compute_incremental_r2, zscore
 from componergy.figures.stats_log import write_figure_log
 
 SMOOTH_MONTHS = 3
@@ -41,13 +39,6 @@ plt.rcParams.update({
 import logging
 
 logging.getLogger("matplotlib.font_manager").setLevel(logging.ERROR)
-
-
-def zscore(series: pd.Series) -> pd.Series:
-    std = series.std(ddof=0)
-    if not std or not np.isfinite(std):
-        return series * 0.0
-    return (series - series.mean()) / std
 
 
 def aggregate_consumption_to_regional(consumption_long_df: pd.DataFrame,
@@ -246,7 +237,8 @@ def compute_sign_consistency(summary: pd.DataFrame) -> pd.DataFrame:
 
 
 def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
-    """Build the heatmap and slope-bar figures, the five summary CSVs, and the log/json.
+    """
+    Build the heatmap and slope-bar figures, the five summary CSVs, and the log/json.
 
     Requires COUNTY_CONSUMPTION_XLSX to already exist locally (restricted
     CEC data -- see preprocessing.consumption_cec); the climate-regions
