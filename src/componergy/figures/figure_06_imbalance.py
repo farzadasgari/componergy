@@ -199,3 +199,17 @@ def plot_signal_panel(ax, data):
 
     style_axis(ax)
     ax.legend(frameon=False, ncol=3, loc="lower left", bbox_to_anchor=(0.03, 0.05), borderaxespad=0.0)
+
+
+def plot_delta_bar_panel(ax, comp: pd.DataFrame, order=("Heatwave", "Drought", "Compound")):
+    event_colors = {"Heatwave": C_HEAT, "Drought": C_DROUGHT, "Compound": C_COMP}
+    vals = comp.set_index("Event").loc[list(order), "Delta_GWh"].to_numpy(dtype=float)
+    cols = [event_colors[e] for e in order]
+    x = np.arange(len(order))
+
+    ax.bar(x, vals, color=cols, alpha=0.90, width=0.70, edgecolor="black", linewidth=1.4)
+    ax.axhline(0, color="k", lw=1.0, alpha=0.45)
+    ax.set_xticks(x)
+    ax.set_xticklabels(order, rotation=0)
+    ax.set_ylabel("$\\Delta$ Imbalance vs normal (GWh)")
+    style_axis(ax)
