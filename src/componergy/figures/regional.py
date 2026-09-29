@@ -335,7 +335,7 @@ def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
             "without separately modeling balancing areas, transmission, and "
             "imports. All p-values are FDR-corrected (Benjamini-Hochberg) "
             "across regions within each driver; q_value < 0.05 is the "
-            "significance criterion used for shading in figure_03B."
+            "significance criterion used for shading in figure."
         ),
     }
     write_figure_log(out_dir / "figure_03_regional", log_sections)

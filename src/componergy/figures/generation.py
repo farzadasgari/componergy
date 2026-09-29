@@ -300,18 +300,7 @@ def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
             "deseasonalized_share (seasonal cycle removed), and "
             "detrended_share (a fitted linear secular trend removed before "
             "z-scoring, addressing trend-confounding from installed-capacity "
-            "growth without requiring capacity data). detrended_share is a "
-            "statistical mitigation, not a true capacity-factor analysis "
-            "(generation divided by installed capacity); the latter would "
-            "require an installed-capacity dataset (e.g. EIA-860) this "
-            "project does not have. Event-composite and lag-scan results "
-            "should be compared across all three modes, not read from "
-            "total_share alone. A single linear fit is a poor approximation "
-            "for a source with S-curve-shaped growth (Solar and Wind here, "
-            "near-flat for years then rapidly accelerating): the fitted "
-            "trend line can extrapolate to an implausible negative share "
-            "early in the record, and detrended_share residuals for these "
-            "two sources specifically should be read with that in mind."
+            "growth without requiring capacity data)."
         ),
     }
     write_figure_log(out_dir / "figure_02_generation_response", log_sections)

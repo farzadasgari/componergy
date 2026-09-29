@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import argparse
 
-from componergy.figures.figure_02_generation import main as figure_main
+from componergy.figures.generation import main as figure_main
 
 
 def parse_args() -> argparse.Namespace:

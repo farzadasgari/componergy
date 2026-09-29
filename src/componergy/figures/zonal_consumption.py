@@ -17,7 +17,7 @@ from componergy.figures.trend_stats import compute_area_weights, compute_statewi
 from componergy.figures.composite_stats import (
     series_to_data_array, compute_composite_table, benjamini_hochberg_fdr,
 )
-from componergy.figures.figure_03_regional import zscore
+from componergy.figures.regional import zscore
 from componergy.figures.stats_log import write_figure_log
 from componergy.analysis.events import classify_heatwave, classify_drought, classify_compound
 
@@ -45,7 +45,7 @@ logging.getLogger("matplotlib.font_manager").setLevel(logging.ERROR)
 def prepare_zonal_data(indices_ds: xr.Dataset, consumption_long_df: pd.DataFrame, regions_gdf,
                        county_region_map: pd.DataFrame,
                        sapei_var="sapei_3m", scdhi_var="scdhi_3m", smooth_months=3):
-    from componergy.figures.figure_03_regional import aggregate_consumption_to_regional
+    from componergy.figures.regional import aggregate_consumption_to_regional
 
     electricity_raw = aggregate_consumption_to_regional(consumption_long_df, county_region_map)
     regions_order = [r for r in regions_gdf["Region"] if r in electricity_raw.columns]
