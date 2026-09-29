@@ -7,6 +7,7 @@ magnitude and color encoding direction, one ring per event type.
 from __future__ import annotations
 
 import matplotlib
+
 matplotlib.use("Agg")
 
 import numpy as np
@@ -55,4 +56,15 @@ plt.rcParams.update({
 })
 
 import logging
+
 logging.getLogger("matplotlib.font_manager").setLevel(logging.ERROR)
+
+
+def aggregate_consumption_by_sector(consumption_long_df: pd.DataFrame) -> pd.DataFrame:
+    return (
+            consumption_long_df.groupby(["Date", "Sector"])["Consumption (MWh)"]
+            .sum()
+            .unstack("Sector")
+            .sort_index()
+            / 1000.0
+    )
