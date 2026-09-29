@@ -180,3 +180,22 @@ def style_axis(ax):
 
 def add_letter(ax, letter, x=0.01, y=0.98, fs=18):
     ax.text(x, y, letter, transform=ax.transAxes, ha="left", va="top", fontsize=fs)
+
+
+def plot_signal_panel(ax, data):
+    common = data["common"]
+    ax.plot(common, zscore(data["dem_gwh"]), color=C_DEM, lw=2.1, alpha=0.85, label="Demand")
+    ax.plot(common, zscore(data["gen_gwh"]), color=C_GEN, lw=2.1, alpha=0.85, label="Generation")
+    ax.plot(common, data["imb_z"], color=C_IMB, lw=2.9, alpha=0.95, label="Imbalance")
+    ax.axhline(0, color="k", lw=1.0, alpha=0.35, zorder=0)
+
+    ax.set_ylabel("Standardized anomaly")
+    ax.set_xlabel("Time (Year)")
+    ax.xaxis.set_major_locator(mdates.YearLocator(5))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
+    ax.xaxis.set_minor_locator(mdates.YearLocator(1))
+    ax.tick_params(axis="x", which="major", length=6, width=1.2)
+    ax.tick_params(axis="x", which="minor", length=3, width=0.9)
+
+    style_axis(ax)
+    ax.legend(frameon=False, ncol=3, loc="lower left", bbox_to_anchor=(0.03, 0.05), borderaxespad=0.0)
