@@ -113,3 +113,19 @@ def prepare_sector_data(indices_ds: xr.Dataset, consumption_long_df: pd.DataFram
         "period_start": start,
         "period_end": end,
     }
+
+
+def compute_sector_composites(data: dict) -> pd.DataFrame:
+    """Event-vs-normal composite per sector, in Delta_GWh/Delta_pct/Delta_z, FDR-corrected."""
+    z_table = compute_composite_table(data["sector_z"], data["event_masks"], data["normal"])
+    raw_table = compute_composite_table(data["sector_raw"], data["event_masks"], data["normal"])
+
+    merged = z_table.merge(
+        raw_table[["Event", "Source", "Mean_event", "Mean_normal"]],
+        on=["Event", "Source"], suffixes=("_z", "_raw"),
+    )
+    merged["Delta_GWh"] = merged["Mean_event_raw"] - merged["Mean_normal_raw"]
+    merged["Delta_pct"] = 100.0 * merged["Delta_GWh"] / merged["Mean_normal_raw"]
+    merged["q_value"] = benjamini_hochberg_fdr(merged["p_value"].values)
+
+    return merged.rename(columns={"Source": "Sector", "Difference": "Delta_z"})
