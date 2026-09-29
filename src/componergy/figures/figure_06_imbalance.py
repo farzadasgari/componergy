@@ -170,3 +170,9 @@ def compute_imbalance_composites(data: dict, risk_q=RISK_Q, n_boot=N_BOOT, seed=
 
     result = merged.rename(columns={"Source": "Metric", "Difference": "Delta_z"}).merge(raf_df, on="Event")
     return result.drop(columns=["Metric"])
+
+
+def style_axis(ax):
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    ax.grid(False)
