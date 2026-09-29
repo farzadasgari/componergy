@@ -167,3 +167,17 @@ def compute_risk_surface(data: dict) -> pd.DataFrame:
 
     monthly_risk = gen_stress * demand_surge
     return pd.DataFrame({"Gen_Stress": gen_stress, "Demand_Surge": demand_surge, "System_Risk": monthly_risk})
+
+
+def compute_return_period(monthly_risk: pd.Series) -> pd.DataFrame:
+    """Empirical return period of System Risk via the Weibull plotting position, (n+1)/rank, in years."""
+    risk_series = monthly_risk.dropna().sort_values(ascending=False)
+    n = len(risk_series)
+    ranks = np.arange(1, n + 1)
+    return_period_years = ((n + 1.0) / ranks) / 12.0
+
+    return pd.DataFrame({
+        "Date": risk_series.index,
+        "System_Risk": risk_series.values,
+        "Return_Period_Years": return_period_years,
+    })
