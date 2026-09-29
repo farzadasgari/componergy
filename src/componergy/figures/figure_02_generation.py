@@ -1,4 +1,4 @@
-""""Generation-mix-by-source figure: statewide timeseries and composite event-anomaly bars, one output file per source."""
+"""Generation-mix-by-source figure: statewide timeseries and composite event-anomaly bars, one output file per source."""
 
 from __future__ import annotations
 
@@ -11,18 +11,19 @@ import pandas as pd
 import xarray as xr
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+from matplotlib.lines import Line2D
 
-from componergy.figures.trend_stats import compute_area_weights, compute_statewide_mean
+from componergy.figures.trend_stats import compute_area_weights, compute_statewide_mean, compute_linear_trend_with_ci
 from componergy.figures.print_style import SOURCE_STYLE, EVENT_STYLE
-from componergy.figures.composite_stats import series_to_data_array, compute_composite_table, best_lag_slope
-from componergy.figures.stats_log import write_figure_log
-from componergy.analysis.events import (
-    classify_heatwave, classify_drought, classify_compound,
+from componergy.figures.composite_stats import (
+    series_to_data_array, compute_composite_table, best_lag_slope, zscore, deseasonalize_monthly,
+    remove_linear_trend, benjamini_hochberg_fdr,
 )
+from componergy.figures.stats_log import write_figure_log
+from componergy.analysis.events import classify_heatwave, classify_drought, classify_compound
+from componergy.analysis.superadditivity import superadditivity_table
+from componergy.analysis.placebo import placebo_table
 from componergy.paths import INDICES_FILE, GENERATION_MONTHLY_FILE, FIGURES_DIR
-
-import logging
-logging.getLogger("matplotlib.font_manager").setLevel(logging.ERROR)
 
 SMOOTH_MONTHS = 3
 LAGS = range(-6, 7)
@@ -40,18 +41,6 @@ plt.rcParams.update({
     "axes.linewidth": 1.4,
     "savefig.dpi": 600,
 })
-
-
-def zscore(series: pd.Series) -> pd.Series:
-    std = series.std(ddof=0)
-    if not std or not np.isfinite(std):
-        return series * 0.0
-    return (series - series.mean()) / std
-
-
-def deseasonalize_monthly(series: pd.Series) -> pd.Series:
-    clim = series.groupby(series.index.month).mean()
-    return series - series.index.month.map(clim)
 
 
 def style_timeseries_axis(ax):
@@ -74,9 +63,7 @@ def add_letter(ax, letter, x=0.01, y=0.98, fs=19):
 
 
 def prepare_data(indices_ds: xr.Dataset, generation_df: pd.DataFrame, sapei_var="sapei_3m", scdhi_var="scdhi_3m"):
-    """
-    Align statewide climate signals with generation shares and classify events.
-    """
+    """Align statewide climate signals with generation shares and classify events."""
     weights = compute_area_weights(indices_ds["lat"])
     sti = zscore(compute_statewide_mean(indices_ds["sti"], weights).to_series())
     sapei = zscore(compute_statewide_mean(indices_ds[sapei_var], weights).to_series())
@@ -91,6 +78,7 @@ def prepare_data(indices_ds: xr.Dataset, generation_df: pd.DataFrame, sapei_var=
 
     mix_z_total = mix_pct_sm.apply(zscore, axis=0)
     mix_z_local = mix_pct_sm.apply(deseasonalize_monthly, axis=0).apply(zscore, axis=0)
+    mix_z_detrended = mix_pct_sm.apply(remove_linear_trend, axis=0).apply(zscore, axis=0)
 
     heat = classify_heatwave(series_to_data_array(sti)).to_series()
     drought = classify_drought(series_to_data_array(sapei)).to_series()
@@ -107,6 +95,7 @@ def prepare_data(indices_ds: xr.Dataset, generation_df: pd.DataFrame, sapei_var=
         "mix_pct_sm": mix_pct_sm,
         "mix_z_total": mix_z_total,
         "mix_z_local": mix_z_local,
+        "mix_z_detrended": mix_z_detrended,
         "event_masks": event_masks,
         "normal": normal,
         "compound_months": mix_pct_sm.index[compound.reindex(mix_pct_sm.index).fillna(False).values],
@@ -121,23 +110,36 @@ def shade_compound_months(ax, compound_months):
 def plot_mix_timeseries(ax, data):
     for col in SOURCE_COLUMNS:
         style = SOURCE_STYLE[col]
-        ax.plot(data["mix_pct_sm"].index, data["mix_pct_sm"][col].values,
+        series = data["mix_pct_sm"][col]
+        ax.plot(series.index, series.values,
                 color=style["color"], linestyle=style["linestyle"], marker=style["marker"],
-                markevery=24, markersize=6, lw=3.2, label=col)
+                markevery=24, markersize=6, lw=2.2, alpha=0.9, label=col)
+
+        fitted, ci_band = compute_linear_trend_with_ci(series)
+        ax.fill_between(fitted.index, fitted.values - ci_band.values, fitted.values + ci_band.values,
+                        color=style["color"], alpha=0.15, linewidth=0, zorder=0)
+        ax.plot(fitted.index, fitted.values, color=style["color"], lw=1.4, linestyle="-", alpha=0.55, zorder=0)
+
     ax.set_ylabel("Share (%)")
     ax.set_xlabel("Time (Year)")
     shade_compound_months(ax, data["compound_months"])
     style_timeseries_axis(ax)
 
-    ax.legend(ncol=3, frameon=False, loc="upper left", bbox_to_anchor=(0.0, 1.34),
-               borderaxespad=0.0, handlelength=2.6, columnspacing=1.2)
+    ax.legend(ncol=2, frameon=False, loc="upper left", bbox_to_anchor=(0.0, 1.34),
+              borderaxespad=0.0, handlelength=2.6, columnspacing=1.2)
 
 
 def plot_single_source_timeseries(ax, data, src):
     style = SOURCE_STYLE[src]
     s = data["mix_pct_sm"][src]
     ax.plot(s.index, s.values, color=style["color"], linestyle=style["linestyle"],
-            marker=style["marker"], markevery=24, markersize=6, lw=2.4)
+            marker=style["marker"], markevery=24, markersize=6, lw=2.4, alpha=0.9)
+
+    fitted, ci_band = compute_linear_trend_with_ci(s)
+    ax.fill_between(fitted.index, fitted.values - ci_band.values, fitted.values + ci_band.values,
+                    color="black", alpha=0.18, linewidth=0, zorder=0)
+    ax.plot(fitted.index, fitted.values, color="black", lw=2.0, linestyle="--", alpha=0.85, zorder=0)
+
     ax.set_ylabel(f"{src} share (%)")
     ax.set_xlabel("Time (Year)")
     shade_compound_months(ax, data["compound_months"])
@@ -159,7 +161,7 @@ def plot_mix_composite_bars(ax, comp_table):
 
     ax.axhline(0, color="k", lw=0.9, alpha=0.5)
     ax.set_xticks(x)
-    ax.set_xticklabels(order_src, rotation=90, ha="center")
+    ax.set_xticklabels(order_src, rotation=40, ha="right")
     ax.set_ylabel("Generation share anomaly ($\\Delta z$)")
     style_bar_axis(ax)
 
@@ -187,9 +189,7 @@ def plot_single_source_composite_bars(ax, comp_table, src):
 
 
 def save_two_panel_figure(fig_path, left_label, right_label, left_plot_fn, right_plot_fn):
-    """
-    Render a timeseries + composite-bars panel pair and save to fig_path.
-    """
+    """Render a timeseries + composite-bars panel pair and save to fig_path."""
     fig, (axL, axR) = plt.subplots(1, 2, figsize=(16.5, 5.2), gridspec_kw={"width_ratios": [1.75, 1.0], "wspace": 0.28})
     fig.subplots_adjust(top=0.72, bottom=0.16, left=0.06, right=0.98)
 
@@ -221,10 +221,17 @@ def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
     comp_total.insert(0, "Mode", "total_share")
     comp_local = compute_composite_table(data["mix_z_local"], data["event_masks"], data["normal"])
     comp_local.insert(0, "Mode", "deseasonalized_share")
-    comp_all = pd.concat([comp_total, comp_local], ignore_index=True)
+    comp_detrended = compute_composite_table(data["mix_z_detrended"], data["event_masks"], data["normal"])
+    comp_detrended.insert(0, "Mode", "detrended_share")
+    comp_all = pd.concat([comp_total, comp_local, comp_detrended], ignore_index=True)
+
+    comp_all["q_value"] = comp_all.groupby("Mode")["p_value"].transform(
+        lambda p: benjamini_hochberg_fdr(p.values)
+    )
 
     lag_rows = []
-    for mode_name, mix_z in [("total_share", data["mix_z_total"]), ("deseasonalized_share", data["mix_z_local"])]:
+    for mode_name, mix_z in [("total_share", data["mix_z_total"]), ("deseasonalized_share", data["mix_z_local"]),
+                             ("detrended_share", data["mix_z_detrended"])]:
         for src in mix_z.columns:
             y = mix_z[src].dropna()
             for driver_name, driver_series in data["drivers"].items():
@@ -235,6 +242,10 @@ def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
                 lag_rows.append({"Mode": mode_name, "Source": src, "Driver": driver_name, **best})
 
     slope_df = pd.DataFrame(lag_rows)
+    if len(slope_df):
+        slope_df["q_value"] = slope_df.groupby("Mode")["p_value"].transform(
+            lambda p: benjamini_hochberg_fdr(p.values)
+        )
 
     print("saving figures...")
     save_two_panel_figure(
@@ -257,6 +268,14 @@ def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
         )
 
     atomic_to_csv(comp_all, out_dir / "figure_02_composite.csv", index=False)
+    superadd_df = superadditivity_table(
+        data["mix_z_detrended"], data["event_masks"], data["normal"], label="Source",
+    )
+    atomic_to_csv(superadd_df, out_dir / "figure_02_superadditivity.csv", index=False)
+    placebo_df = placebo_table(
+        data["mix_z_detrended"], data["event_masks"], data["normal"], label="Source",
+    )
+    atomic_to_csv(placebo_df, out_dir / "figure_02_placebo.csv", index=False)
     atomic_to_csv(slope_df, out_dir / "figure_02_lag_scan.csv", index=False)
 
     log_sections = {
@@ -268,10 +287,31 @@ def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
             "n_months": len(data["mix_pct_sm"]),
         },
         "Event counts": {k: int(v.sum()) for k, v in data["event_masks"].items()},
+        "Study period": {
+            "period_start": str(data["mix_pct_sm"].index.min().date()),
+            "period_end": str(data["mix_pct_sm"].index.max().date()),
+            "n_months": int(len(data["mix_pct_sm"].index)),
+        },
+        "Super-additivity by source (detrended mode, FDR-corrected)": superadd_df.to_string(index=False),
+        "Placebo test (shifted event timing, FDR-corrected)": placebo_df.to_string(index=False),
         "Note": (
-            "Generation shares reflect both climate-driven anomalies and secular "
-            "changes in installed capacity over the record; the latter is not "
-            "controlled for here (would require an installed-capacity dataset)."
+            "Three modes are reported for each source's share: total_share "
+            "(raw, includes both climate response and secular trend), "
+            "deseasonalized_share (seasonal cycle removed), and "
+            "detrended_share (a fitted linear secular trend removed before "
+            "z-scoring, addressing trend-confounding from installed-capacity "
+            "growth without requiring capacity data). detrended_share is a "
+            "statistical mitigation, not a true capacity-factor analysis "
+            "(generation divided by installed capacity); the latter would "
+            "require an installed-capacity dataset (e.g. EIA-860) this "
+            "project does not have. Event-composite and lag-scan results "
+            "should be compared across all three modes, not read from "
+            "total_share alone. A single linear fit is a poor approximation "
+            "for a source with S-curve-shaped growth (Solar and Wind here, "
+            "near-flat for years then rapidly accelerating): the fitted "
+            "trend line can extrapolate to an implausible negative share "
+            "early in the record, and detrended_share residuals for these "
+            "two sources specifically should be read with that in mind."
         ),
     }
     write_figure_log(out_dir / "figure_02_generation_response", log_sections)
