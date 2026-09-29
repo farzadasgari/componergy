@@ -260,3 +260,21 @@ def plot_risk_surface_panel(ax, risk_df: pd.DataFrame):
     ax.set_ylabel("Demand surge (z-score)")
 
     return monthly_risk
+
+
+def plot_return_period_panel(ax, rp_df: pd.DataFrame):
+    ax.plot(rp_df["Return_Period_Years"], rp_df["System_Risk"], "o-", color="#AF0A0A",
+            markersize=8, linewidth=3.4, alpha=0.92)
+
+    ax.set_xlabel("Return period (years)")
+    ax.set_ylabel("System risk index")
+    ax.set_xscale("log")
+    ax.set_xticks([1, 2, 5, 10, 20])
+    ax.set_xticklabels(["1", "2", "5", "10", "20"])
+
+    max_rp = rp_df["Return_Period_Years"].iloc[0]
+    max_risk = rp_df["System_Risk"].iloc[0]
+    ax.annotate(f"Observed max\nRP = {max_rp:.1f} yr", xy=(max_rp, max_risk),
+                xytext=(max_rp * 0.65, max_risk * 1.18), fontsize=17, color="#8B0000",
+                arrowprops=dict(arrowstyle="->", color="#8B0000", lw=1.9))
+    ax.grid(True, alpha=0.15)
