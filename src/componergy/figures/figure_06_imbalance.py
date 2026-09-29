@@ -296,3 +296,108 @@ def build_imbalance_figure(data: dict, comp: pd.DataFrame):
     add_letter(axD, "D")
 
     return fig
+
+
+def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
+    """Build the imbalance figure, its two CSVs, and the log/json."""
+    from componergy.netcdf_io import atomic_to_csv
+    from componergy.paths import INDICES_FILE, GENERATION_MONTHLY_FILE, DEMAND_MONTHLY_FILE, FIGURES_DIR
+
+    out_dir = FIGURES_DIR / "figure_06"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    print("loading generation, demand, and climate data...")
+    generation_df = pd.read_csv(GENERATION_MONTHLY_FILE, parse_dates=[0], index_col=0)
+    generation_df.index = pd.DatetimeIndex(generation_df.index.values, name=None)
+    demand_df = pd.read_csv(DEMAND_MONTHLY_FILE, parse_dates=[0], index_col=0)
+    demand_df.index = pd.DatetimeIndex(demand_df.index.values, name=None)
+    indices_ds = xr.open_dataset(INDICES_FILE)
+
+    print("preparing imbalance data...")
+    data = prepare_imbalance_data(indices_ds, generation_df, demand_df, sapei_var=sapei_var, scdhi_var=scdhi_var)
+
+    print("computing composites and bootstrap RAF...")
+    comp = compute_imbalance_composites(data)
+
+    print("saving figure...")
+    fig = build_imbalance_figure(data, comp)
+    fig.savefig(out_dir / "figure_06_imbalance.jpg", bbox_inches="tight")
+    plt.close(fig)
+
+    atomic_to_csv(comp, out_dir / "figure_06_event_metrics.csv", index=False)
+
+    superadd = superadditivity_test(
+        data["imb_z"].values,
+        data["event_masks"]["Heatwave"].reindex(data["imb_z"].index).fillna(False).values,
+        data["event_masks"]["Drought"].reindex(data["imb_z"].index).fillna(False).values,
+        data["event_masks"]["Compound"].reindex(data["imb_z"].index).fillna(False).values,
+        data["normal"].reindex(data["imb_z"].index).fillna(False).values,
+    )
+    atomic_to_csv(pd.DataFrame([superadd]), out_dir / "figure_06_superadditivity.csv", index=False)
+
+    placebo_df = placebo_table(
+        data["imb_z"].to_frame("Imbalance"), data["event_masks"], data["normal"], label="Metric",
+    )
+    atomic_to_csv(placebo_df, out_dir / "figure_06_placebo.csv", index=False)
+
+    boundary = validate_system_boundary(data["dem_gwh"], data["gen_gwh"])
+    atomic_to_csv(compute_import_fraction(data["dem_gwh"], data["gen_gwh"]),
+                  out_dir / "figure_06_system_boundary.csv")
+
+    metrics_df = pd.DataFrame({
+        "Demand_GWh": data["dem_gwh"], "Generation_GWh": data["gen_gwh"],
+        "Imbalance_GWh": data["imb_gwh"], "Imbalance_z": data["imb_z"],
+    })
+    for name, mask in data["event_masks"].items():
+        metrics_df[f"{name}"] = mask.reindex(metrics_df.index).fillna(False)
+    metrics_df["Normal"] = data["normal"].reindex(metrics_df.index).fillna(False)
+    atomic_to_csv(metrics_df, out_dir / "figure_06_imbalance_metrics.csv")
+
+    log_sections = {
+        "Overview": {
+            "sapei_variable": sapei_var, "scdhi_variable": scdhi_var,
+            "smoothing_months": SMOOTH_MONTHS,
+            "period_start": str(data["common"].min().date()),
+            "period_end": str(data["common"].max().date()),
+            "n_months": len(data["common"]),
+        },
+        "Imbalance definition": "Demand_GWh - Generation_GWh (positive = net import / supply shortfall)",
+        "System boundary validation": boundary,
+        "Event counts": {k: int(v.sum()) for k, v in data["event_masks"].items()},
+        "Normal period count": int(data["normal"].sum()),
+        "Event metrics (FDR-corrected, bootstrap RAF)": comp.to_string(index=False),
+        "Placebo test (shifted event timing, FDR-corrected)": placebo_df.to_string(index=False),
+        "Super-additivity test (imbalance)": {
+            "dz_heatwave": superadd["dz_heat"],
+            "dz_drought": superadd["dz_drought"],
+            "dz_compound": superadd["dz_compound"],
+            "additive_expectation_heat_plus_drought": superadd["additive_expectation"],
+            "interaction_compound_minus_additive": superadd["interaction"],
+            "interaction_CI95": [superadd["ci_lo"], superadd["ci_hi"]],
+            "interaction_p_value": superadd["p_value"],
+            "verdict": (
+                "super-additive (CI excludes zero, positive)"
+                if superadd["ci_lo"] > 0 else
+                "sub-additive (CI excludes zero, negative)"
+                if superadd["ci_hi"] < 0 else
+                "additivity not rejected (CI includes zero)"
+            ),
+        },
+        "Note": (
+            "Delta_pct divides by the normal-period mean imbalance and can "
+            "be extreme or uninterpretable if that baseline is near zero; "
+            "Delta_GWh and Delta_z are the more robust metrics for this "
+            "figure specifically. RAF (risk attributable fraction) bootstrap "
+            "uses a fixed, deterministic per-event seed offset, not a hash "
+            "of the event name -- Python's built-in hash() on strings is "
+            "randomized per-process (PYTHONHASHSEED) and would silently "
+            "give different confidence intervals on every re-run of this "
+            "script with identical data."
+        ),
+    }
+    write_figure_log(out_dir / "figure_06_imbalance", log_sections)
+    print(f"wrote outputs to {out_dir}")
+
+
+if __name__ == "__main__":
+    main()
