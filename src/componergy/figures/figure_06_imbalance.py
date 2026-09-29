@@ -102,3 +102,28 @@ def prepare_imbalance_data(indices_ds: xr.Dataset, generation_df: pd.DataFrame, 
         "gen_gwh": gen_gwh, "dem_gwh": dem_gwh, "imb_gwh": imb_gwh, "imb_z": imb_z,
         "event_masks": event_masks, "normal": normal,
     }
+
+
+def bootstrap_raf(values_event, values_normal, thr, n_boot=N_BOOT, seed=BOOT_SEED):
+    """Risk Attributable Fraction: P(value > thr | event) / P(value > thr | normal) - 1, with a bootstrap 95% CI."""
+    rng = np.random.default_rng(seed)
+    e = np.asarray(values_event, dtype=float)
+    n = np.asarray(values_normal, dtype=float)
+    e = e[np.isfinite(e)]
+    n = n[np.isfinite(n)]
+    if len(e) < 8 or len(n) < 8:
+        return np.nan, np.nan, np.nan, np.nan, np.nan
+
+    p_e = np.mean(e > thr)
+    p_n = np.mean(n > thr)
+    raf = p_e / max(p_n, EPS) - 1.0
+
+    boots = np.empty(n_boot)
+    for i in range(n_boot):
+        eb = rng.choice(e, size=len(e), replace=True)
+        nb = rng.choice(n, size=len(n), replace=True)
+        pe = np.mean(eb > thr)
+        pn = np.mean(nb > thr)
+        boots[i] = pe / max(pn, EPS) - 1.0
+    lo, hi = np.quantile(boots, [0.025, 0.975])
+    return raf, lo, hi, p_e, p_n
