@@ -235,3 +235,28 @@ def plot_regional_evi_panel(ax, evi: pd.Series, regions_gdf, county_boundary_dis
                 path_effects=[pe.withStroke(linewidth=1.6, foreground=stroke_col), pe.Normal()])
 
     ax.set_axis_off()
+
+
+def plot_risk_surface_panel(ax, risk_df: pd.DataFrame):
+    gen_stress, demand_surge, monthly_risk = risk_df["Gen_Stress"], risk_df["Demand_Surge"], risk_df["System_Risk"]
+
+    ax.scatter(gen_stress, demand_surge, c=monthly_risk, cmap="RdBu_r",
+               norm=Normalize(vmin=monthly_risk.min(), vmax=monthly_risk.max()),
+               s=70, alpha=0.88, edgecolors="none")
+
+    x_range = np.linspace(gen_stress.min() - 0.2, gen_stress.max() + 0.2, 90)
+    y_range = np.linspace(demand_surge.min() - 0.2, demand_surge.max() + 0.2, 90)
+    Xg, Yg = np.meshgrid(x_range, y_range)
+    Zg = Xg * Yg
+    risk_levels = np.linspace(0.5, monthly_risk.max() * 0.85, 6)
+    risk_levels = risk_levels[risk_levels > 0.2]
+    if len(risk_levels) > 0:
+        cs = ax.contour(Xg, Yg, Zg, levels=risk_levels, colors="#222222", linewidths=2, linestyles="dashed", alpha=0.85)
+        ax.clabel(cs, inline=True, fontsize=14, fmt="Risk=%.1f", colors="#222222")
+
+    ax.axvline(0, color="black", lw=1.1, alpha=0.45)
+    ax.axhline(0, color="black", lw=1.1, alpha=0.45)
+    ax.set_xlabel("Generation stress ($-$SCDHI)")
+    ax.set_ylabel("Demand surge (z-score)")
+
+    return monthly_risk
