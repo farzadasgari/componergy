@@ -102,3 +102,11 @@ def plot_hovmoller(fields, mode: str, space: str, figsize=(18, 20), xtick_rotati
         lbl.set_ha("right")
 
     return fig
+
+
+HOVMOLLER_VARIANTS = [
+    ("S2", "annual", "lat", "Latitudinal evolution of climate extremes (annual)"),
+    ("S3", "annual", "lon", "Longitudinal evolution of climate extremes (annual)"),
+    ("S4", "monthly", "lat", "Seasonal and latitudinal variability of climate extremes"),
+    ("S5", "monthly", "lon", "Seasonal and longitudinal variability of climate extremes"),
+]
