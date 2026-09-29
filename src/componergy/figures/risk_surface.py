@@ -146,3 +146,13 @@ def compute_gridded_vulnerability(data: dict, sapei_var="sapei_3m", scdhi_var="s
     is_significant = (q_heat < ALPHA_SIG) | (q_drought < ALPHA_SIG) | (q_compound < ALPHA_SIG)
 
     return gridded, is_significant
+
+
+def compute_regional_evi(data: dict) -> tuple:
+    """Per-region Event Vulnerability Index: mean Delta_z of demand across the three events, FDR-corrected supporting table."""
+    comp = compute_composite_table(data["electricity_z"], data["event_masks"], data["normal"])
+    comp = comp.rename(columns={"Source": "Region", "Difference": "Delta_z"})
+    comp["q_value"] = benjamini_hochberg_fdr(comp["p_value"].values)
+
+    evi = comp.pivot(index="Region", columns="Event", values="Delta_z").mean(axis=1).rename("EVI")
+    return evi, comp
