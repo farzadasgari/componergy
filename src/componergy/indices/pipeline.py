@@ -1,11 +1,4 @@
-"""
-End-to-end index construction: climate.nc -> +PET -> +STI -> +SAPEI -> +SCDHI.
-
-Wires together the four index modules in the order each depends on the
-last (SAPEI needs PET; SCDHI needs both SAPEI and STI), against the
-single combined monthly climate dataset, and writes one final dataset containing
-every month from the full record with all indices attached.
-"""
+"""End-to-end index construction: climate.nc -> +PET -> +STI -> +SAPEI -> +SCDHI."""
 
 from __future__ import annotations
 
@@ -15,6 +8,7 @@ from componergy.indices.pet import add_pet
 from componergy.indices.sti import add_sti
 from componergy.indices.sapei import add_sapei
 from componergy.indices.scdhi import add_scdhi
+from componergy.netcdf_io import atomic_to_netcdf
 from componergy.paths import NOAA_MONTHLY_FILE, INDICES_FILE, ensure_dirs
 
 
@@ -76,5 +70,5 @@ def main(n_jobs: int = -1, copula_family: str = None, force: bool = False) -> No
 
     print(f"writing {INDICES_FILE}...")
     encoding = {v: {"zlib": True, "complevel": 5} for v in result.data_vars}
-    result.to_netcdf(INDICES_FILE, encoding=encoding)
+    atomic_to_netcdf(result, INDICES_FILE, encoding=encoding)
     print(f"wrote {INDICES_FILE}: {dict(result.sizes)}")
