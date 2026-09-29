@@ -241,3 +241,34 @@ def plot_distribution_panel(ax, data, comp: pd.DataFrame, order=("Heatwave", "Dr
     ax.set_ylabel("Probability density")
     ax.legend(frameon=False, ncol=1, loc="upper left", bbox_to_anchor=(0.02, 0.98))
     style_axis(ax)
+
+
+def plot_raf_panel(ax, comp: pd.DataFrame, order=("Heatwave", "Drought", "Compound")):
+    """RAF forest plot. Reference line at RAF=0 (no amplification),"""
+    event_colors = {"Heatwave": C_HEAT, "Drought": C_DROUGHT, "Compound": C_COMP}
+    tmp = comp.set_index("Event").loc[list(order)]
+    raf = tmp["RAF"].to_numpy(dtype=float)
+    lo = tmp["RAF_CI95_lo"].to_numpy(dtype=float)
+    hi = tmp["RAF_CI95_hi"].to_numpy(dtype=float)
+
+    y = np.arange(len(order))
+    xerr = np.vstack([raf - lo, hi - raf])
+
+    ax.errorbar(raf, y, xerr=xerr, fmt="o", ms=7.5, lw=1.8, capsize=4, color="#222222", zorder=2)
+    for i, ev in enumerate(order):
+        ax.scatter(raf[i], i, s=95, color=event_colors[ev], zorder=3)
+
+    ax.axvline(0.0, color="k", lw=1.0, ls="--", alpha=0.6, zorder=1)
+    ax.set_yticks(y)
+    ax.set_yticklabels(order)
+    ax.set_xlabel("RAF")
+    ax.set_ylim(-0.6, len(order) - 0.4)
+
+    finite_lo = lo[np.isfinite(lo)]
+    finite_hi = hi[np.isfinite(hi)]
+    if len(finite_lo) and len(finite_hi):
+        lo_min, hi_max = float(np.nanmin(finite_lo)), float(np.nanmax(finite_hi))
+        pad = 0.12 * (hi_max - lo_min + EPS)
+        ax.set_xlim(lo_min - pad, hi_max + pad)
+
+    style_axis(ax)
