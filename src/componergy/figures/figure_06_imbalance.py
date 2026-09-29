@@ -272,3 +272,27 @@ def plot_raf_panel(ax, comp: pd.DataFrame, order=("Heatwave", "Drought", "Compou
         ax.set_xlim(lo_min - pad, hi_max + pad)
 
     style_axis(ax)
+
+
+def build_imbalance_figure(data: dict, comp: pd.DataFrame):
+    fig = plt.figure(figsize=(16.5, 9.4))
+    gs = GridSpec(nrows=2, ncols=3, figure=fig, height_ratios=[1.25, 1.0], wspace=0.34, hspace=0.34)
+    fig.subplots_adjust(left=0.055, right=0.985, top=0.97, bottom=0.10)
+
+    axA = fig.add_subplot(gs[0, :])
+    plot_signal_panel(axA, data)
+    add_letter(axA, "A")
+
+    axB = fig.add_subplot(gs[1, 0])
+    plot_delta_bar_panel(axB, comp)
+    add_letter(axB, "B")
+
+    axC = fig.add_subplot(gs[1, 1])
+    plot_distribution_panel(axC, data, comp)
+    add_letter(axC, "C")
+
+    axD = fig.add_subplot(gs[1, 2])
+    plot_raf_panel(axD, comp)
+    add_letter(axD, "D")
+
+    return fig
