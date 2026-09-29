@@ -181,3 +181,8 @@ def compute_return_period(monthly_risk: pd.Series) -> pd.DataFrame:
         "System_Risk": risk_series.values,
         "Return_Period_Years": return_period_years,
     })
+
+
+def region_abbrev(name: str) -> str:
+    parts = [p for p in name.replace("-", " ").split() if p]
+    return "".join(p[0].upper() for p in parts[:3])
