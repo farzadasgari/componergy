@@ -59,3 +59,46 @@ def symmetric_levels(da: xr.DataArray, n_levels=21, percentile=98) -> np.ndarray
     vmax = float(np.percentile(vals, percentile))
     vmax = max(vmax, 1e-6)
     return np.linspace(-vmax, vmax, n_levels)
+
+
+def plot_hovmoller(fields, mode: str, space: str, figsize=(18, 20), xtick_rotation=90):
+    """Stacked Hovmoller panels, one per (title, DataArray, cmap) entry in `fields`."""
+    fig, axes = plt.subplots(nrows=len(fields), ncols=1, figsize=figsize,
+                             sharex=True, constrained_layout=True)
+    if len(fields) == 1:
+        axes = [axes]
+
+    for ax, (title, da, cmap) in zip(axes, fields):
+        reduced = reduce_for_hovmoller(da, mode=mode, space=space)
+        levels = symmetric_levels(reduced)
+        y = reduced[space].values
+
+        if mode == "annual":
+            x = reduced["year"].values
+            X, Y = np.meshgrid(x, y)
+            Z = reduced.transpose(space, "year").values
+        else:
+            x = mdates.date2num(reduced["time"].values)
+            X, Y = np.meshgrid(x, y)
+            Z = reduced.transpose(space, "time").values
+
+        im = ax.contourf(X, Y, Z, levels=levels, cmap=cmap, extend="both")
+
+        if mode == "monthly":
+            ax.xaxis_date()
+            ax.xaxis.set_major_locator(mdates.YearLocator(base=5))
+            ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
+
+        ax.set_ylabel("Latitude (°N)" if space == "lat" else "Longitude (°E)", fontsize=24)
+        ax.tick_params(labelsize=22, width=1.5, length=6)
+
+        cbar = fig.colorbar(im, ax=ax, orientation="vertical", pad=0.01, shrink=0.95)
+        cbar.set_label(title, fontsize=28)
+        cbar.ax.tick_params(labelsize=26, width=1.5, length=6)
+
+    axes[-1].set_xlabel("Time (year)", fontsize=28)
+    axes[-1].tick_params(axis="x", labelrotation=xtick_rotation)
+    for lbl in axes[-1].get_xticklabels():
+        lbl.set_ha("right")
+
+    return fig
