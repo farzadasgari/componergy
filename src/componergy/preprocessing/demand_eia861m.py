@@ -57,3 +57,10 @@ def load_raw_demand_sheet(path, sheet_name: str, state: str = "CA") -> pd.Series
     data[total_col] = pd.to_numeric(data[total_col], errors="coerce")
 
     return data.set_index("Date")[total_col].sort_index()
+
+
+def combine_demand_eras(old_series: pd.Series, new_series: pd.Series) -> pd.Series:
+    """Combine the two era series, preferring the newer file wherever both cover the same month."""
+    combined = pd.concat([old_series, new_series])
+    combined = combined[~combined.index.duplicated(keep="last")]
+    return combined.sort_index()
