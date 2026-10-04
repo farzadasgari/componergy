@@ -17,3 +17,14 @@ def check_file(nc_file) -> str | None:
         return None
     except Exception as exc:
         return f"{type(exc).__name__}: {exc}"
+
+
+def find_corrupted_files(directory) -> list[tuple]:
+    """Check every .nc file in `directory`, return [(path, error), ...] for
+    any that fail to open or are missing an expected variable."""
+    results = []
+    for nc_file in sorted(directory.glob("*.nc")):
+        error = check_file(nc_file)
+        if error is not None:
+            results.append((nc_file, error))
+    return results
