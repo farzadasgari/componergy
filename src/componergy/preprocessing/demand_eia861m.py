@@ -25,3 +25,35 @@ def _build_combined_column_names(df_raw: pd.DataFrame, header_row_idx: int) -> l
         else:
             columns.append(f"{str(sector_row.iloc[i]).strip()}_{str(subcol_row.iloc[i]).strip()}")
     return columns
+
+
+def load_raw_demand_sheet(path, sheet_name: str, state: str = "CA") -> pd.Series:
+    """Read one EIA-861M sheet and return that state's TOTAL_Sales as a monthly Series (MWh)."""
+    df_raw = pd.read_excel(path, sheet_name=sheet_name, header=None)
+
+    header_row_idx = None
+    for i in range(min(MAX_HEADER_SCAN_ROWS, len(df_raw))):
+        if "Year" in set(df_raw.iloc[i].astype(str)):
+            header_row_idx = i
+            break
+    if header_row_idx is None:
+        raise ValueError(f"could not locate a header row containing 'Year' in sheet '{sheet_name}'")
+
+    columns = _build_combined_column_names(df_raw, header_row_idx)
+    data = df_raw.iloc[header_row_idx + 1:].copy()
+    data.columns = columns
+
+    valid_year = pd.to_numeric(data["Year"], errors="coerce")
+    data = data[valid_year.notna()].copy()
+    data["Year"] = valid_year[valid_year.notna()].astype(int)
+    data["Month"] = pd.to_numeric(data["Month"], errors="coerce").astype(int)
+    data = data[data["State"].astype(str).str.strip() == state].copy()
+
+    total_col = "TOTAL_Sales"
+    if total_col not in data.columns:
+        raise ValueError(f"expected column '{total_col}' not found; got {list(data.columns)}")
+
+    data["Date"] = pd.to_datetime(data["Year"].astype(str) + "-" + data["Month"].astype(str) + "-01")
+    data[total_col] = pd.to_numeric(data[total_col], errors="coerce")
+
+    return data.set_index("Date")[total_col].sort_index()
