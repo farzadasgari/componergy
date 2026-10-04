@@ -1,18 +1,6 @@
 """
 Ingest EIA-923 "generation_monthly.xlsx" (state-level monthly generation by
 energy source) into a single-state, source-grouped monthly table.
-
-The raw file has one sheet per year range plus a notes sheet; rows cover
-all states, five producer-type categories, and a per-state "Total"
-energy-source row alongside the individual fuel sources (including
-Pumped Storage, which can be negative -- net of pumping consumption).
-
-The Total computed here (sum of the six SOURCE_GROUPS) intentionally
-excludes Pumped Storage and the small residual "Other" category, since
-Pumped Storage reinjects previously-generated energy rather than
-producing it. Excluded_MWh reports exactly how much that leaves out per
-month, against EIA's own reported total, as a running reconciliation
-check rather than a silent omission.
 """
 
 from __future__ import annotations

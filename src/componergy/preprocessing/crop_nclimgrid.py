@@ -5,13 +5,6 @@ Reads every raw file in RAW_DATA_CLIMATE_DIR (CONUS-wide) and writes a
 California-clipped copy to NOAA_CA_DIR, one file in -> one file out.
 Files already cropped are skipped, so re-running this after a fresh
 download only processes newly-downloaded months.
-
-Assumes nClimGrid-Daily's native grid is unprojected WGS84 (EPSG:4326)
-lat/lon, matching NOAA's published grid specification for this product --
-write_crs() below only tags this as metadata, it does not reproject
-anything. Spatial dims are explicitly declared as ("lon", "lat") since
-rioxarray only auto-detects "x"/"y" by default and otherwise raises
-MissingSpatialDimensionError on this data's native dimension names.
 """
 
 from __future__ import annotations
