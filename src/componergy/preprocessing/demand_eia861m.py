@@ -64,3 +64,38 @@ def combine_demand_eras(old_series: pd.Series, new_series: pd.Series) -> pd.Seri
     combined = pd.concat([old_series, new_series])
     combined = combined[~combined.index.duplicated(keep="last")]
     return combined.sort_index()
+
+
+def main(state: str = "CA", force: bool = False) -> None:
+    """
+    Read both EIA-861M workbooks and write the combined DEMAND_MONTHLY_FILE.
+
+    Idempotent: skips entirely if the output already exists, unless force=True.
+    """
+    from componergy.netcdf_io import atomic_to_csv
+    from componergy.paths import (
+        EIA_DEMAND_RAW_FILE_1990_2009, EIA_DEMAND_RAW_FILE_2010_PRESENT,
+        DEMAND_MONTHLY_FILE, ensure_dirs,
+    )
+
+    ensure_dirs()
+
+    if DEMAND_MONTHLY_FILE.exists() and not force:
+        print(f"{DEMAND_MONTHLY_FILE} already exists, skipping (pass force=True to rebuild).")
+        return
+
+    print(f"reading {EIA_DEMAND_RAW_FILE_1990_2009} (sheet 'Monthly')...")
+    old_series = load_raw_demand_sheet(EIA_DEMAND_RAW_FILE_1990_2009, "Monthly", state=state)
+    print(f"reading {EIA_DEMAND_RAW_FILE_2010_PRESENT} (sheet 'Monthly-States')...")
+    new_series = load_raw_demand_sheet(EIA_DEMAND_RAW_FILE_2010_PRESENT, "Monthly-States", state=state)
+
+    combined = combine_demand_eras(old_series, new_series)
+    print(f"combined: {len(combined)} months, {combined.index.min().date()} to {combined.index.max().date()}")
+
+    out_df = combined.rename("total_sales").to_frame()
+    atomic_to_csv(out_df, DEMAND_MONTHLY_FILE)
+    print(f"wrote {DEMAND_MONTHLY_FILE}")
+
+
+if __name__ == "__main__":
+    main()
