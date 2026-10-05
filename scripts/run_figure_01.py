@@ -1,4 +1,3 @@
-# scripts/run_figure_01.py
 """CLI entry point for generating Figure 1."""
 
 from __future__ import annotations
