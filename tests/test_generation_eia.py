@@ -2,7 +2,7 @@ import pandas as pd
 from pathlib import Path
 import tempfile
 
-from componergy.preprocessing.generation_eia import load_raw_sheets, pivot_by_source_group, SOURCE_GROUPS
+from componergy.preprocessing.generation_eia import load_raw_sheets, pivot_by_source_group
 
 
 def _make_test_workbook():
@@ -44,6 +44,12 @@ def test_load_raw_sheets_filters_state_and_producer_type():
     assert (raw["TYPE OF PRODUCER"] == "Total Electric Power Industry").all()
     assert 88888888 not in raw["GENERATION (Megawatthours)"].values
     assert 55555555 not in raw["GENERATION (Megawatthours)"].values
+
+
+def test_notes_sheet_is_skipped():
+    path, _, _ = _make_test_workbook()
+    raw = load_raw_sheets(path, state="CA")
+    assert "Note" not in raw.columns
 
 
 def test_source_grouping_matches_manual_sum():
@@ -90,13 +96,6 @@ def test_month_with_no_reported_total_gives_nan_not_crash():
 
 
 def test_sheets_with_preamble_rows_are_not_silently_dropped():
-    """Regression test for the actual production bug: sheets from 2012
-    onward have 3 title/metadata rows (DOE header, description, source
-    citation) above the real column header row, while 2001-2011 sheets
-    have the header on row 0. Reading every sheet with a fixed header row
-    silently dropped every post-2011 sheet, since they never had a real
-    'ENERGY SOURCE' column at row 0.
-    """
     test_dir = Path(tempfile.mkdtemp())
     test_path = test_dir / "gen_mixed_preamble.xlsx"
 
@@ -131,14 +130,6 @@ def test_sheets_with_preamble_rows_are_not_silently_dropped():
 
 
 def test_inconsistent_generation_column_whitespace_across_years_is_not_lost():
-    """
-    Regression test for the actual production bug: sheets from 2015
-    onward use 'GENERATION  (Megawatthours)' (double space) while
-    2001-2014 use 'GENERATION (Megawatthours)' (single space). Without
-    normalizing whitespace, pd.concat() treats these as two different
-    columns, silently zeroing out every 2015+ row when only the
-    single-space column name is read downstream.
-    """
     test_dir = Path(tempfile.mkdtemp())
     test_path = test_dir / "gen_whitespace.xlsx"
 
