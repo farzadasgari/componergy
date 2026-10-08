@@ -151,3 +151,71 @@ def randomization_inference(estimate: float, null: np.ndarray) -> dict:
 
 def _as_bool(s, index):
     return pd.Series(s).reindex(index).fillna(False).astype(bool)
+
+
+def event_effects(y, event_masks: dict, normal_mask, trend: str = "linear",
+                  hac_lags: int = DEFAULT_HAC_LAGS, month_fe: bool = True, exclusive: bool = True,
+                  min_event: int = DEFAULT_MIN_EVENT, min_shift: int = DEFAULT_MIN_SHIFT) -> dict:
+    """Fit the event-effect model for one series (effects in the units of `y`)."""
+    from componergy.analysis.events import exclusive_event_masks
+
+    y = pd.Series(y).astype(float)
+    masks = {k: _as_bool(v, y.index) for k, v in event_masks.items()}
+    if exclusive:
+        masks = exclusive_event_masks(masks)
+    normal = _as_bool(normal_mask, y.index)
+
+    in_sample = normal.copy()
+    for m in masks.values():
+        in_sample = in_sample | m
+    in_sample = in_sample & y.notna()
+
+    ys = y[in_sample]
+    dummies, counts = {}, {}
+    for name, m in masks.items():
+        ms = m[in_sample]
+        counts[name] = int(ms.sum())
+        if counts[name] >= min_event:
+            dummies[name] = ms.values
+
+    X, names = design_matrix(ys.index, dummies, trend=trend, month_fe=month_fe)
+    fit = ols_hac(ys.values, X, names, lags=hac_lags)
+    dnames = list(dummies)
+
+    null = np.empty((0, 0))
+    if dnames:
+        Z, _ = design_matrix(ys.index, None, trend=trend, month_fe=month_fe)
+        D = np.column_stack([dummies[k].astype(float) for k in dnames])
+        null = shift_null_coefficients(ys.values, Z, D, min_shift=min_shift)
+
+    X0 = X.copy()
+    for name in dnames:
+        X0[:, names.index(name)] = 0.0
+    baseline = X0 @ fit["beta"]
+
+    rows = []
+    for name in masks:
+        if name in dummies:
+            j = dnames.index(name)
+            est = float(fit["beta"][names.index(name)])
+            ri = randomization_inference(est, null[:, j])
+            hac = hac_contrast(fit, {name: 1.0})
+            base_mean = float(np.mean(baseline[dummies[name]]))
+            rows.append({"Event": name, "N_event": counts[name], "Delta_native": est,
+                         "SE_native": ri["se"], "CI_lo_native": ri["ci_lo"], "CI_hi_native": ri["ci_hi"],
+                         "tstat": est / ri["se"] if ri["se"] and np.isfinite(ri["se"]) else np.nan,
+                         "p_value": ri["p_value"], "p_exact": ri["p_exact"], "p_hac": hac["p"],
+                         "Baseline_mean": base_mean,
+                         "Delta_pct": 100.0 * est / base_mean if base_mean else np.nan,
+                         "N_shifts": ri["n_shifts"]})
+        else:
+            rows.append({"Event": name, "N_event": counts[name], "Delta_native": np.nan, "SE_native": np.nan,
+                         "CI_lo_native": np.nan, "CI_hi_native": np.nan, "tstat": np.nan, "p_value": np.nan,
+                         "p_exact": np.nan, "p_hac": np.nan, "Baseline_mean": np.nan, "Delta_pct": np.nan,
+                         "N_shifts": 0})
+
+    info = {"n_used": int(in_sample.sum()), "n_normal": int((normal & in_sample).sum()),
+            "n_dropped_other": int((y.notna() & ~in_sample).sum()), "trend": trend,
+            "hac_lags": int(hac_lags), "month_fe": bool(month_fe), "exclusive": bool(exclusive),
+            "rank_deficient": fit["rank_deficient"], "r2": fit["r2"]}
+    return {"effects": pd.DataFrame(rows), "fit": fit, "null": null, "dummy_names": dnames, "info": info}
