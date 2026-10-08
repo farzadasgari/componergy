@@ -50,3 +50,29 @@ def block_permute(x: np.ndarray, block: int, rng) -> np.ndarray:
     blocks = [x[i * block:(i + 1) * block] for i in range(k)]
     order = rng.permutation(k)
     return np.concatenate([blocks[i] for i in order])[:n]
+
+
+def best_lag_randomization(x, y, lags=DEFAULT_LAGS, min_n: int = 24, block: int = DEFAULT_BLOCK,
+                           n_perm: int = DEFAULT_N_PERM, seed: int = 42):
+    """Best-lag regression whose p-value accounts for the lag search and for autocorrelation."""
+    x = pd.Series(x).astype(float)
+    y = pd.Series(y).astype(float)
+    x = x.reindex(y.index)
+    ok = x.notna() & y.notna()
+    xa, ya = x[ok].values, y[ok].values
+
+    obs = best_lag_stats(xa, ya, lags, min_n)
+    if obs is None:
+        return None
+
+    rng = np.random.default_rng(seed)
+    null = np.empty(int(n_perm))
+    for i in range(int(n_perm)):
+        s = best_lag_stats(block_permute(xa, block, rng), ya, lags, min_n)
+        null[i] = s["r2"] if s is not None else np.nan
+    null = null[np.isfinite(null)]
+
+    t = np.sqrt(obs["r2"] * (obs["n"] - 2) / max(1.0 - obs["r2"], 1e-12))
+    return {**obs, "p_value": float((1 + np.sum(null >= obs["r2"])) / (len(null) + 1)),
+            "p_ols_naive": float(2.0 * stats.t.sf(t, obs["n"] - 2)),
+            "n_perm": int(len(null)), "block": int(block)}
