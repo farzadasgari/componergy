@@ -147,3 +147,7 @@ def randomization_inference(estimate: float, null: np.ndarray) -> dict:
     p_norm = float(2.0 * stats.norm.sf(abs(estimate - null.mean()) / se)) if se > 0 else np.nan
     return {"estimate": float(estimate), "se": se, "ci_lo": float(estimate - _Z * se),
             "ci_hi": float(estimate + _Z * se), "p_value": p_norm, "p_exact": p_exact, "n_shifts": S}
+
+
+def _as_bool(s, index):
+    return pd.Series(s).reindex(index).fillna(False).astype(bool)
