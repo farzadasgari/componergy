@@ -114,3 +114,21 @@ def shift_range(n: int, min_shift: int = DEFAULT_MIN_SHIFT) -> np.ndarray:
     if n > 2 * min_shift:
         return np.arange(min_shift, n - min_shift + 1)
     return np.arange(1, max(2, n))
+
+
+def shift_null_coefficients(y: np.ndarray, Z: np.ndarray, D: np.ndarray,
+                            min_shift: int = DEFAULT_MIN_SHIFT) -> np.ndarray:
+    """Coefficients of the event dummies when the whole event calendar is shifted."""
+    n = len(y)
+    M = np.eye(n) - Z @ np.linalg.pinv(Z)
+    yt = M @ y
+    out = []
+    for s in shift_range(n, min_shift):
+        Ds = np.roll(D, int(s), axis=0)
+        G = Ds.T @ M @ Ds
+        b = Ds.T @ yt
+        try:
+            out.append(np.linalg.solve(G, b))
+        except np.linalg.LinAlgError:
+            out.append(np.linalg.pinv(G) @ b)
+    return np.asarray(out)
