@@ -69,3 +69,24 @@ def newey_west_cov(X: np.ndarray, resid: np.ndarray, lags: int, small_sample: bo
     if small_sample and n > k:
         cov = cov * (n / (n - k))
     return cov
+
+
+def ols_hac(y, X: np.ndarray, names: list, lags: int = DEFAULT_HAC_LAGS, use_t: bool = True) -> dict:
+    y = np.asarray(y, dtype=float)
+    beta, *_ = np.linalg.lstsq(X, y, rcond=None)
+    fitted = X @ beta
+    resid = y - fitted
+    n, k = X.shape
+    rank = int(np.linalg.matrix_rank(X))
+    cov = newey_west_cov(X, resid, lags)
+    se = np.sqrt(np.clip(np.diag(cov), 0.0, None))
+    with np.errstate(divide="ignore", invalid="ignore"):
+        tvals = np.where(se > 0, beta / se, np.nan)
+    df_resid = max(n - rank, 1)
+    pvals = 2.0 * (stats.t.sf(np.abs(tvals), df_resid) if use_t else stats.norm.sf(np.abs(tvals)))
+    ss_tot = float(np.sum((y - y.mean()) ** 2))
+    r2 = 1.0 - float(resid @ resid) / ss_tot if ss_tot > 0 else np.nan
+    return {"names": list(names), "beta": beta, "se": se, "t": tvals, "p": pvals, "cov": cov,
+            "fitted": fitted, "resid": resid, "n": int(n), "k": int(k), "rank": rank,
+            "rank_deficient": bool(rank < k), "df_resid": int(df_resid), "r2": r2,
+            "hac_lags": int(lags), "use_t": bool(use_t)}
