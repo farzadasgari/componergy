@@ -298,3 +298,30 @@ def adjusted_composite_table(raw_df: pd.DataFrame, event_masks: dict, normal_mas
                 "Trend": trend, "N_dropped_other": res["info"]["n_dropped_other"],
             })
     return pd.DataFrame(rows)
+
+
+def amplification_table(raw_df: pd.DataFrame, event_masks: dict, normal_mask, trend: str = "linear",
+                        hac_lags: int = DEFAULT_HAC_LAGS, label: str = "Source", standardize: bool = True,
+                        min_shift: int = DEFAULT_MIN_SHIFT) -> pd.DataFrame:
+    """Amplification contrast per series, FDR-corrected across series."""
+    from componergy.figures.composite_stats import benjamini_hochberg_fdr
+
+    rows = []
+    for col in raw_df.columns:
+        y = raw_df[col]
+        scale = 1.0
+        if standardize:
+            anom, _ = normal_baseline_anomalies(y, normal_mask, trend)
+            scale = float(anom.std(ddof=1)) or 1.0
+        res = event_effects(y / scale, event_masks, normal_mask, trend=trend, hac_lags=hac_lags,
+                            min_shift=min_shift)
+        c = amplification_contrast(res)
+        rows.append({label: col, "Trend": trend, "Units": "z" if standardize else "native",
+                     "Compound_effect": c["compound"], "Additive_expectation": c["additive_expectation"],
+                     "Amplification_contrast": c["contrast"], "SE": c["se"],
+                     "CI_lo": c["ci_lo"], "CI_hi": c["ci_hi"], "p_value": c["p_value"],
+                     "p_exact": c["p_exact"], "p_hac": c["p_hac"], "N_shifts": c["n_shifts"]})
+    out = pd.DataFrame(rows)
+    if len(out):
+        out["q_value"] = benjamini_hochberg_fdr(out["p_value"].values)
+    return out
