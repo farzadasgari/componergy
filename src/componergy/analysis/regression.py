@@ -219,3 +219,29 @@ def event_effects(y, event_masks: dict, normal_mask, trend: str = "linear",
             "hac_lags": int(hac_lags), "month_fe": bool(month_fe), "exclusive": bool(exclusive),
             "rank_deficient": fit["rank_deficient"], "r2": fit["r2"]}
     return {"effects": pd.DataFrame(rows), "fit": fit, "null": null, "dummy_names": dnames, "info": info}
+
+
+AMPLIFICATION_WEIGHTS = {"Compound": 1.0, "Heatwave": -1.0, "Drought": -1.0}
+
+
+def amplification_contrast(result: dict, weights: dict | None = None) -> dict:
+    """Compound minus (heat-only + drought-only): does the compound response exceed the additive sum?"""
+    weights = weights or AMPLIFICATION_WEIGHTS
+    dn = result["dummy_names"]
+    nan = {"contrast": np.nan, "se": np.nan, "ci_lo": np.nan, "ci_hi": np.nan, "p_value": np.nan,
+           "p_exact": np.nan, "p_hac": np.nan, "additive_expectation": np.nan, "compound": np.nan,
+           "n_shifts": 0}
+    if any(k not in dn for k in weights):
+        return nan
+    fit, null = result["fit"], result["null"]
+    names = fit["names"]
+    w_full = {k: v for k, v in weights.items()}
+    est = float(sum(v * fit["beta"][names.index(k)] for k, v in w_full.items()))
+    null_c = null @ np.array([w_full.get(k, 0.0) for k in dn])
+    ri = randomization_inference(est, null_c)
+    hac = hac_contrast(fit, w_full)
+    add = float(sum(fit["beta"][names.index(k)] for k in ("Heatwave", "Drought")))
+    return {"contrast": est, "se": ri["se"], "ci_lo": ri["ci_lo"], "ci_hi": ri["ci_hi"],
+            "p_value": ri["p_value"], "p_exact": ri["p_exact"], "p_hac": hac["p"],
+            "additive_expectation": add, "compound": float(fit["beta"][names.index("Compound")]),
+            "n_shifts": ri["n_shifts"]}
