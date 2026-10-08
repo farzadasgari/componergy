@@ -268,3 +268,33 @@ def baseline_adjusted_z(y, normal_mask, trend: str = "linear", month_fe: bool = 
     anom, _ = normal_baseline_anomalies(y, normal_mask, trend, month_fe)
     sd = anom.std(ddof=1)
     return anom / sd if isinstance(anom, pd.Series) else anom.divide(sd, axis=1)
+
+
+def adjusted_composite_table(raw_df: pd.DataFrame, event_masks: dict, normal_mask, trend: str = "linear",
+                             hac_lags: int = DEFAULT_HAC_LAGS, exclusive: bool = True,
+                             min_shift: int = DEFAULT_MIN_SHIFT) -> pd.DataFrame:
+    """Seasonally and trend-adjusted event composites, one row per (Event, Source)."""
+    rows = []
+    for col in raw_df.columns:
+        res = event_effects(raw_df[col], event_masks, normal_mask, trend=trend, hac_lags=hac_lags,
+                            exclusive=exclusive, min_shift=min_shift)
+        anom, _ = normal_baseline_anomalies(raw_df[col], normal_mask, trend)
+        scale = float(anom.std(ddof=1))
+        for _, r in res["effects"].iterrows():
+            d = float(r["Delta_native"])
+            z = d / scale if scale else np.nan
+            rows.append({
+                "Event": r["Event"], "Source": col, "N_event": int(r["N_event"]),
+                "N_normal": res["info"]["n_normal"],
+                "Delta_native": d, "SE_native": r["SE_native"],
+                "CI_lo_native": r["CI_lo_native"], "CI_hi_native": r["CI_hi_native"],
+                "Baseline_mean": r["Baseline_mean"], "Delta_pct": r["Delta_pct"],
+                "Scale": scale, "Delta_z": z,
+                "CI_lo_z": r["CI_lo_native"] / scale if scale else np.nan,
+                "CI_hi_z": r["CI_hi_native"] / scale if scale else np.nan,
+                "Mean_normal": r["Baseline_mean"], "Mean_event": r["Baseline_mean"] + d,
+                "Difference": z, "tstat": r["tstat"], "p_value": r["p_value"],
+                "p_exact": r["p_exact"], "p_hac": r["p_hac"], "N_shifts": r["N_shifts"],
+                "Trend": trend, "N_dropped_other": res["info"]["n_dropped_other"],
+            })
+    return pd.DataFrame(rows)
