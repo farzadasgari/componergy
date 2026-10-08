@@ -261,3 +261,10 @@ def normal_baseline_anomalies(y, normal_mask, trend: str = "linear", month_fe: b
     beta, *_ = np.linalg.lstsq(X[normal.values], y[normal].values, rcond=None)
     base = pd.Series(X @ beta, index=y.index)
     return (y - base), base
+
+
+def baseline_adjusted_z(y, normal_mask, trend: str = "linear", month_fe: bool = True):
+    """Counterfactual anomalies scaled by their own standard deviation (dimensionless)."""
+    anom, _ = normal_baseline_anomalies(y, normal_mask, trend, month_fe)
+    sd = anom.std(ddof=1)
+    return anom / sd if isinstance(anom, pd.Series) else anom.divide(sd, axis=1)
