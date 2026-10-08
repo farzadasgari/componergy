@@ -21,3 +21,23 @@ def _lagged(x: np.ndarray, y: np.ndarray, lag: int):
     else:
         xl, yl = x, y
     return xl, yl
+
+
+def best_lag_stats(x, y, lags=DEFAULT_LAGS, min_n: int = 24):
+    """The lag with the highest R², as {lag, slope, r2, n}; None if no lag has >= min_n pairs."""
+    x, y = np.asarray(x, dtype=float), np.asarray(y, dtype=float)
+    best = None
+    for lag in lags:
+        xl, yl = _lagged(x, y, int(lag))
+        ok = np.isfinite(xl) & np.isfinite(yl)
+        n = int(ok.sum())
+        if n < min_n:
+            continue
+        xm, ym = xl[ok] - xl[ok].mean(), yl[ok] - yl[ok].mean()
+        sxx, syy, sxy = float(xm @ xm), float(ym @ ym), float(xm @ ym)
+        if sxx <= 0 or syy <= 0:
+            continue
+        r2 = sxy * sxy / (sxx * syy)
+        if best is None or r2 > best["r2"]:
+            best = {"lag": int(lag), "slope": sxy / sxx, "r2": r2, "n": n}
+    return best
