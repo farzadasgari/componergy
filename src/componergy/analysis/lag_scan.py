@@ -41,3 +41,12 @@ def best_lag_stats(x, y, lags=DEFAULT_LAGS, min_n: int = 24):
         if best is None or r2 > best["r2"]:
             best = {"lag": int(lag), "slope": sxy / sxx, "r2": r2, "n": n}
     return best
+
+
+def block_permute(x: np.ndarray, block: int, rng) -> np.ndarray:
+    """Cut into consecutive blocks, permute the blocks, keep the original length."""
+    n = len(x)
+    k = int(np.ceil(n / block))
+    blocks = [x[i * block:(i + 1) * block] for i in range(k)]
+    order = rng.permutation(k)
+    return np.concatenate([blocks[i] for i in order])[:n]
