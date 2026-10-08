@@ -107,3 +107,10 @@ def hac_contrast(fit: dict, weights: dict) -> dict:
     t = est / se
     p = float(2.0 * (stats.t.sf(abs(t), fit["df_resid"]) if fit["use_t"] else stats.norm.sf(abs(t))))
     return {"estimate": est, "se": se, "p": p}
+
+
+def shift_range(n: int, min_shift: int = DEFAULT_MIN_SHIFT) -> np.ndarray:
+    """Distinct circular shifts to use: at least `min_shift` months from zero in either direction."""
+    if n > 2 * min_shift:
+        return np.arange(min_shift, n - min_shift + 1)
+    return np.arange(1, max(2, n))
