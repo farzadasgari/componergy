@@ -53,3 +53,19 @@ def design_matrix(index, dummies: dict | None = None, trend: str = "linear", mon
         cols.append(np.asarray(values, dtype=float))
         names.append(name)
     return np.column_stack(cols), names
+
+
+def newey_west_cov(X: np.ndarray, resid: np.ndarray, lags: int, small_sample: bool = True) -> np.ndarray:
+    """Newey-West HAC covariance of OLS coefficients (Bartlett kernel)."""
+    n, k = X.shape
+    xu = X * resid[:, None]
+    S = xu.T @ xu
+    for j in range(1, min(int(lags), n - 1) + 1):
+        w = 1.0 - j / (lags + 1.0)
+        G = xu[j:].T @ xu[:-j]
+        S += w * (G + G.T)
+    bread = np.linalg.pinv(X.T @ X)
+    cov = bread @ S @ bread
+    if small_sample and n > k:
+        cov = cov * (n / (n - k))
+    return cov
