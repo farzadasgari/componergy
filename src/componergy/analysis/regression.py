@@ -132,3 +132,18 @@ def shift_null_coefficients(y: np.ndarray, Z: np.ndarray, D: np.ndarray,
         except np.linalg.LinAlgError:
             out.append(np.linalg.pinv(G) @ b)
     return np.asarray(out)
+
+
+def randomization_inference(estimate: float, null: np.ndarray) -> dict:
+    """Standard error, CI and two p-values of `estimate` against its shift-null distribution."""
+    null = np.asarray(null, dtype=float)
+    null = null[np.isfinite(null)]
+    S = int(len(null))
+    if S < 10 or not np.isfinite(estimate):
+        return {"estimate": estimate, "se": np.nan, "ci_lo": np.nan, "ci_hi": np.nan,
+                "p_value": np.nan, "p_exact": np.nan, "n_shifts": S}
+    se = float(null.std(ddof=1))
+    p_exact = float((1 + np.sum(np.abs(null) >= abs(estimate))) / (S + 1))
+    p_norm = float(2.0 * stats.norm.sf(abs(estimate - null.mean()) / se)) if se > 0 else np.nan
+    return {"estimate": float(estimate), "se": se, "ci_lo": float(estimate - _Z * se),
+            "ci_hi": float(estimate + _Z * se), "p_value": p_norm, "p_exact": p_exact, "n_shifts": S}
