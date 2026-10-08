@@ -90,3 +90,20 @@ def ols_hac(y, X: np.ndarray, names: list, lags: int = DEFAULT_HAC_LAGS, use_t: 
             "fitted": fitted, "resid": resid, "n": int(n), "k": int(k), "rank": rank,
             "rank_deficient": bool(rank < k), "df_resid": int(df_resid), "r2": r2,
             "hac_lags": int(lags), "use_t": bool(use_t)}
+
+
+def hac_contrast(fit: dict, weights: dict) -> dict:
+    """Estimate, HAC standard error and p-value of sum_j w_j * beta_j (reference)."""
+    names = fit["names"]
+    w = np.zeros(len(names))
+    for name, value in weights.items():
+        if name not in names:
+            return {"estimate": np.nan, "se": np.nan, "p": np.nan}
+        w[names.index(name)] = value
+    est = float(w @ fit["beta"])
+    se = float(np.sqrt(max(w @ fit["cov"] @ w, 0.0)))
+    if se <= 0 or not np.isfinite(se):
+        return {"estimate": est, "se": se, "p": np.nan}
+    t = est / se
+    p = float(2.0 * (stats.t.sf(abs(t), fit["df_resid"]) if fit["use_t"] else stats.norm.sf(abs(t))))
+    return {"estimate": est, "se": se, "p": p}
