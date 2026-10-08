@@ -245,3 +245,19 @@ def amplification_contrast(result: dict, weights: dict | None = None) -> dict:
             "p_value": ri["p_value"], "p_exact": ri["p_exact"], "p_hac": hac["p"],
             "additive_expectation": add, "compound": float(fit["beta"][names.index("Compound")]),
             "n_shifts": ri["n_shifts"]}
+
+
+def normal_baseline_anomalies(y, normal_mask, trend: str = "linear", month_fe: bool = True):
+    """Counterfactual anomalies: y minus what the NORMAL months predict for that month and year."""
+    if isinstance(y, pd.DataFrame):
+        parts = [normal_baseline_anomalies(y[c], normal_mask, trend, month_fe) for c in y.columns]
+        anom = pd.concat([p[0].rename(c) for p, c in zip(parts, y.columns)], axis=1)
+        base = pd.concat([p[1].rename(c) for p, c in zip(parts, y.columns)], axis=1)
+        return anom, base
+
+    y = pd.Series(y).astype(float)
+    normal = _as_bool(normal_mask, y.index) & y.notna()
+    X, _ = design_matrix(y.index, None, trend=trend, month_fe=month_fe)
+    beta, *_ = np.linalg.lstsq(X[normal.values], y[normal].values, rcond=None)
+    base = pd.Series(X @ beta, index=y.index)
+    return (y - base), base
