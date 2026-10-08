@@ -40,7 +40,7 @@ def compute_regional_mean(da: xr.DataArray, regions_gdf: gpd.GeoDataFrame) -> pd
     regions = regionmask.Regions(
         outlines=list(regions_gdf.geometry),
         names=list(regions_gdf["Region"]),
-        abbrevs=[f"R{i+1:02d}" for i in range(len(regions_gdf))],
+        abbrevs=[f"R{i + 1:02d}" for i in range(len(regions_gdf))],
         overlap=True,
     )
 
@@ -70,3 +70,13 @@ def county_region_shares(counties_gdf: gpd.GeoDataFrame, regions_gdf: gpd.GeoDat
     pieces = pieces.merge(totals, on="CountyName")
     pieces["share"] = pieces["area"] / pieces["county_area"]
     return pieces[["CountyName", "Region", "share"]].sort_values(["CountyName", "share"], ascending=[True, False])
+
+
+def county_split_summary(shares: pd.DataFrame, threshold: float = 0.8) -> pd.DataFrame:
+    """Per county: majority region, its area share, and whether the county is materially split."""
+    top = shares.sort_values("share", ascending=False).groupby("CountyName").first()
+    n = shares.groupby("CountyName")["Region"].nunique()
+    out = top.rename(columns={"Region": "Majority_region", "share": "Majority_share"})
+    out["N_regions_touched"] = n
+    out["Split"] = out["Majority_share"] < threshold
+    return out.reset_index().sort_values("Majority_share")
