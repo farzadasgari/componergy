@@ -1,6 +1,5 @@
 """
-Supplementary Figure S1: CDHE co-occurrence frequency by climate region
-and electricity demand sector.
+CDHE co-occurrence frequency by climate region and electricity demand sector.
 """
 
 from __future__ import annotations
@@ -67,6 +66,7 @@ def compute_cooccurrence_frequency(regional_scdhi: pd.DataFrame, region_sector_g
     for region in regional_scdhi.columns:
         scdhi = zscore(regional_scdhi[region].rolling(smooth_months, center=True, min_periods=1).mean())
         cdhe = classify_compound(series_to_data_array(scdhi)).to_series()
+        cdhe = cdhe.reindex(region_sector_gwh.index).fillna(False).astype(bool)
         n_cdhe = int(cdhe.sum())
 
         for label, cec_name in sectors.items():
@@ -130,7 +130,7 @@ def plot_cooccurrence_heatmap(freq_df: pd.DataFrame, sectors=None, figsize=(11, 
 
 
 def main(scdhi_var: str = "scdhi_3m") -> None:
-    """Build figure with its frequency CSV and log."""
+    """Build S1 plus its frequency CSV and log."""
     from componergy.download.climate_regions import get_california_climate_regions
     from componergy.download.boundaries import get_california_counties
     from componergy.analysis.regions import build_county_to_region_map, compute_regional_mean
@@ -154,7 +154,7 @@ def main(scdhi_var: str = "scdhi_3m") -> None:
     region_sector_gwh = aggregate_consumption_to_region_sector(consumption_long_df, county_region_map)
 
     common = regional_scdhi.index.intersection(region_sector_gwh.index)
-    regional_scdhi = regional_scdhi.loc[common]
+    # regional_scdhi is deliberately NOT trimmed: event thresholds use the full climate record
     region_sector_gwh = region_sector_gwh.loc[common]
 
     print("computing co-occurrence frequencies...")
@@ -183,7 +183,7 @@ def main(scdhi_var: str = "scdhi_3m") -> None:
             "expected_by_chance": float(1.0 - DEMAND_HIGH_Q),
         },
         "Note": (
-            "Frequency is defined as the fraction of that "
+            "Frequency is defined per the S1 caption as the fraction of that "
             "region's CDHE months during which the given sector also shows "
             "elevated demand, where 'elevated' is the top decile of that "
             "region-sector's deseasonalized, z-scored demand."
