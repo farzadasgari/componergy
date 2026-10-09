@@ -1,10 +1,4 @@
-"""
-CLI entry point for running the componergy data-acquisition pipeline.
-
-Kept as a tracked script (not a notebook) so the data-acquisition step
-can always be reproduced straight from git history, independent of
-anyone's local Jupyter setup.
-"""
+"""CLI entry point for running the componergy data-acquisition pipeline."""
 
 from __future__ import annotations
 
