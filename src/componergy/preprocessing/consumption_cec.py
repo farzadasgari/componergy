@@ -1,11 +1,4 @@
-"""
-Ingest CEC's county-level electricity consumption workbook into a clean
-long-format monthly table.
-
-Restricted-access data (obtained by direct request, not redistributable)
--- this module only processes a local copy the user provides; nothing
-here fetches it.
-"""
+"""Ingest CEC's county-level electricity consumption workbook into a clean long-format monthly table."""
 
 from __future__ import annotations
 
@@ -16,10 +9,8 @@ MAX_PREAMBLE_ROWS_TO_SCAN = 5
 
 
 def _find_header_row(df_raw: pd.DataFrame):
-    """
-    Return the index of the first row containing every REQUIRED_COLUMNS
-    value, scanning at most MAX_PREAMBLE_ROWS_TO_SCAN rows. None if not found.
-    """
+    """Return the index of the first row containing every REQUIRED_COLUMNS
+    value, scanning at most MAX_PREAMBLE_ROWS_TO_SCAN rows. None if not found."""
     for i in range(min(MAX_PREAMBLE_ROWS_TO_SCAN, len(df_raw))):
         row_values = {str(v).strip() for v in df_raw.iloc[i]}
         if all(col in row_values for col in REQUIRED_COLUMNS):
@@ -28,14 +19,7 @@ def _find_header_row(df_raw: pd.DataFrame):
 
 
 def load_raw_consumption(path, sheet_name="Electricity Consumption") -> pd.DataFrame:
-    """
-    Read the workbook and return a clean long-format DataFrame.
-
-    Returns
-    -------
-    pd.DataFrame
-        Columns: Date, CountyName, Sector, Consumption (MWh).
-    """
+    """Read the workbook and return a clean long-format DataFrame."""
     df_raw = pd.read_excel(path, sheet_name=sheet_name, header=None)
     header_row_idx = _find_header_row(df_raw)
     if header_row_idx is None:
@@ -58,12 +42,15 @@ def load_raw_consumption(path, sheet_name="Electricity Consumption") -> pd.DataF
     return data[["Date", "CountyName", "Sector", "Consumption (MWh)"]]
 
 
-def main(force: bool = False) -> None:
-    """
-    Read COUNTY_CONSUMPTION_XLSX and write COUNTY_CONSUMPTION_MONTHLY_FILE.
+def statewide_monthly_mwh(long_df: pd.DataFrame) -> pd.Series:
+    """Statewide monthly consumption (MWh): every county and sector summed."""
+    out = long_df.groupby("Date")["Consumption (MWh)"].sum().sort_index()
+    out.index = pd.DatetimeIndex(out.index.values, name=None)
+    return out.rename("total_sales")
 
-    Idempotent: skips entirely if the output already exists, unless force=True.
-    """
+
+def main(force: bool = False) -> None:
+    """Read COUNTY_CONSUMPTION_XLSX and write COUNTY_CONSUMPTION_MONTHLY_FILE."""
     from componergy.netcdf_io import atomic_to_csv
     from componergy.paths import COUNTY_CONSUMPTION_XLSX, COUNTY_CONSUMPTION_MONTHLY_FILE, ensure_dirs
 
