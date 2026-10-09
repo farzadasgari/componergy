@@ -48,3 +48,9 @@ def make_generation(start="2001-01-01", end="2025-08-01", seed=2):
     df = pd.DataFrame({k: v * total * (1 + rng.normal(0, 0.02, n)) for k, v in shares.items()}, index=idx)
     df["Total"] = df[SOURCE_COLUMNS].sum(axis=1)
     return df
+
+
+def make_demand_mwh(generation_df, import_fraction=0.28, seed=3, start=None, end=None, noise=0.02):
+    rng = np.random.default_rng(seed)
+    d = generation_df["Total"] / (1.0 - import_fraction) * (1 + rng.normal(0, noise, len(generation_df)))
+    return d.loc[start:end] if start or end else d
