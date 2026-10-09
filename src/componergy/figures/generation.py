@@ -11,18 +11,18 @@ import pandas as pd
 import xarray as xr
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-from matplotlib.lines import Line2D
 
 from componergy.figures.trend_stats import compute_area_weights, compute_statewide_mean, compute_linear_trend_with_ci
 from componergy.figures.print_style import SOURCE_STYLE, EVENT_STYLE
 from componergy.figures.composite_stats import (
-    series_to_data_array, compute_composite_table, best_lag_slope, zscore, deseasonalize_monthly,
+    compute_composite_table, zscore, deseasonalize_monthly,
     remove_linear_trend, benjamini_hochberg_fdr,
 )
 from componergy.figures.stats_log import write_figure_log
-from componergy.analysis.events import classify_heatwave, classify_drought, classify_compound
-from componergy.analysis.superadditivity import superadditivity_table
-from componergy.analysis.placebo import placebo_table
+from componergy.analysis.events import build_event_masks
+from componergy.analysis.regression import adjusted_composite_table, baseline_adjusted_z
+from componergy.analysis.lag_scan import best_lag_randomization
+from componergy.figures.composite_outputs import write_composite_inference, INFERENCE_NOTE
 from componergy.paths import INDICES_FILE, GENERATION_MONTHLY_FILE, FIGURES_DIR
 
 SMOOTH_MONTHS = 3
@@ -62,12 +62,14 @@ def add_letter(ax, letter, x=0.01, y=0.98, fs=19):
     ax.text(x, y, letter, transform=ax.transAxes, ha="left", va="top", fontsize=fs, clip_on=False)
 
 
-def prepare_data(indices_ds: xr.Dataset, generation_df: pd.DataFrame, sapei_var="sapei_3m", scdhi_var="scdhi_3m"):
+def prepare_data(indices_ds: xr.Dataset, generation_df: pd.DataFrame, sapei_var="sapei_3m", scdhi_var="scdhi_3m",
+                 smooth_months=SMOOTH_MONTHS, baseline="full_record"):
     """Align statewide climate signals with generation shares and classify events."""
     weights = compute_area_weights(indices_ds["lat"])
     sti = zscore(compute_statewide_mean(indices_ds["sti"], weights).to_series())
     sapei = zscore(compute_statewide_mean(indices_ds[sapei_var], weights).to_series())
     scdhi = zscore(compute_statewide_mean(indices_ds[scdhi_var], weights).to_series())
+    sti_full, sapei_full, scdhi_full = sti, sapei, scdhi  # untrimmed record: the event baseline
 
     mix_pct = generation_df[SOURCE_COLUMNS].div(generation_df["Total"], axis=0) * 100.0
     mix_pct_sm = mix_pct.rolling(SMOOTH_MONTHS, center=True, min_periods=1).mean()
@@ -80,15 +82,12 @@ def prepare_data(indices_ds: xr.Dataset, generation_df: pd.DataFrame, sapei_var=
     mix_z_local = mix_pct_sm.apply(deseasonalize_monthly, axis=0).apply(zscore, axis=0)
     mix_z_detrended = mix_pct_sm.apply(remove_linear_trend, axis=0).apply(zscore, axis=0)
 
-    heat = classify_heatwave(series_to_data_array(sti)).to_series()
-    drought = classify_drought(series_to_data_array(sapei)).to_series()
-    compound = classify_compound(series_to_data_array(scdhi)).to_series()
-
-    heat_only = heat & (~drought)
-    drought_only = drought & (~heat)
-    normal = ~(heat | drought | compound)
-
-    event_masks = {"Heatwave": heat_only, "Drought": drought_only, "Compound": compound}
+    # One shared event definition for every composite figure (see analysis.events.build_event_masks).
+    event_masks, normal, event_meta, event_flags = build_event_masks(
+        sti_full, sapei_full, scdhi_full, window_index=common,
+        smooth_months=smooth_months, baseline=baseline, return_flags=True,
+    )
+    compound = event_masks["Compound"]
 
     return {
         "drivers": {"STI": sti, "SAPEI": sapei, "SCDHI": scdhi},
@@ -98,6 +97,8 @@ def prepare_data(indices_ds: xr.Dataset, generation_df: pd.DataFrame, sapei_var=
         "mix_z_detrended": mix_z_detrended,
         "event_masks": event_masks,
         "normal": normal,
+        "event_meta": event_meta,
+        "event_flags": event_flags,
         "compound_months": mix_pct_sm.index[compound.reindex(mix_pct_sm.index).fillna(False).values],
     }
 
@@ -203,7 +204,7 @@ def save_two_panel_figure(fig_path, left_label, right_label, left_plot_fn, right
     plt.close(fig)
 
 
-def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
+def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m", baseline: str = "full_record") -> None:
     """Build all 6 output figures, the composite/lag-scan CSVs, and the log/json summary."""
     from componergy.netcdf_io import atomic_to_csv
 
@@ -215,7 +216,7 @@ def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
     generation_df = pd.read_csv(GENERATION_MONTHLY_FILE, parse_dates=[0], index_col=0)
     generation_df.index = pd.DatetimeIndex(generation_df.index.values, name=None)
 
-    data = prepare_data(indices_ds, generation_df, sapei_var=sapei_var, scdhi_var=scdhi_var)
+    data = prepare_data(indices_ds, generation_df, sapei_var=sapei_var, scdhi_var=scdhi_var, baseline=baseline)
 
     comp_total = compute_composite_table(data["mix_z_total"], data["event_masks"], data["normal"])
     comp_total.insert(0, "Mode", "total_share")
@@ -223,20 +224,30 @@ def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
     comp_local.insert(0, "Mode", "deseasonalized_share")
     comp_detrended = compute_composite_table(data["mix_z_detrended"], data["event_masks"], data["normal"])
     comp_detrended.insert(0, "Mode", "detrended_share")
-    comp_all = pd.concat([comp_total, comp_local, comp_detrended], ignore_index=True)
+    comp_adjusted = adjusted_composite_table(data["mix_pct_sm"], data["event_masks"], data["normal"],
+                                             trend="quadratic")
+    comp_adjusted.insert(0, "Mode", "adjusted_share")
+    comp_all = pd.concat([comp_total, comp_local, comp_detrended, comp_adjusted], ignore_index=True)
 
     comp_all["q_value"] = comp_all.groupby("Mode")["p_value"].transform(
         lambda p: benjamini_hochberg_fdr(p.values)
     )
 
-    lag_rows = []
-    for mode_name, mix_z in [("total_share", data["mix_z_total"]), ("deseasonalized_share", data["mix_z_local"]),
-                             ("detrended_share", data["mix_z_detrended"])]:
+    always_on = pd.Series(True, index=data["mix_pct_sm"].index)
+    adj_mix = baseline_adjusted_z(data["mix_pct_sm"], always_on, trend="quadratic")
+    adj_drivers = {k: baseline_adjusted_z(v, always_on, trend="quadratic") for k, v in data["drivers"].items()}
+    lag_rows, k = [], 0
+    for mode_name, mix_z, drivers in [
+        ("total_share", data["mix_z_total"], data["drivers"]),
+        ("deseasonalized_share", data["mix_z_local"], data["drivers"]),
+        ("detrended_share", data["mix_z_detrended"], data["drivers"]),
+        ("adjusted_share", adj_mix, adj_drivers)]:
         for src in mix_z.columns:
             y = mix_z[src].dropna()
-            for driver_name, driver_series in data["drivers"].items():
+            for driver_name, driver_series in drivers.items():
                 x = driver_series.reindex(y.index)
-                best = best_lag_slope(x, y, lags=LAGS, min_n=60)
+                best = best_lag_randomization(x, y, lags=LAGS, min_n=60, n_perm=999, seed=42 + k)
+                k += 1
                 if best is None:
                     continue
                 lag_rows.append({"Mode": mode_name, "Source": src, "Driver": driver_name, **best})
@@ -251,7 +262,7 @@ def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
     save_two_panel_figure(
         out_dir / "figure_02A_mix_composite.jpg", "A", "B",
         left_plot_fn=lambda ax: plot_mix_timeseries(ax, data),
-        right_plot_fn=lambda ax: plot_mix_composite_bars(ax, comp_total),
+        right_plot_fn=lambda ax: plot_mix_composite_bars(ax, comp_adjusted),
     )
     single_source_panels = [
         ("figure_02B_fossil.jpg", "C", "D", "Fossil"),
@@ -264,18 +275,14 @@ def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
         save_two_panel_figure(
             out_dir / fname, left_letter, right_letter,
             left_plot_fn=lambda ax, s=src: plot_single_source_timeseries(ax, data, s),
-            right_plot_fn=lambda ax, s=src: plot_single_source_composite_bars(ax, comp_total, s),
+            right_plot_fn=lambda ax, s=src: plot_single_source_composite_bars(ax, comp_adjusted, s),
         )
 
     atomic_to_csv(comp_all, out_dir / "figure_02_composite.csv", index=False)
-    superadd_df = superadditivity_table(
-        data["mix_z_detrended"], data["event_masks"], data["normal"], label="Source",
-    )
-    atomic_to_csv(superadd_df, out_dir / "figure_02_superadditivity.csv", index=False)
-    placebo_df = placebo_table(
-        data["mix_z_detrended"], data["event_masks"], data["normal"], label="Source",
-    )
-    atomic_to_csv(placebo_df, out_dir / "figure_02_placebo.csv", index=False)
+
+    print("computing amplification, robustness and placebo tables...")
+    inference = write_composite_inference(data["mix_pct_sm"], data["event_masks"], data["normal"], out_dir,
+                                          "figure_02", label="Source", trend="quadratic")
     atomic_to_csv(slope_df, out_dir / "figure_02_lag_scan.csv", index=False)
 
     log_sections = {
@@ -286,14 +293,16 @@ def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
             "year_end": int(data["mix_pct_sm"].index.year.max()),
             "n_months": len(data["mix_pct_sm"]),
         },
-        "Event counts": {k: int(v.sum()) for k, v in data["event_masks"].items()},
+        "Event definition (shared across Figures 2 and 4-7)": data["event_meta"],
         "Study period": {
             "period_start": str(data["mix_pct_sm"].index.min().date()),
             "period_end": str(data["mix_pct_sm"].index.max().date()),
             "n_months": int(len(data["mix_pct_sm"].index)),
         },
-        "Super-additivity by source (detrended mode, FDR-corrected)": superadd_df.to_string(index=False),
-        "Placebo test (shifted event timing, FDR-corrected)": placebo_df.to_string(index=False),
+        "Adjusted event effects (month + quadratic trend; FDR within mode)":
+            comp_adjusted.assign(q_value=lambda d: benjamini_hochberg_fdr(d["p_value"].values)).to_string(index=False),
+        **inference["log_sections"],
+        "Inference": INFERENCE_NOTE,
         "Note": (
             "Three modes are reported for each source's share: total_share "
             "(raw, includes both climate response and secular trend), "
