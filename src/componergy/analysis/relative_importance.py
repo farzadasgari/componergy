@@ -84,3 +84,18 @@ def lmg_table(y: pd.Series, X: pd.DataFrame, n_boot: int = 300, block: int = 12,
                      "CI_lo_share": float(lo), "CI_hi_share": float(hi), "VIF": float(vif[j]),
                      "Total_R2": float(base["total_r2"]), "n": int(len(df))})
     return pd.DataFrame(rows)
+
+
+def incremental_r2_block_permutation(y: pd.Series, base: pd.Series, add: pd.Series,
+                                     n_perm: int = 1999, block: int = 24, seed: int = 42) -> dict:
+    """Does `add` explain y beyond `base`? Increase in R² vs a null that permutes `add` in blocks."""
+    df = pd.concat([y.rename("y"), base.rename("b"), add.rename("a")], axis=1).dropna()
+    if len(df) < 24:
+        return {"delta_r2": np.nan, "p_value": np.nan, "n": int(len(df)), "n_perm": 0}
+    yv, bv, av = df["y"].values, df["b"].values[:, None], df["a"].values
+    observed = _r2(yv, np.column_stack([bv, av])) - _r2(yv, bv)
+    rng = np.random.default_rng(seed)
+    null = np.array([_r2(yv, np.column_stack([bv, block_permute(av, block, rng)])) - _r2(yv, bv)
+                     for _ in range(int(n_perm))])
+    return {"delta_r2": float(observed), "p_value": float((1 + np.sum(null >= observed)) / (len(null) + 1)),
+            "n": int(len(df)), "n_perm": int(len(null))}
