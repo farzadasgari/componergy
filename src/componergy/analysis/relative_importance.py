@@ -43,3 +43,14 @@ def lmg_decomposition(y, X: np.ndarray) -> dict:
             entered.append(j)
     contrib /= len(orders)
     return {"lmg": contrib, "total_r2": r2_of(range(p))}
+
+
+def variance_inflation(X: np.ndarray) -> np.ndarray:
+    """VIF_j = 1 / (1 - R^2 of column j regressed on the others)."""
+    X = np.asarray(X, dtype=float)
+    out = []
+    for j in range(X.shape[1]):
+        others = np.delete(X, j, axis=1)
+        r2 = _r2(X[:, j], others) if others.shape[1] else 0.0
+        out.append(1.0 / max(1.0 - r2, 1e-12))
+    return np.array(out)
