@@ -22,3 +22,8 @@ REGION_ABBREV = {
 def _initials(name: str, width: int = 3) -> str:
     parts = [p for p in name.replace("-", " ").split() if p]
     return "".join(p[0].upper() for p in parts[:width])
+
+
+def region_abbrev(name: str) -> str:
+    """The manuscript abbreviation, or initials for a name that has none."""
+    return REGION_ABBREV.get(name, _initials(name))
