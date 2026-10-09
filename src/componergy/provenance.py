@@ -23,3 +23,10 @@ def sha256_file(path, chunk: int = 1 << 20) -> str:
         for block in iter(lambda: f.read(chunk), b""):
             h.update(block)
     return h.hexdigest()
+
+
+def directory_fingerprint(path, pattern: str = "*") -> dict:
+    files = sorted(p for p in Path(path).rglob(pattern) if p.is_file())
+    listing = "\n".join(f"{p.relative_to(path)}:{p.stat().st_size}" for p in files)
+    return {"n_files": len(files), "total_bytes": int(sum(p.stat().st_size for p in files)),
+            "listing_sha256": hashlib.sha256(listing.encode()).hexdigest()}
