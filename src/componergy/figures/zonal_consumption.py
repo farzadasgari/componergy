@@ -21,12 +21,13 @@ import matplotlib.patheffects as pe
 
 from componergy.figures.trend_stats import compute_area_weights, compute_statewide_mean
 from componergy.figures.composite_stats import (
-    series_to_data_array, compute_composite_table, benjamini_hochberg_fdr, zscore, deseasonalize_monthly,
+    benjamini_hochberg_fdr, zscore, deseasonalize_monthly,
 )
 from componergy.figures.stats_log import write_figure_log
-from componergy.analysis.events import classify_heatwave, classify_drought, classify_compound
-from componergy.analysis.superadditivity import superadditivity_table
-from componergy.analysis.placebo import placebo_table
+from componergy.figures.labels import region_abbrev, region_label_table, format_region_key
+from componergy.analysis.events import build_event_masks
+from componergy.analysis.regression import adjusted_composite_table
+from componergy.figures.composite_outputs import write_composite_inference, INFERENCE_NOTE
 
 Q_ALPHA_FDR = 0.05
 Q_ALPHA_FDR_MARGINAL = 0.10
@@ -51,7 +52,7 @@ logging.getLogger("matplotlib.font_manager").setLevel(logging.ERROR)
 
 def prepare_zonal_data(indices_ds: xr.Dataset, consumption_long_df: pd.DataFrame, regions_gdf,
                        county_region_map: pd.DataFrame,
-                       sapei_var="sapei_3m", scdhi_var="scdhi_3m", smooth_months=3):
+                       sapei_var="sapei_3m", scdhi_var="scdhi_3m", smooth_months=3, baseline="full_record"):
     """Classify statewide climate events, and prepare regional consumption in both raw (GWh) and z-scored form."""
     from componergy.figures.regional import aggregate_consumption_to_regional
 
@@ -63,6 +64,7 @@ def prepare_zonal_data(indices_ds: xr.Dataset, consumption_long_df: pd.DataFrame
     sti = zscore(compute_statewide_mean(indices_ds["sti"], weights).to_series())
     sapei = zscore(compute_statewide_mean(indices_ds[sapei_var], weights).to_series())
     scdhi = zscore(compute_statewide_mean(indices_ds[scdhi_var], weights).to_series())
+    sti_full, sapei_full, scdhi_full = sti, sapei, scdhi  # untrimmed record: the event baseline
 
     start = max(electricity_raw.index.min(), sti.index.min(), sapei.index.min(), scdhi.index.min())
     end = min(electricity_raw.index.max(), sti.index.max(), sapei.index.max(), scdhi.index.max())
@@ -74,16 +76,10 @@ def prepare_zonal_data(indices_ds: xr.Dataset, consumption_long_df: pd.DataFrame
     electricity_local = electricity_sm.apply(deseasonalize_monthly, axis=0)
     electricity_z = electricity_local.apply(zscore, axis=0)
 
-    heat = classify_heatwave(series_to_data_array(sti)).to_series()
-    drought = classify_drought(series_to_data_array(sapei)).to_series()
-    compound = classify_compound(series_to_data_array(scdhi)).to_series()
-    normal = ~(heat | drought | compound)
-
-    event_masks = {
-        "Heatwave": heat & (~drought),
-        "Drought": drought & (~heat),
-        "Compound": compound,
-    }
+    event_masks, normal, event_meta, event_flags = build_event_masks(
+        sti_full, sapei_full, scdhi_full, window_index=sti.index,
+        smooth_months=smooth_months, baseline=baseline, return_flags=True,
+    )
 
     return {
         "regions_order": regions_order,
@@ -91,29 +87,18 @@ def prepare_zonal_data(indices_ds: xr.Dataset, consumption_long_df: pd.DataFrame
         "electricity_z": electricity_z,
         "event_masks": event_masks,
         "normal": normal,
+        "event_meta": event_meta,
+        "event_flags": event_flags,
         "period_start": start,
         "period_end": end,
     }
 
 
-def compute_zonal_composites(data: dict) -> pd.DataFrame:
-    """Event-vs-normal composite per region, in both Delta_z and Delta_pct, FDR-corrected."""
-    z_table = compute_composite_table(data["electricity_z"], data["event_masks"], data["normal"])
-    raw_table = compute_composite_table(data["electricity_raw"], data["event_masks"], data["normal"])
-
-    merged = z_table.merge(
-        raw_table[["Event", "Source", "Mean_event", "Mean_normal"]],
-        on=["Event", "Source"], suffixes=("_z", "_raw"),
-    )
-    merged["Delta_pct"] = 100.0 * (merged["Mean_event_raw"] - merged["Mean_normal_raw"]) / merged["Mean_normal_raw"]
-    merged["q_value"] = benjamini_hochberg_fdr(merged["p_value"].values)
-
-    return merged.rename(columns={"Source": "Region", "Difference": "Delta_z"})
-
-
-def region_abbrev(name: str) -> str:
-    parts = [p for p in name.replace("-", " ").split() if p]
-    return "".join(p[0].upper() for p in parts[:3])
+def compute_zonal_composites(data: dict, trend: str = "linear") -> pd.DataFrame:
+    """Event effect per region, controlling for season and trend, FDR-corrected."""
+    adj = adjusted_composite_table(data["electricity_raw"], data["event_masks"], data["normal"], trend=trend)
+    adj["q_value"] = benjamini_hochberg_fdr(adj["p_value"].values)
+    return adj.rename(columns={"Source": "Region"})
 
 
 def text_color_for_bg(value, norm, cmap_obj, light_thresh=0.55):
@@ -250,11 +235,16 @@ def build_zonal_figure(comp: pd.DataFrame, regions_gdf, county_boundary_dissolve
                   frameon=False, loc="upper left", bbox_to_anchor=(0.01, 0.99),
                   labelspacing=1.6, handletextpad=0.8, borderaxespad=0.2)
 
-    fig.tight_layout(rect=[0.0, 0.0, 0.98, 0.98])
+    fig.tight_layout(rect=[0.0, 0.035, 0.98, 0.98])
+    fig.text(0.5, 0.008,
+             "Heavy outline / bold bubble edge: q < 0.05; light: 0.05 <= q < 0.10 "
+             "(Benjamini-Hochberg across all region x event tests). Effects are season- and trend-adjusted "
+             "(month effects + trend); significance by calendar-shift randomization.",
+             ha="center", va="bottom", fontsize=9, color="#333333")
     return fig
 
 
-def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
+def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m", baseline: str = "full_record") -> None:
     """Build the zonal figure, its composite CSV, and the log/json."""
     from componergy.download.climate_regions import get_california_climate_regions
     from componergy.download.boundaries import get_california_counties
@@ -276,7 +266,7 @@ def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
 
     print("preparing zonal data...")
     data = prepare_zonal_data(indices_ds, consumption_long_df, regions_gdf, county_region_map,
-                              sapei_var=sapei_var, scdhi_var=scdhi_var)
+                              sapei_var=sapei_var, scdhi_var=scdhi_var, baseline=baseline)
 
     print("computing composites...")
     comp = compute_zonal_composites(data)
@@ -287,15 +277,12 @@ def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
     plt.close(fig)
 
     atomic_to_csv(comp, out_dir / "figure_04_event_composites.csv", index=False)
-    superadd_df = superadditivity_table(
-        data["electricity_z"], data["event_masks"], data["normal"], label="Region",
-    )
-    atomic_to_csv(superadd_df, out_dir / "figure_04_superadditivity.csv", index=False)
 
-    placebo_df = placebo_table(
-        data["electricity_z"], data["event_masks"], data["normal"], label="Region",
-    )
-    atomic_to_csv(placebo_df, out_dir / "figure_04_placebo.csv", index=False)
+    print("computing amplification, robustness and placebo tables...")
+    inference = write_composite_inference(data["electricity_raw"], data["event_masks"], data["normal"],
+                                          out_dir, "figure_04", label="Region")
+    label_table = region_label_table(data["regions_order"])
+    atomic_to_csv(label_table, out_dir / "figure_04_region_abbreviations.csv", index=False)
 
     log_sections = {
         "Overview": {
@@ -304,16 +291,13 @@ def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
             "period_start": str(data["period_start"].date()),
             "period_end": str(data["period_end"].date()),
         },
-        "Event counts (statewide classification)": {k: int(v.sum()) for k, v in data["event_masks"].items()},
-        "Normal period count": int(data["normal"].sum()),
-        "Event composites (FDR-corrected)": comp.to_string(index=False),
-        "Super-additivity by region (FDR-corrected)": superadd_df.to_string(index=False),
-        "Placebo test (shifted event timing, FDR-corrected)": placebo_df.to_string(index=False),
+        "Event definition (shared across Figures 2 and 4-7)": data["event_meta"],
+        "Region abbreviation key (caption text)": format_region_key(data["regions_order"]),
+        "Event effects per region (FDR-corrected)": comp.to_string(index=False),
+        **inference["log_sections"],
         "Note": (
-            "Significance markers (map outline thickness, bubble edge) use "
-            "Benjamini-Hochberg FDR-corrected q-values across all region x "
-            "event tests, not raw p-values, given the number of comparisons "
-            "involved (regions x event types)."
+                INFERENCE_NOTE + " Map outline thickness and bubble edges mark q < 0.05 (heavy) and "
+                                 "0.05 <= q < 0.10 (light), across all region x event tests."
         ),
     }
     write_figure_log(out_dir / "figure_04_zonal_consumption", log_sections)
