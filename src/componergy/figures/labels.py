@@ -27,3 +27,9 @@ def _initials(name: str, width: int = 3) -> str:
 def region_abbrev(name: str) -> str:
     """The manuscript abbreviation, or initials for a name that has none."""
     return REGION_ABBREV.get(name, _initials(name))
+
+
+def duplicate_labels(names) -> list:
+    """Labels used by more than one of `names` (empty when the set is unambiguous)."""
+    labels = [region_abbrev(n) for n in names]
+    return sorted({lab for lab in labels if labels.count(lab) > 1})
