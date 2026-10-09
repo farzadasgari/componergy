@@ -16,7 +16,12 @@ import xarray as xr
 import matplotlib.pyplot as plt
 
 from componergy.analysis.regions import build_county_to_region_map, compute_regional_mean
-from componergy.figures.composite_stats import best_lag_slope, benjamini_hochberg_fdr, compute_incremental_r2, zscore
+from componergy.figures.composite_stats import (
+    best_lag_slope, benjamini_hochberg_fdr, compute_incremental_r2, zscore,
+    deseasonalize_monthly, remove_linear_trend,
+)
+from componergy.analysis.lag_scan import best_lag_randomization
+from componergy.analysis.relative_importance import lmg_table, incremental_r2_block_permutation
 from componergy.figures.stats_log import write_figure_log
 
 SMOOTH_MONTHS = 3
@@ -60,16 +65,27 @@ def aggregate_consumption_to_regional(consumption_long_df: pd.DataFrame,
     return regional
 
 
+def adjust_series(s: pd.Series) -> pd.Series:
+    """Smoothed series -> z-score of its deseasonalized, linearly detrended anomalies."""
+    v = s.dropna()
+    if len(v) < 24:
+        return s * np.nan
+    return zscore(remove_linear_trend(deseasonalize_monthly(v)).reindex(s.index))
+
+
+def _series_for(data: dict, name: str, adjusted: bool) -> pd.DataFrame:
+    key = f"{name}_adj" if adjusted else f"{name}_z"
+    if key in data:
+        return data[key]
+    if adjusted and f"{name}_z" in data:  # a caller that only built the legacy frames
+        return data[f"{name}_z"].apply(adjust_series, axis=0)
+    raise KeyError(key)
+
+
 def prepare_data(indices_ds: xr.Dataset, consumption_long_df: pd.DataFrame, regions_gdf,
                  county_region_map: pd.DataFrame,
                  sapei_var="sapei_3m", scdhi_var="scdhi_3m"):
-    """
-    Align regional electricity consumption with regional climate signals.
-
-    Returns a dict with regions_order (list) and four smoothed,
-    z-scored, common-period DataFrames (time index, one column per
-    region): electricity_z, sti_z, sapei_z, scdhi_z, plus period_start/end.
-    """
+    """Align regional electricity consumption with regional climate signals."""
     electricity_regional = aggregate_consumption_to_regional(consumption_long_df, county_region_map)
 
     sti_regional = compute_regional_mean(indices_ds["sti"], regions_gdf)
@@ -92,27 +108,27 @@ def prepare_data(indices_ds: xr.Dataset, consumption_long_df: pd.DataFrame, regi
         smoothed = df.rolling(SMOOTH_MONTHS, center=True, min_periods=1).mean()
         return smoothed.apply(zscore, axis=0)
 
+    def smooth_and_adjust(df):
+        smoothed = df.rolling(SMOOTH_MONTHS, center=True, min_periods=1).mean()
+        return smoothed.apply(adjust_series, axis=0)
+
     return {
         "regions_order": regions_order,
         "electricity_z": smooth_and_z(electricity_regional),
         "sti_z": smooth_and_z(sti_regional),
         "sapei_z": smooth_and_z(sapei_regional),
         "scdhi_z": smooth_and_z(scdhi_regional),
+        "electricity_adj": smooth_and_adjust(electricity_regional),
+        "sti_adj": smooth_and_adjust(sti_regional),
+        "sapei_adj": smooth_and_adjust(sapei_regional),
+        "scdhi_adj": smooth_and_adjust(scdhi_regional),
         "period_start": start,
         "period_end": end,
     }
 
 
 def plot_heatmap(ax, data, regions_order, row_label, vlim=2.5, cmap="viridis"):
-    """
-    One heatmap panel: regions on the y-axis, time on the x-axis.
-
-    NaN cells (a region with no overlapping grid cells for this
-    variable, see analysis.regions.compute_regional_mean) render as a
-    distinct light gray rather than the colormap's own out-of-range
-    color or the page's white background, so missing data reads as
-    missing rather than as a value or blank space.
-    """
+    """One heatmap panel: regions on the y-axis, time on the x-axis."""
     mat = data[regions_order].T.values
     cmap_obj = plt.get_cmap(cmap).copy()
     cmap_obj.set_bad(color="#dddddd")
@@ -151,29 +167,33 @@ def build_heatmap_figure(data):
     return fig
 
 
-def compute_dominance_and_lag_summary(data):
-    """
-    Best-lag driver regression per (region, driver), with FDR-corrected q-values.
-
-    One best_lag_slope() call per (region, driver) pair; the resulting
-    p-values are corrected together across the whole table via
-    benjamini_hochberg_fdr(), not read individually against 0.05.
-    """
+def compute_dominance_and_lag_summary(data, adjusted: bool = True, method: str = "randomization",
+                                      n_perm: int = 1999):
+    """Best-lag driver regression per (region, driver), with FDR-corrected q-values."""
+    if method not in ("randomization", "ols_naive"):
+        raise ValueError(f"method must be 'randomization' or 'ols_naive', got {method!r}")
     regions_order = data["regions_order"]
-    drivers = {"STI": data["sti_z"], "SAPEI": data["sapei_z"], "SCDHI": data["scdhi_z"]}
+    y_all = _series_for(data, "electricity", adjusted)
+    drivers = {"STI": _series_for(data, "sti", adjusted), "SAPEI": _series_for(data, "sapei", adjusted),
+               "SCDHI": _series_for(data, "scdhi", adjusted)}
 
-    rows = []
+    rows, k = [], 0
     for region in regions_order:
-        y = data["electricity_z"][region].dropna()
+        y = y_all[region].dropna()
         for driver_name, driver_df in drivers.items():
             x = driver_df[region].reindex(y.index)
-            best = best_lag_slope(x, y, lags=LAGS, min_n=24)
+            if method == "randomization":
+                best = best_lag_randomization(x, y, lags=LAGS, min_n=24, n_perm=n_perm, seed=42 + k)
+            else:
+                best = best_lag_slope(x, y, lags=LAGS, min_n=24)
+            k += 1
             if best is None:
                 continue
             rows.append({"Region": region, "Driver": driver_name, **best})
 
     summary = pd.DataFrame(rows)
-    summary["q_value"] = benjamini_hochberg_fdr(summary["p_value"].values)
+    if len(summary):
+        summary["q_value"] = benjamini_hochberg_fdr(summary["p_value"].values)
     return summary
 
 
@@ -202,29 +222,49 @@ def plot_slope_bars(ax, summary, regions_order, alpha_fdr=0.05):
     ax.spines["right"].set_visible(False)
 
 
-def compute_incremental_r2_by_region(data):
-    """
-    Per-region incremental R^2 of SCDHI beyond STI, FDR-corrected across regions.
-
-    See composite_stats.compute_incremental_r2 for the nested-model
-    F-test this wraps, and why it is not called "dominance analysis".
-    """
+def compute_incremental_r2_by_region(data, adjusted: bool = True, n_perm: int = 1999):
+    """Per-region incremental R^2 of SCDHI beyond STI, FDR-corrected across regions."""
+    y_all = _series_for(data, "electricity", adjusted)
+    sti_all, scdhi_all = _series_for(data, "sti", adjusted), _series_for(data, "scdhi", adjusted)
     rows = []
-    for region in data["regions_order"]:
-        y = data["electricity_z"][region].dropna()
-        sti = data["sti_z"][region].reindex(y.index)
-        scdhi = data["scdhi_z"][region].reindex(y.index)
+    for i, region in enumerate(data["regions_order"]):
+        y = y_all[region].dropna()
+        sti = sti_all[region].reindex(y.index)
+        scdhi = scdhi_all[region].reindex(y.index)
 
         combined = pd.concat([y.rename("y"), sti.rename("sti"), scdhi.rename("scdhi")], axis=1).dropna()
         if len(combined) < 24:
             continue
 
         result = compute_incremental_r2(combined["y"], combined["sti"], combined["scdhi"])
-        rows.append({"Region": region, **result})
+        perm = incremental_r2_block_permutation(combined["y"], combined["sti"], combined["scdhi"],
+                                                n_perm=n_perm, seed=42 + i)
+        rows.append({"Region": region, **result, "p_value_F_naive": result.get("p_value"),
+                     "p_value": perm["p_value"], "delta_r2_permutation": perm["delta_r2"],
+                     "n_perm": perm["n_perm"]})
 
     incremental = pd.DataFrame(rows)
-    incremental["q_value"] = benjamini_hochberg_fdr(incremental["p_value"].values)
+    if len(incremental):
+        incremental["q_value"] = benjamini_hochberg_fdr(incremental["p_value"].values)
     return incremental
+
+
+def compute_relative_importance_by_region(data, lags=(0, 2), n_boot: int = 300, adjusted: bool = True):
+    """LMG ("general dominance") decomposition of STI, SAPEI and SCDHI per region and lag."""
+    y_all = _series_for(data, "electricity", adjusted)
+    x_all = {"STI": _series_for(data, "sti", adjusted), "SAPEI": _series_for(data, "sapei", adjusted),
+             "SCDHI": _series_for(data, "scdhi", adjusted)}
+    parts = []
+    for region in data["regions_order"]:
+        y = y_all[region].dropna()
+        for lag in lags:
+            X = pd.DataFrame({n: df[region].shift(lag) for n, df in x_all.items()}).reindex(y.index)
+            t = lmg_table(y, X, n_boot=n_boot, seed=42)
+            if len(t):
+                t.insert(0, "Lag", lag)
+                t.insert(0, "Region", region)
+                parts.append(t)
+    return pd.concat(parts, ignore_index=True) if parts else pd.DataFrame()
 
 
 def compute_sign_consistency(summary: pd.DataFrame) -> pd.DataFrame:
@@ -237,13 +277,7 @@ def compute_sign_consistency(summary: pd.DataFrame) -> pd.DataFrame:
 
 
 def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
-    """
-    Build the heatmap and slope-bar figures, the five summary CSVs, and the log/json.
-
-    Requires COUNTY_CONSUMPTION_XLSX to already exist locally (restricted
-    CEC data -- see preprocessing.consumption_cec); the climate-regions
-    and county-boundary downloads are cached automatically on first use.
-    """
+    """Build the heatmap and slope-bar figures, the five summary CSVs, and the log/json."""
     from componergy.download.climate_regions import get_california_climate_regions
     from componergy.download.boundaries import get_california_counties
     from componergy.preprocessing.consumption_cec import load_raw_consumption
@@ -266,7 +300,9 @@ def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
 
     print("computing statistics...")
     summary = compute_dominance_and_lag_summary(data)
+    summary_legacy = compute_dominance_and_lag_summary(data, adjusted=False, method="ols_naive")
     incremental = compute_incremental_r2_by_region(data)
+    relative = compute_relative_importance_by_region(data)
     sign_check = compute_sign_consistency(summary)
 
     dominance = (
@@ -297,7 +333,10 @@ def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
     slope_fig.savefig(out_dir / "figure_03B_slope.jpg", bbox_inches="tight")
     plt.close(slope_fig)
 
-    atomic_to_csv(dominance, out_dir / "figure_03_dominance.csv", index=False)
+    atomic_to_csv(dominance, out_dir / "figure_03_top_driver_by_region.csv", index=False)
+    atomic_to_csv(summary, out_dir / "figure_03_lag_scan.csv", index=False)
+    atomic_to_csv(summary_legacy, out_dir / "figure_03_lag_scan_legacy_method.csv", index=False)
+    atomic_to_csv(relative, out_dir / "figure_03_relative_importance.csv", index=False)
     atomic_to_csv(driver_stats, out_dir / "figure_03_driver_stats.csv", index=False)
     atomic_to_csv(lag_summary, out_dir / "figure_03_lag_summary.csv", index=False)
     atomic_to_csv(sign_check, out_dir / "figure_03_sign_consistency.csv")
@@ -315,7 +354,12 @@ def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
             "method": "majority area overlap (EPSG:3310)",
             "n_counties_mapped": len(county_region_map),
         },
-        "Dominant driver per region (highest R2)": dominance.to_string(index=False),
+        "Driver with the highest UNIVARIATE R2 per region (this is not a dominance analysis)": dominance.to_string(
+            index=False),
+        "Relative importance, LMG decomposition (the dominance analysis): shares add to the joint R2": relative.to_string(
+            index=False),
+        "Lag scan, LEGACY method (unadjusted series, OLS p at the selected lag; shown for comparison only)": summary_legacy.to_string(
+            index=False),
         "Driver overall statistics across regions": driver_stats.to_string(index=False),
         "Lag summary per driver": lag_summary.to_string(index=False),
         "Sign consistency of slopes": sign_check.to_string(),
@@ -325,9 +369,7 @@ def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
             "zones, or utility planning areas; regional climate-electricity "
             "relationships shown here should not be read as grid-system risk "
             "without separately modeling balancing areas, transmission, and "
-            "imports. All p-values are FDR-corrected (Benjamini-Hochberg) "
-            "across regions within each driver; q_value < 0.05 is the "
-            "significance criterion used for shading in figure."
+            "imports."
         ),
     }
     write_figure_log(out_dir / "figure_03_regional", log_sections)
