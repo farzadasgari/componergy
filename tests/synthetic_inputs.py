@@ -69,3 +69,19 @@ def make_consumption_long(n_counties=10, start="2008-01-01", end="2024-12-01", s
             rows.append(pd.DataFrame({"Date": dates, "CountyName": f"COUNTY{c:02d}", "Sector": sector,
                                       "Consumption (MWh)": vals}))
     return pd.concat(rows, ignore_index=True)
+
+
+def make_geography(n_counties=10):
+    """Five vertical region strips; each county is a small square wholly inside one strip."""
+    regions = gpd.GeoDataFrame(
+        {"Region": REGION_NAMES},
+        geometry=[Polygon([(-124 + 1.9 * i, 32), (-122.2 + 1.9 * i, 32), (-122.2 + 1.9 * i, 42), (-124 + 1.9 * i, 42)])
+                  for i in range(5)], crs="EPSG:4326")
+    polys, names = [], []
+    for c in range(n_counties):
+        strip = c % 5
+        cx, cy = -123.1 + 1.9 * strip, 33.0 + 0.9 * c
+        polys.append(Polygon([(cx - 0.3, cy - 0.3), (cx + 0.3, cy - 0.3), (cx + 0.3, cy + 0.3), (cx - 0.3, cy + 0.3)]))
+        names.append(f"COUNTY{c:02d}")
+    counties = gpd.GeoDataFrame({"CountyName": names}, geometry=polys, crs="EPSG:4326")
+    return regions, counties
