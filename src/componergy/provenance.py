@@ -66,3 +66,16 @@ def git_info(root) -> dict:
     status = run("status", "--porcelain")
     return {"commit": run("rev-parse", "HEAD"), "describe": run("describe", "--tags", "--always"),
             "dirty": (bool(status) if status is not None else None)}
+
+
+def build_manifest(inputs: dict, outputs: dict, root, seeds: dict | None = None, extra: dict | None = None) -> dict:
+    return {
+        "created_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "code": git_info(root),
+        "python": sys.version.split()[0], "platform": platform.platform(),
+        "packages": package_versions(),
+        "seeds": SEEDS if seeds is None else seeds,
+        "inputs": {k: describe_path(v) for k, v in inputs.items()},
+        "outputs": {k: describe_path(v) for k, v in outputs.items()},
+        **(extra or {}),
+    }
