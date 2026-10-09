@@ -24,9 +24,9 @@ from componergy.figures.composite_stats import (
     series_to_data_array, compute_composite_table, benjamini_hochberg_fdr, zscore, deseasonalize_monthly,
 )
 from componergy.figures.stats_log import write_figure_log
-from componergy.analysis.events import classify_heatwave, classify_drought, classify_compound
-from componergy.analysis.superadditivity import superadditivity_table
-from componergy.analysis.placebo import placebo_table
+from componergy.analysis.events import build_event_masks
+from componergy.analysis.regression import adjusted_composite_table
+from componergy.figures.composite_outputs import write_composite_inference, INFERENCE_NOTE
 
 Q_ALPHA_FDR = 0.05
 Q_ALPHA_FDR_MARGINAL = 0.10
@@ -71,7 +71,7 @@ def aggregate_consumption_by_sector(consumption_long_df: pd.DataFrame) -> pd.Dat
 
 
 def prepare_sector_data(indices_ds: xr.Dataset, consumption_long_df: pd.DataFrame,
-                        sapei_var="sapei_3m", scdhi_var="scdhi_3m", smooth_months=3):
+                        sapei_var="sapei_3m", scdhi_var="scdhi_3m", smooth_months=3, baseline="full_record"):
     """Classify statewide climate events and prepare statewide sector consumption in raw (GWh) and z-scored form."""
     sector_raw = aggregate_consumption_by_sector(consumption_long_df)
     sectors_order = [s for s in SECTOR_ORDER if s in sector_raw.columns] + \
@@ -82,6 +82,7 @@ def prepare_sector_data(indices_ds: xr.Dataset, consumption_long_df: pd.DataFram
     sti = zscore(compute_statewide_mean(indices_ds["sti"], weights).to_series())
     sapei = zscore(compute_statewide_mean(indices_ds[sapei_var], weights).to_series())
     scdhi = zscore(compute_statewide_mean(indices_ds[scdhi_var], weights).to_series())
+    sti_full, sapei_full, scdhi_full = sti, sapei, scdhi
 
     start = max(sector_raw.index.min(), sti.index.min(), sapei.index.min(), scdhi.index.min())
     end = min(sector_raw.index.max(), sti.index.max(), sapei.index.max(), scdhi.index.max())
@@ -93,16 +94,10 @@ def prepare_sector_data(indices_ds: xr.Dataset, consumption_long_df: pd.DataFram
     sector_local = sector_sm.apply(deseasonalize_monthly, axis=0)
     sector_z = sector_local.apply(zscore, axis=0)
 
-    heat = classify_heatwave(series_to_data_array(sti)).to_series()
-    drought = classify_drought(series_to_data_array(sapei)).to_series()
-    compound = classify_compound(series_to_data_array(scdhi)).to_series()
-    normal = ~(heat | drought | compound)
-
-    event_masks = {
-        "Heatwave": heat & (~drought),
-        "Drought": drought & (~heat),
-        "Compound": compound,
-    }
+    event_masks, normal, event_meta, event_flags = build_event_masks(
+        sti_full, sapei_full, scdhi_full, window_index=sti.index,
+        smooth_months=smooth_months, baseline=baseline, return_flags=True,
+    )
 
     return {
         "sectors_order": sectors_order,
@@ -110,25 +105,19 @@ def prepare_sector_data(indices_ds: xr.Dataset, consumption_long_df: pd.DataFram
         "sector_z": sector_z,
         "event_masks": event_masks,
         "normal": normal,
+        "event_meta": event_meta,
+        "event_flags": event_flags,
         "period_start": start,
         "period_end": end,
     }
 
 
-def compute_sector_composites(data: dict) -> pd.DataFrame:
-    """Event-vs-normal composite per sector, in Delta_GWh/Delta_pct/Delta_z, FDR-corrected."""
-    z_table = compute_composite_table(data["sector_z"], data["event_masks"], data["normal"])
-    raw_table = compute_composite_table(data["sector_raw"], data["event_masks"], data["normal"])
-
-    merged = z_table.merge(
-        raw_table[["Event", "Source", "Mean_event", "Mean_normal"]],
-        on=["Event", "Source"], suffixes=("_z", "_raw"),
-    )
-    merged["Delta_GWh"] = merged["Mean_event_raw"] - merged["Mean_normal_raw"]
-    merged["Delta_pct"] = 100.0 * merged["Delta_GWh"] / merged["Mean_normal_raw"]
-    merged["q_value"] = benjamini_hochberg_fdr(merged["p_value"].values)
-
-    return merged.rename(columns={"Source": "Sector", "Difference": "Delta_z"})
+def compute_sector_composites(data: dict, trend: str = "linear") -> pd.DataFrame:
+    """Event effect per sector (Delta_GWh / Delta_pct / Delta_z), season- and trend-adjusted, FDR-corrected."""
+    adj = adjusted_composite_table(data["sector_raw"], data["event_masks"], data["normal"], trend=trend)
+    adj["Delta_GWh"] = adj["Delta_native"]
+    adj["q_value"] = benjamini_hochberg_fdr(adj["p_value"].values)
+    return adj.rename(columns={"Source": "Sector"})
 
 
 def build_sector_wheel_figure(comp: pd.DataFrame, sectors_order, events_order=("Heatwave", "Drought", "Compound")):
@@ -251,9 +240,8 @@ def build_sector_wheel_figure(comp: pd.DataFrame, sectors_order, events_order=("
     return fig
 
 
-def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
-    """
-    Build the sector wheel figure, its composite CSV, and the log/json.
+def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m", baseline: str = "full_record") -> None:
+    """Build the sector wheel figure, its composite CSV, and the log/json.
 
     Requires COUNTY_CONSUMPTION_XLSX to already exist locally (restricted
     CEC data).
@@ -270,7 +258,8 @@ def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
     indices_ds = xr.open_dataset(INDICES_FILE)
 
     print("preparing sector data...")
-    data = prepare_sector_data(indices_ds, consumption_long_df, sapei_var=sapei_var, scdhi_var=scdhi_var)
+    data = prepare_sector_data(indices_ds, consumption_long_df, sapei_var=sapei_var, scdhi_var=scdhi_var,
+                               baseline=baseline)
 
     print("computing composites...")
     comp = compute_sector_composites(data)
@@ -282,15 +271,9 @@ def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
 
     atomic_to_csv(comp, out_dir / "figure_05_sector_composites.csv", index=False)
 
-    superadd_df = superadditivity_table(
-        data["sector_z"], data["event_masks"], data["normal"], label="Sector",
-    )
-    atomic_to_csv(superadd_df, out_dir / "figure_05_superadditivity.csv", index=False)
-
-    placebo_df = placebo_table(
-        data["sector_z"], data["event_masks"], data["normal"], label="Sector",
-    )
-    atomic_to_csv(placebo_df, out_dir / "figure_05_placebo.csv", index=False)
+    print("computing amplification, robustness and placebo tables...")
+    inference = write_composite_inference(data["sector_raw"], data["event_masks"], data["normal"],
+                                          out_dir, "figure_05", label="Sector")
 
     log_sections = {
         "Overview": {
@@ -299,15 +282,12 @@ def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
             "period_start": str(data["period_start"].date()),
             "period_end": str(data["period_end"].date()),
         },
-        "Event counts (statewide classification)": {k: int(v.sum()) for k, v in data["event_masks"].items()},
-        "Normal period count": int(data["normal"].sum()),
-        "Sector composites (FDR-corrected)": comp.to_string(index=False),
-        "Super-additivity by sector (FDR-corrected)": superadd_df.to_string(index=False),
-        "Placebo test (shifted event timing, FDR-corrected)": placebo_df.to_string(index=False),
+        "Event definition (shared across Figures 2 and 4-7)": data["event_meta"],
+        "Sector effects (FDR-corrected)": comp.to_string(index=False),
+        **inference["log_sections"],
         "Note": (
-            "Significance (ring outline, legend) uses Benjamini-Hochberg "
-            "FDR-corrected q-values across all sector x event tests, not raw "
-            "p-values, given the number of comparisons."
+                INFERENCE_NOTE + " Ring outline uses q across all sector x event tests "
+                                 "(7 sectors x 3 events = 21)."
         ),
     }
     write_figure_log(out_dir / "figure_05_sector_fingerprint", log_sections)
