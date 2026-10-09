@@ -54,3 +54,18 @@ def make_demand_mwh(generation_df, import_fraction=0.28, seed=3, start=None, end
     rng = np.random.default_rng(seed)
     d = generation_df["Total"] / (1.0 - import_fraction) * (1 + rng.normal(0, noise, len(generation_df)))
     return d.loc[start:end] if start or end else d
+
+
+def make_consumption_long(n_counties=10, start="2008-01-01", end="2024-12-01", seed=4):
+    dates = pd.date_range(start, end, freq="MS")
+    n = len(dates)
+    rng = np.random.default_rng(seed)
+    season = np.sin(2 * np.pi * (dates.month.values - 4) / 12)
+    rows = []
+    for c in range(n_counties):
+        for s_i, sector in enumerate(SECTORS):
+            base = 5000.0 * (1 + 0.3 * s_i) * (1 + c / 10)
+            vals = base * (1 + (0.15 if s_i < 2 else 0.05) * season + rng.normal(0, 0.03, n))
+            rows.append(pd.DataFrame({"Date": dates, "CountyName": f"COUNTY{c:02d}", "Sector": sector,
+                                      "Consumption (MWh)": vals}))
+    return pd.concat(rows, ignore_index=True)
