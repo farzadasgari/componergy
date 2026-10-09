@@ -54,3 +54,33 @@ def variance_inflation(X: np.ndarray) -> np.ndarray:
         r2 = _r2(X[:, j], others) if others.shape[1] else 0.0
         out.append(1.0 / max(1.0 - r2, 1e-12))
     return np.array(out)
+
+
+def lmg_table(y: pd.Series, X: pd.DataFrame, n_boot: int = 300, block: int = 12, seed: int = 42) -> pd.DataFrame:
+    """LMG shares with indicative block-bootstrap intervals and VIFs, one row per predictor."""
+    df = pd.concat([y.rename("__y__"), X], axis=1).dropna()
+    names = list(X.columns)
+    if len(df) < 24:
+        return pd.DataFrame(columns=["Predictor", "LMG_R2", "LMG_share", "CI_lo_share", "CI_hi_share", "VIF",
+                                     "Total_R2", "n"])
+    yv, Xv = df["__y__"].values, df[names].values
+    base = lmg_decomposition(yv, Xv)
+    vif = variance_inflation(Xv)
+
+    rng = np.random.default_rng(seed)
+    shares = []
+    for _ in range(n_boot):
+        idx = moving_block_indices(len(df), block, rng)
+        d = lmg_decomposition(yv[idx], Xv[idx])
+        if d["total_r2"] > 1e-9:
+            shares.append(d["lmg"] / d["total_r2"])
+    shares = np.array(shares)
+
+    rows = []
+    for j, name in enumerate(names):
+        share = base["lmg"][j] / base["total_r2"] if base["total_r2"] > 1e-12 else np.nan
+        lo, hi = (np.quantile(shares[:, j], [0.025, 0.975]) if len(shares) >= 20 else (np.nan, np.nan))
+        rows.append({"Predictor": name, "LMG_R2": float(base["lmg"][j]), "LMG_share": float(share),
+                     "CI_lo_share": float(lo), "CI_hi_share": float(hi), "VIF": float(vif[j]),
+                     "Total_R2": float(base["total_r2"]), "n": int(len(df))})
+    return pd.DataFrame(rows)
