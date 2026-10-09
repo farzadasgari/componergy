@@ -43,3 +43,13 @@ def describe_path(path) -> dict:
            "modified_utc": datetime.fromtimestamp(st.st_mtime, tz=timezone.utc).isoformat(timespec="seconds")}
     out["sha256"] = sha256_file(p) if st.st_size <= HASH_LIMIT_BYTES else "skipped (file larger than limit)"
     return out
+
+
+def package_versions(names=PACKAGES) -> dict:
+    out = {}
+    for n in names:
+        try:
+            out[n] = metadata.version(n)
+        except metadata.PackageNotFoundError:
+            out[n] = None
+    return out
