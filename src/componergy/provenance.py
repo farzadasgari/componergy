@@ -79,3 +79,21 @@ def build_manifest(inputs: dict, outputs: dict, root, seeds: dict | None = None,
         "outputs": {k: describe_path(v) for k, v in outputs.items()},
         **(extra or {}),
     }
+
+
+def compare_manifests(a: dict, b: dict) -> dict:
+    """What changed between two manifests: inputs/outputs whose checksum or fingerprint differs, and package versions."""
+
+    def key(d):
+        return d.get("sha256") or d.get("listing_sha256") or d.get("exists")
+
+    changed = {}
+    for section in ("inputs", "outputs"):
+        for name in sorted(set(a.get(section, {})) | set(b.get(section, {}))):
+            ka, kb = key(a.get(section, {}).get(name, {})), key(b.get(section, {}).get(name, {}))
+            if ka != kb:
+                changed[f"{section}.{name}"] = {"a": ka, "b": kb}
+    pk = {n: (a["packages"].get(n), b["packages"].get(n)) for n in set(a["packages"]) | set(b["packages"])
+          if a["packages"].get(n) != b["packages"].get(n)}
+    return {"changed_files": changed, "changed_packages": pk,
+            "same_commit": a["code"].get("commit") == b["code"].get("commit")}
