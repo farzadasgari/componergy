@@ -34,3 +34,17 @@ def make_indices(start="1951-01-01", end="2025-08-01", seed=1, n_lat=6, n_lon=6,
     coords = {"time": times, "lat": np.linspace(32.5, 42.0, n_lat), "lon": np.linspace(-124.0, -114.5, n_lon)}
     return xr.Dataset({"sti": (("time", "lat", "lon"), sti), "sapei_3m": (("time", "lat", "lon"), sapei),
                        "scdhi_3m": (("time", "lat", "lon"), scdhi)}, coords=coords)
+
+
+def make_generation(start="2001-01-01", end="2025-08-01", seed=2):
+    idx = pd.date_range(start, end, freq="MS")
+    n = len(idx)
+    rng = np.random.default_rng(seed)
+    season = np.sin(2 * np.pi * (idx.month.values - 4) / 12)
+    t = np.linspace(0, 1, n)
+    shares = {"Fossil": 0.55 + 0.05 * season, "Hydro": 0.15 - 0.05 * season, "Solar": 0.01 + 0.12 * t,
+              "Wind": 0.04 + 0.03 * t, "Nuclear": np.full(n, 0.08), "Other Renewable": np.full(n, 0.07)}
+    total = 19e6 * (1 + 0.1 * season + rng.normal(0, 0.03, n))
+    df = pd.DataFrame({k: v * total * (1 + rng.normal(0, 0.02, n)) for k, v in shares.items()}, index=idx)
+    df["Total"] = df[SOURCE_COLUMNS].sum(axis=1)
+    return df
