@@ -53,3 +53,16 @@ def package_versions(names=PACKAGES) -> dict:
         except metadata.PackageNotFoundError:
             out[n] = None
     return out
+
+
+def git_info(root) -> dict:
+    def run(*args):
+        try:
+            return subprocess.run(["git", *args], cwd=root, capture_output=True, text=True, timeout=20,
+                                  check=True).stdout.strip()
+        except Exception:
+            return None
+
+    status = run("status", "--porcelain")
+    return {"commit": run("rev-parse", "HEAD"), "describe": run("describe", "--tags", "--always"),
+            "dirty": (bool(status) if status is not None else None)}
