@@ -30,3 +30,16 @@ def directory_fingerprint(path, pattern: str = "*") -> dict:
     listing = "\n".join(f"{p.relative_to(path)}:{p.stat().st_size}" for p in files)
     return {"n_files": len(files), "total_bytes": int(sum(p.stat().st_size for p in files)),
             "listing_sha256": hashlib.sha256(listing.encode()).hexdigest()}
+
+
+def describe_path(path) -> dict:
+    p = Path(path)
+    if not p.exists():
+        return {"path": str(p), "exists": False}
+    if p.is_dir():
+        return {"path": str(p), "exists": True, "kind": "directory", **directory_fingerprint(p)}
+    st = p.stat()
+    out = {"path": str(p), "exists": True, "kind": "file", "size_bytes": int(st.st_size),
+           "modified_utc": datetime.fromtimestamp(st.st_mtime, tz=timezone.utc).isoformat(timespec="seconds")}
+    out["sha256"] = sha256_file(p) if st.st_size <= HASH_LIMIT_BYTES else "skipped (file larger than limit)"
+    return out
