@@ -1,10 +1,4 @@
-"""
-Central orchestration for the componergy data-acquisition pipeline.
-
-Runs all registered download tasks -- currently the California state
-boundary (single file) and NOAA nClimGrid-Daily (many files, downloaded
-in parallel) -- and records every downloaded file in a JSON manifest.
-"""
+"""Central orchestration for the componergy data-acquisition pipeline."""
 
 from __future__ import annotations
 
