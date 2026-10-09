@@ -39,3 +39,23 @@ def double_calm_share(gen_stress: pd.Series, demand_z: pd.Series) -> dict:
             "n_positive_from_both_negative": int(both_negative.sum()),
             "share_of_positive_months_that_are_double_calm":
                 float(both_negative.sum() / n_pos) if n_pos else np.nan}
+
+
+def compare_risk_variants(variants: pd.DataFrame, reference: str = REFERENCE, top_k=(5, 10)) -> pd.DataFrame:
+    """Each variant against the reference: rank agreement, overlap of the worst months, and the peak month."""
+    ref = variants[reference]
+    ref_peak = ref.idxmax()
+    rows = []
+    for name in variants.columns:
+        v = variants[name]
+        rho = float(stats.spearmanr(ref, v)[0])
+        tau = float(stats.kendalltau(ref, v)[0])
+        ranks = v.rank(ascending=False, method="min")
+        row = {"Variant": name, "Spearman_vs_reference": rho, "Kendall_vs_reference": tau,
+               "Peak_month": str(v.idxmax().date()),
+               "Same_peak_month_as_reference": bool(v.idxmax() == ref_peak),
+               "Rank_of_reference_peak_month": int(ranks.loc[ref_peak])}
+        for k in top_k:
+            row[f"Top{k}_overlap_with_reference"] = int(len(set(ref.nlargest(k).index) & set(v.nlargest(k).index)))
+        rows.append(row)
+    return pd.DataFrame(rows)
