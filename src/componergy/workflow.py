@@ -51,3 +51,33 @@ STAGES = (
     Stage("manifest", "make_run_manifest", "checksums, versions, seeds"),
 )
 STAGE_NAMES = tuple(s.name for s in STAGES)
+
+
+def plan(only=None, start=None, end=None, skip_missing=False, baseline=None, demand_source=None,
+         exists=None) -> list:
+    """Ordered list of {stage, command, status}; `exists(name)` says whether a paths constant is on disk."""
+    if exists is None:
+        from componergy import paths
+        exists = lambda n: getattr(paths, n).exists()  # noqa: E731
+    names = list(STAGE_NAMES)
+    for label, val in (("only", only), ("start", start), ("end", end)):
+        for v in ([] if val is None else (val if isinstance(val, (list, tuple)) else [val])):
+            if v not in names:
+                raise ValueError(f"unknown stage {v!r} for --{label}; choose from {names}")
+    lo = names.index(start) if start else 0
+    hi = names.index(end) if end else len(names) - 1
+    selected = [s for s in STAGES[lo:hi + 1] if (not only or s.name in only)]
+
+    out = []
+    for s in selected:
+        cmd = [sys.executable, "-m", f"scripts.{s.script}"]
+        if baseline and s.accepts_baseline:
+            cmd += ["--baseline", baseline]
+        if demand_source and s.accepts_demand_source:
+            cmd += ["--demand-source", demand_source]
+        missing = [n for n in s.needs if not exists(n)]
+        status = "run" if not missing else f"skip (missing: {', '.join(missing)})"
+        if missing and not skip_missing:
+            status = f"BLOCKED (missing: {', '.join(missing)})"
+        out.append({"stage": s.name, "command": cmd, "status": status, "description": s.description})
+    return out
