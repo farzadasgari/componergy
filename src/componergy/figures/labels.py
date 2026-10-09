@@ -55,3 +55,9 @@ def region_label_table(names) -> pd.DataFrame:
         used.add(lab)
         rows.append({"Region": n, "Abbreviation": lab, "Source": "fallback (no manuscript label)"})
     return pd.DataFrame(rows)
+
+
+def format_region_key(names) -> str:
+    """Caption-ready key, e.g. 'NC, North Coast; N-C, North Central; ...'."""
+    t = region_label_table(names)
+    return "; ".join(f"{a}, {r}" for r, a in zip(t["Region"], t["Abbreviation"]))
