@@ -1,9 +1,7 @@
 """
 Supply-demand imbalance figure: statewide Demand - Generation over time,
 event-composite mean shifts, distributional comparison, and a bootstrap
-Risk Attributable Fraction (RAF) forest plot -- how much more likely the
-imbalance is to exceed a normal-period risk threshold during each event
-type.
+Risk Attributable Fraction (RAF) forest plot
 """
 
 from __future__ import annotations
@@ -25,11 +23,14 @@ from componergy.figures.composite_stats import (
     series_to_data_array, compute_composite_table, benjamini_hochberg_fdr, zscore,
 )
 from componergy.figures.stats_log import write_figure_log
-from componergy.analysis.events import classify_heatwave, classify_drought, classify_compound
+from componergy.analysis.events import build_event_masks
 from componergy.analysis.block_bootstrap import block_bootstrap_raf
-from componergy.analysis.superadditivity import superadditivity_test
-from componergy.analysis.placebo import placebo_table
+from componergy.analysis.regression import (
+    adjusted_composite_table, normal_baseline_anomalies, shift_range, DEFAULT_MIN_SHIFT,
+)
+from componergy.analysis.demand_crosscheck import compare_demand_sources
 from componergy.analysis.system_boundary import validate_system_boundary, compute_import_fraction
+from componergy.figures.composite_outputs import write_composite_inference, INFERENCE_NOTE
 
 SMOOTH_MONTHS = 3
 RISK_Q = 0.90
@@ -63,7 +64,8 @@ logging.getLogger("matplotlib.font_manager").setLevel(logging.ERROR)
 
 
 def prepare_imbalance_data(indices_ds: xr.Dataset, generation_df: pd.DataFrame, demand_df: pd.DataFrame,
-                           sapei_var="sapei_3m", scdhi_var="scdhi_3m", smooth_months=SMOOTH_MONTHS):
+                           sapei_var="sapei_3m", scdhi_var="scdhi_3m", smooth_months=SMOOTH_MONTHS,
+                           baseline="full_record"):
     """Align statewide demand, generation, and climate signals; classify events."""
     gen_gwh = generation_df["Total"] / 1000.0
     dem_gwh = demand_df["total_sales"] / 1000.0
@@ -72,35 +74,29 @@ def prepare_imbalance_data(indices_ds: xr.Dataset, generation_df: pd.DataFrame, 
     sti = zscore(compute_statewide_mean(indices_ds["sti"], weights).to_series())
     sapei = zscore(compute_statewide_mean(indices_ds[sapei_var], weights).to_series())
     scdhi = zscore(compute_statewide_mean(indices_ds[scdhi_var], weights).to_series())
-    sti = sti.rolling(smooth_months, center=True, min_periods=1).mean()
-    sapei = sapei.rolling(smooth_months, center=True, min_periods=1).mean()
-    scdhi = scdhi.rolling(smooth_months, center=True, min_periods=1).mean()
+    sti_full, sapei_full, scdhi_full = sti, sapei, scdhi  # untrimmed AND unsmoothed: build_event_masks smooths once
 
     common = gen_gwh.index.intersection(dem_gwh.index).intersection(sti.index).intersection(sapei.index).intersection(
         scdhi.index)
 
     gen_gwh = gen_gwh.loc[common].rolling(smooth_months, center=True, min_periods=1).mean()
     dem_gwh = dem_gwh.loc[common].rolling(smooth_months, center=True, min_periods=1).mean()
-    sti, sapei, scdhi = sti.loc[common], sapei.loc[common], scdhi.loc[common]
 
     imb_gwh = dem_gwh - gen_gwh
     imb_z = zscore(imb_gwh)
 
-    heat = classify_heatwave(series_to_data_array(sti)).to_series()
-    drought = classify_drought(series_to_data_array(sapei)).to_series()
-    compound = classify_compound(series_to_data_array(scdhi)).to_series()
-    normal = ~(heat | drought | compound)
-
-    event_masks = {
-        "Heatwave": heat & (~drought),
-        "Drought": drought & (~heat),
-        "Compound": compound,
-    }
+    event_masks, normal, event_meta, event_flags = build_event_masks(
+        sti_full, sapei_full, scdhi_full, window_index=common,
+        smooth_months=smooth_months, baseline=baseline, return_flags=True,
+    )
+    imb_adj, imb_baseline = normal_baseline_anomalies(imb_gwh, normal)
 
     return {
         "common": common,
         "gen_gwh": gen_gwh, "dem_gwh": dem_gwh, "imb_gwh": imb_gwh, "imb_z": imb_z,
+        "imb_adj": imb_adj, "imb_baseline": imb_baseline,
         "event_masks": event_masks, "normal": normal,
+        "event_meta": event_meta, "event_flags": event_flags,
     }
 
 
@@ -129,46 +125,76 @@ def bootstrap_raf(values_event, values_normal, thr, n_boot=N_BOOT, seed=BOOT_SEE
     return raf, lo, hi, p_e, p_n
 
 
-def compute_imbalance_composites(data: dict, risk_q=RISK_Q, n_boot=N_BOOT, seed=BOOT_SEED):
-    """Event-vs-normal composite (Delta_GWh/Delta_pct/Delta_z, FDR-corrected) plus bootstrap RAF, per event."""
-    imb_gwh = data["imb_gwh"]
-    normal = data["normal"]
+def _raf_stat(values, event_mask, normal_mask, thr):
+    v = np.asarray(values, dtype=float)
+    ok = np.isfinite(v)
+    e, n = v[event_mask & ok], v[normal_mask & ok]
+    if len(e) < 3 or len(n) < 3:
+        return np.nan
+    return float(np.mean(e > thr) / max(np.mean(n > thr), EPS) - 1.0)
 
-    thr_risk = np.nanquantile(imb_gwh[normal.values], risk_q) if normal.sum() > 5 else np.nan
 
-    z_table = compute_composite_table(imb_gwh.to_frame("Imbalance").apply(zscore), data["event_masks"], normal)
-    raw_table = compute_composite_table(imb_gwh.to_frame("Imbalance"), data["event_masks"], normal)
-    merged = z_table.merge(
-        raw_table[["Event", "Source", "Mean_event", "Mean_normal"]],
-        on=["Event", "Source"], suffixes=("_z", "_raw"),
-    )
-    merged["Delta_GWh"] = merged["Mean_event_raw"] - merged["Mean_normal_raw"]
-    merged["Delta_pct"] = 100.0 * merged["Delta_GWh"] / merged["Mean_normal_raw"]
-    merged["q_value"] = benjamini_hochberg_fdr(merged["p_value"].values)
+def raf_shift_test(values, event_mask, normal_mask, thr, min_shift=DEFAULT_MIN_SHIFT):
+    """Is RAF larger than event timing alone produces? Calendar-shift randomization."""
+    v = np.asarray(values, dtype=float)
+    ev, nm = np.asarray(event_mask, dtype=bool), np.asarray(normal_mask, dtype=bool)
+    other = ~(ev | nm)
+    observed = _raf_stat(v, ev, nm, thr)
+    if not np.isfinite(observed):
+        return {"observed": np.nan, "p_upper": np.nan, "p_two_sided": np.nan, "n_shifts": 0}
+    null = np.array([_raf_stat(v, np.roll(ev, int(s)), ~np.roll(ev, int(s)) & ~other, thr)
+                     for s in shift_range(len(v), min_shift)])
+    null = null[np.isfinite(null)]
+    S = len(null)
+    return {"observed": observed, "n_shifts": int(S),
+            "p_upper": float((1 + np.sum(null >= observed)) / (S + 1)),
+            "p_two_sided": float((1 + np.sum(np.abs(null - null.mean()) >= abs(observed - null.mean()))) / (S + 1))}
 
-    x_nm = imb_gwh[normal.values].dropna().values
+
+def compute_imbalance_composites(data: dict, risk_q=RISK_Q, n_boot=N_BOOT, seed=BOOT_SEED, trend="linear"):
+    """Season- and trend-adjusted event effect on the imbalance, plus RAF, per event."""
+    imb_gwh, normal = data["imb_gwh"], data["normal"]
+    imb_adj = data.get("imb_adj")
+    if imb_adj is None:  # derive it rather than depend on the caller having precomputed it
+        imb_adj, _ = normal_baseline_anomalies(imb_gwh, normal, trend=trend)
+
+    adj = adjusted_composite_table(imb_gwh.to_frame("Imbalance"), data["event_masks"], normal, trend=trend)
+    adj["Delta_GWh"] = adj["Delta_native"]
+    adj["q_value"] = benjamini_hochberg_fdr(adj["p_value"].values)
+
+    def risk_threshold(series):
+        return np.nanquantile(series[normal.values], risk_q) if normal.sum() > 5 else np.nan
+
+    thr_adj, thr_raw = risk_threshold(imb_adj), risk_threshold(imb_gwh)
+    x_nm_adj = imb_adj[normal.values].dropna().values
+    x_nm_raw = imb_gwh[normal.values].dropna().values
+
     raf_rows = []
     for i, event_name in enumerate(sorted(data["event_masks"])):
         mask = data["event_masks"][event_name]
-        x_ev = imb_gwh[mask.values].dropna().values
-        raf, lo, hi, p_e, p_n = bootstrap_raf(x_ev, x_nm, thr_risk, n_boot=n_boot, seed=seed + i)
+        ev_arr = mask.reindex(imb_gwh.index).fillna(False).values
+        nm_arr = normal.reindex(imb_gwh.index).fillna(False).values
 
-        block_res = block_bootstrap_raf(
-            imb_gwh.values, mask.reindex(imb_gwh.index).fillna(False).values,
-            normal.reindex(imb_gwh.index).fillna(False).values,
-            thr_risk, n_boot=n_boot, seed=seed + i,
-        )
+        raf, lo, hi, p_e, p_n = bootstrap_raf(imb_adj[mask.values].dropna().values, x_nm_adj, thr_adj,
+                                              n_boot=n_boot, seed=seed + i)
+        raf_u, lo_u, hi_u, _, _ = bootstrap_raf(imb_gwh[mask.values].dropna().values, x_nm_raw, thr_raw,
+                                                n_boot=n_boot, seed=seed + i)
+        block_res = block_bootstrap_raf(imb_adj.values, ev_arr, nm_arr, thr_adj, n_boot=n_boot, seed=seed + i)
+        shift = raf_shift_test(imb_adj.values, ev_arr, nm_arr, thr_adj)
 
         raf_rows.append({
-            "Event": event_name, "RiskThreshold_GWh_q90_normal": thr_risk,
+            "Event": event_name, "RiskThreshold_adjusted_anomaly_GWh": thr_adj,
             "P_imbalance_gt_thr_event": p_e, "P_imbalance_gt_thr_normal": p_n,
             "RAF": raf, "RAF_CI95_lo": lo, "RAF_CI95_hi": hi,
             "RAF_block_CI95_lo": block_res["ci_lo"], "RAF_block_CI95_hi": block_res["ci_hi"],
             "RAF_block_length_months": block_res["block"],
+            "RAF_p_shift_upper": shift["p_upper"], "RAF_p_shift_two_sided": shift["p_two_sided"],
+            "RAF_n_shifts": shift["n_shifts"],
+            "RAF_unadjusted": raf_u, "RAF_unadjusted_CI95_lo": lo_u, "RAF_unadjusted_CI95_hi": hi_u,
         })
     raf_df = pd.DataFrame(raf_rows)
 
-    result = merged.rename(columns={"Source": "Metric", "Difference": "Delta_z"}).merge(raf_df, on="Event")
+    result = adj.rename(columns={"Source": "Metric"}).merge(raf_df, on="Event")
     return result.drop(columns=["Metric"])
 
 
@@ -217,7 +243,7 @@ def plot_delta_bar_panel(ax, comp: pd.DataFrame, order=("Heatwave", "Drought", "
 
 def plot_distribution_panel(ax, data, comp: pd.DataFrame, order=("Heatwave", "Drought", "Compound")):
     event_colors = {"Heatwave": C_HEAT, "Drought": C_DROUGHT, "Compound": C_COMP}
-    imb_gwh = data["imb_gwh"]
+    imb_gwh = data.get("imb_adj", data["imb_gwh"])
 
     x_all = imb_gwh[np.isfinite(imb_gwh.values)].values
     xmin, xmax = np.nanpercentile(x_all, [2, 98])
@@ -233,18 +259,19 @@ def plot_distribution_panel(ax, data, comp: pd.DataFrame, order=("Heatwave", "Dr
         if len(x_ev) > 10:
             ax.plot(grid, gaussian_kde(x_ev)(grid), color=event_colors[ev], lw=2.2, alpha=0.95, label=ev)
 
-    thr_risk = comp["RiskThreshold_GWh_q90_normal"].iloc[0]
+    thr_col = "RiskThreshold_adjusted_anomaly_GWh"
+    thr_risk = comp[thr_col].iloc[0] if thr_col in comp.columns else np.nan
     if np.isfinite(thr_risk):
         ax.axvline(thr_risk, color="k", lw=1.0, alpha=0.55)
 
-    ax.set_xlabel("Imbalance (GWh)")
+    ax.set_xlabel("Imbalance anomaly (GWh, vs normal months of the same calendar month)")
     ax.set_ylabel("Probability density")
     ax.legend(frameon=False, ncol=1, loc="upper left", bbox_to_anchor=(0.02, 0.98))
     style_axis(ax)
 
 
 def plot_raf_panel(ax, comp: pd.DataFrame, order=("Heatwave", "Drought", "Compound")):
-    """RAF forest plot. Reference line at RAF=0 (no amplification),"""
+    """RAF forest plot. Reference line at RAF=0 (no amplification)."""
     event_colors = {"Heatwave": C_HEAT, "Drought": C_DROUGHT, "Compound": C_COMP}
     tmp = comp.set_index("Event").loc[list(order)]
     raf = tmp["RAF"].to_numpy(dtype=float)
@@ -298,10 +325,33 @@ def build_imbalance_figure(data: dict, comp: pd.DataFrame):
     return fig
 
 
-def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
-    """Build the imbalance figure, its two CSVs, and the log/json."""
+DEMAND_SOURCES = ("cec", "eia861m")
+
+
+def load_demand_sources() -> dict:
+    """Statewide monthly demand (MWh) from each source that is present on disk; None if absent."""
+
+    from componergy.paths import COUNTY_CONSUMPTION_XLSX, DEMAND_MONTHLY_FILE
+    from componergy.preprocessing.consumption_cec import load_raw_consumption, statewide_monthly_mwh
+
+    out = {"cec": None, "eia861m": None}
+    if COUNTY_CONSUMPTION_XLSX.exists():
+        out["cec"] = statewide_monthly_mwh(load_raw_consumption(COUNTY_CONSUMPTION_XLSX))
+    if DEMAND_MONTHLY_FILE.exists():
+        d = pd.read_csv(DEMAND_MONTHLY_FILE, parse_dates=[0], index_col=0)
+        d.index = pd.DatetimeIndex(d.index.values, name=None)
+        out["eia861m"] = d["total_sales"]
+    return out
+
+
+def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m", baseline: str = "full_record",
+         demand_source: str = "cec") -> None:
+    """Build the imbalance figure, its CSVs, and the log/json."""
     from componergy.netcdf_io import atomic_to_csv
-    from componergy.paths import INDICES_FILE, GENERATION_MONTHLY_FILE, DEMAND_MONTHLY_FILE, FIGURES_DIR
+    from componergy.paths import INDICES_FILE, GENERATION_MONTHLY_FILE, FIGURES_DIR
+
+    if demand_source not in DEMAND_SOURCES:
+        raise ValueError(f"demand_source must be one of {DEMAND_SOURCES}, got {demand_source!r}")
 
     out_dir = FIGURES_DIR / "figure_06"
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -309,14 +359,21 @@ def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
     print("loading generation, demand, and climate data...")
     generation_df = pd.read_csv(GENERATION_MONTHLY_FILE, parse_dates=[0], index_col=0)
     generation_df.index = pd.DatetimeIndex(generation_df.index.values, name=None)
-    demand_df = pd.read_csv(DEMAND_MONTHLY_FILE, parse_dates=[0], index_col=0)
-    demand_df.index = pd.DatetimeIndex(demand_df.index.values, name=None)
+    sources = load_demand_sources()
+    if sources[demand_source] is None:
+        raise FileNotFoundError(
+            f"demand source {demand_source!r} is not available on disk. 'cec' needs the restricted CEC "
+            "county consumption workbook (paths.COUNTY_CONSUMPTION_XLSX); 'eia861m' needs "
+            "paths.DEMAND_MONTHLY_FILE (run scripts/run_demand_pipeline.py). Use --demand-source to choose."
+        )
     indices_ds = xr.open_dataset(INDICES_FILE)
+    alt_name = [s for s in DEMAND_SOURCES if s != demand_source][0]
 
-    print("preparing imbalance data...")
-    data = prepare_imbalance_data(indices_ds, generation_df, demand_df, sapei_var=sapei_var, scdhi_var=scdhi_var)
+    print(f"preparing imbalance data (demand source: {demand_source}, baseline: {baseline})...")
+    data = prepare_imbalance_data(indices_ds, generation_df, sources[demand_source].to_frame("total_sales"),
+                                  sapei_var=sapei_var, scdhi_var=scdhi_var, baseline=baseline)
 
-    print("computing composites and bootstrap RAF...")
+    print("computing composites and RAF...")
     comp = compute_imbalance_composites(data)
 
     print("saving figure...")
@@ -326,27 +383,33 @@ def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
 
     atomic_to_csv(comp, out_dir / "figure_06_event_metrics.csv", index=False)
 
-    superadd = superadditivity_test(
-        data["imb_z"].values,
-        data["event_masks"]["Heatwave"].reindex(data["imb_z"].index).fillna(False).values,
-        data["event_masks"]["Drought"].reindex(data["imb_z"].index).fillna(False).values,
-        data["event_masks"]["Compound"].reindex(data["imb_z"].index).fillna(False).values,
-        data["normal"].reindex(data["imb_z"].index).fillna(False).values,
-    )
-    atomic_to_csv(pd.DataFrame([superadd]), out_dir / "figure_06_superadditivity.csv", index=False)
+    print("computing amplification, robustness and placebo tables...")
+    inference = write_composite_inference(data["imb_gwh"].to_frame("Imbalance"), data["event_masks"],
+                                          data["normal"], out_dir, "figure_06", label="Metric")
 
-    placebo_df = placebo_table(
-        data["imb_z"].to_frame("Imbalance"), data["event_masks"], data["normal"], label="Metric",
-    )
-    atomic_to_csv(placebo_df, out_dir / "figure_06_placebo.csv", index=False)
+    # The OTHER demand source, if present: same analysis, so the choice of source is measured.
+    alt_comp, alt_period = None, None
+    if sources[alt_name] is not None:
+        alt_data = prepare_imbalance_data(indices_ds, generation_df, sources[alt_name].to_frame("total_sales"),
+                                          sapei_var=sapei_var, scdhi_var=scdhi_var, baseline=baseline)
+        alt_comp = compute_imbalance_composites(alt_data)
+        alt_period = f"{alt_data['common'].min().date()} to {alt_data['common'].max().date()}"
+        atomic_to_csv(alt_comp, out_dir / f"figure_06_event_metrics_{alt_name}_demand.csv", index=False)
 
-    boundary = validate_system_boundary(data["dem_gwh"], data["gen_gwh"])
-    atomic_to_csv(compute_import_fraction(data["dem_gwh"], data["gen_gwh"]),
+    demand_check = (compare_demand_sources(sources["cec"], sources["eia861m"])
+                    if sources["cec"] is not None and sources["eia861m"] is not None
+                    else "only one demand source is available, so no cross-check is possible")
+
+    gen_gwh_raw = generation_df["Total"] / 1000.0
+    boundary = {name: validate_system_boundary(series / 1000.0, gen_gwh_raw)
+                for name, series in sources.items() if series is not None}
+    atomic_to_csv(compute_import_fraction(sources[demand_source] / 1000.0, gen_gwh_raw),
                   out_dir / "figure_06_system_boundary.csv")
 
     metrics_df = pd.DataFrame({
         "Demand_GWh": data["dem_gwh"], "Generation_GWh": data["gen_gwh"],
-        "Imbalance_GWh": data["imb_gwh"], "Imbalance_z": data["imb_z"],
+        "Imbalance_GWh": data["imb_gwh"], "Imbalance_adjusted_GWh": data["imb_adj"],
+        "Imbalance_z": data["imb_z"],
     })
     for name, mask in data["event_masks"].items():
         metrics_df[f"{name}"] = mask.reindex(metrics_df.index).fillna(False)
@@ -356,36 +419,44 @@ def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
     log_sections = {
         "Overview": {
             "sapei_variable": sapei_var, "scdhi_variable": scdhi_var,
-            "smoothing_months": SMOOTH_MONTHS,
+            "smoothing_months": SMOOTH_MONTHS, "event_baseline": baseline,
+            "demand_source": demand_source,
             "period_start": str(data["common"].min().date()),
             "period_end": str(data["common"].max().date()),
             "n_months": len(data["common"]),
         },
-        "Imbalance definition": "Demand_GWh - Generation_GWh (positive = net import / supply shortfall)",
-        "System boundary validation": boundary,
-        "Event counts": {k: int(v.sum()) for k, v in data["event_masks"].items()},
-        "Normal period count": int(data["normal"].sum()),
-        "Event metrics (FDR-corrected, bootstrap RAF)": comp.to_string(index=False),
-        "Placebo test (shifted event timing, FDR-corrected)": placebo_df.to_string(index=False),
-        "Super-additivity test (imbalance)": {
-            "dz_heatwave": superadd["dz_heat"],
-            "dz_drought": superadd["dz_drought"],
-            "dz_compound": superadd["dz_compound"],
-            "additive_expectation_heat_plus_drought": superadd["additive_expectation"],
-            "interaction_compound_minus_additive": superadd["interaction"],
-            "interaction_CI95": [superadd["ci_lo"], superadd["ci_hi"]],
-            "interaction_p_value": superadd["p_value"],
-            "verdict": (
-                "super-additive (CI excludes zero, positive)"
-                if superadd["ci_lo"] > 0 else
-                "sub-additive (CI excludes zero, negative)"
-                if superadd["ci_hi"] < 0 else
-                "additivity not rejected (CI includes zero)"
-            ),
+        "Imbalance definition": (
+            "Demand_GWh - Generation_GWh. Positive = demand exceeds in-state generation. This is a "
+            "monthly energy-accounting gap: it includes net imports, but also storage and transmission "
+            "losses and any boundary mismatch between the demand and generation series, none of which "
+            "is measured here. Describe it as such, not as grid reliability."
+        ),
+        "Demand source": {
+            "primary": demand_source,
+            "why": ("CEC is the default because the manuscript's Supplementary Methods attribute demand "
+                    "mainly to the CEC; EIA-861M is the public alternative and cross-check."),
+            "alternative_source": alt_name if alt_comp is not None else "not available",
+            "alternative_period": alt_period,
         },
+        "Demand source cross-check (CEC vs EIA-861M)": demand_check,
+        "System boundary validation (per demand source)": boundary,
+        "Event definition (shared across Figures 2 and 4-7)": data["event_meta"],
+        "Event effects and RAF (FDR-corrected)": comp.to_string(index=False),
+        **inference["log_sections"],
+        "Results with the alternative demand source": (
+            alt_comp.to_string(index=False) if alt_comp is not None else "alternative source not available"),
+        "Inference": INFERENCE_NOTE,
         "Note": (
-            "Delta_pct divides by the normal-period mean imbalance and can "
-            "be extreme or uninterpretable if that baseline is near zero."
+            "Delta_pct divides by the counterfactual baseline mean imbalance and can be extreme if that "
+            "baseline is near zero; Delta_GWh and Delta_z are the more robust metrics for this figure. "
+            "RAF is computed on the imbalance as a seasonally adjusted counterfactual anomaly; "
+            "RAF_unadjusted reproduces the original raw-imbalance version, which is confounded by the "
+            "season (summer imbalances exceed a normal-months threshold largely regardless of events). "
+            "RAF_p_shift_upper is the calendar-shift p-value for RAF > 0 and cannot fall below "
+            "1/(RAF_n_shifts + 1); the RAF bootstrap CIs are NOT calibrated when events form a few "
+            "episodes and are kept for reference. The bootstrap uses a fixed, deterministic per-event "
+            "seed offset, not a hash of the event name -- Python's hash() on strings is randomized "
+            "per-process (PYTHONHASHSEED) and would give different intervals on every re-run."
         ),
     }
     write_figure_log(out_dir / "figure_06_imbalance", log_sections)
