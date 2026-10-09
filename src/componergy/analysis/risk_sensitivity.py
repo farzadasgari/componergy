@@ -25,3 +25,17 @@ def build_risk_variants(gen_stress: pd.Series, demand_z: pd.Series,
     if generation_z is not None:
         out["observed generation shortfall x demand"] = (-generation_z.loc[common].astype(float)) * d
     return pd.DataFrame(out)
+
+
+def double_calm_share(gen_stress: pd.Series, demand_z: pd.Series) -> dict:
+    """Of the months the product scores as positive risk, how many have BOTH factors negative?"""
+    common = gen_stress.dropna().index.intersection(demand_z.dropna().index)
+    g, d = gen_stress.loc[common], demand_z.loc[common]
+    prod = g * d
+    positive = prod > 0
+    both_negative = positive & (g < 0) & (d < 0)
+    n_pos = int(positive.sum())
+    return {"n_months": int(len(common)), "n_positive_risk_months": n_pos,
+            "n_positive_from_both_negative": int(both_negative.sum()),
+            "share_of_positive_months_that_are_double_calm":
+                float(both_negative.sum() / n_pos) if n_pos else np.nan}
