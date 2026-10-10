@@ -35,3 +35,12 @@ def test_a_true_lagged_link_is_recovered_at_the_right_lag_with_a_small_p():
     r = best_lag_randomization(x, y, n_perm=299)
     assert r["lag"] == 2 and r["p_value"] < 0.01
     assert r["p_value"] >= 1 / 300
+
+
+def test_block_permutation_keeps_every_value_and_within_block_order():
+    rng = np.random.default_rng(0)
+    x = np.arange(100.0)
+    xp = block_permute(x, 24, rng)
+    assert sorted(xp) == sorted(x) and len(xp) == 100
+    starts = [i for i in range(0, 96, 24)]
+    assert any(np.array_equal(xp[i:i + 24], x[j:j + 24]) for i in starts[:1] for j in (0, 24, 48, 72))
