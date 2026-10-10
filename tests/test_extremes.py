@@ -3,7 +3,15 @@ import pandas as pd
 from scipy import stats
 
 from componergy.analysis.extremes import (
-    empirical_return_period, fit_gev_annual_maxima, fit_pot_gpd, return_period_of_value,
+    empirical_return_period,
+    fit_gev_annual_maxima,
+    fit_pot_gpd,
+    return_period_of_value,
+    decluster_runs,
+    bootstrap_return_period,
+    gev_goodness_of_fit,
+    threshold_stability,
+    stationarity_check,
 )
 
 
@@ -52,3 +60,12 @@ def test_fitted_return_period_exceeds_empirical_for_the_record_maximum():
     empirical_cap = 205.0 / 12.0
     assert rp["gev_return_period_years"] > empirical_cap
     assert rp["pot_return_period_years"] > empirical_cap
+
+
+def _persistent_series(n=204, seed=0, ar=0.8):
+    idx = pd.date_range("2008-01-01", periods=n, freq="MS")
+    rng = np.random.default_rng(seed)
+    e = np.zeros(n)
+    for i in range(1, n):
+        e[i] = ar * e[i - 1] + rng.normal()
+    return pd.Series(e, index=idx)
