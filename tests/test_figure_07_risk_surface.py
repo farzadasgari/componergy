@@ -109,3 +109,54 @@ def test_compute_regional_evi_averages_delta_z_across_events():
     evi, comp = compute_regional_evi(data)
     assert "q_value" in comp.columns
     assert abs(evi.loc["RegionA"]) < 1.0
+
+
+def test_gridded_vulnerability_significance_detects_spatially_coherent_signal_at_realistic_scale():
+    n = 200
+    times = pd.date_range("2001-01-01", periods=n, freq="MS")
+    lats = np.linspace(32, 42, 30)
+    lons = np.linspace(-124, -114, 30)
+
+    rng = np.random.default_rng(0)
+    sti_data = rng.normal(0, 0.3, (n, 30, 30))
+    sapei_data = rng.normal(0, 0.3, (n, 30, 30))
+    scdhi_data = rng.normal(0, 0.3, (n, 30, 30))
+
+    heat_months = np.zeros(n, dtype=bool)
+    heat_months[::5] = True
+    drought_months = np.zeros(n, dtype=bool)
+    drought_months[1::7] = True
+    compound_months = np.zeros(n, dtype=bool)
+    compound_months[2::9] = True
+
+    heat_idx = np.where(heat_months)[0]
+    sti_data[np.ix_(heat_idx, range(10, 17), range(10, 17))] += 2.5
+
+    indices_ds = xr.Dataset(
+        {"sti": (("time", "lat", "lon"), sti_data),
+         "sapei_3m": (("time", "lat", "lon"), sapei_data),
+         "scdhi_3m": (("time", "lat", "lon"), scdhi_data)},
+        coords={"time": times, "lat": lats, "lon": lons},
+    )
+
+    heat_mask = pd.Series(heat_months, index=times)
+    drought_mask = pd.Series(drought_months, index=times)
+    compound_mask = pd.Series(compound_months, index=times)
+    normal_mask = ~(heat_mask | drought_mask | compound_mask)
+
+    data = {
+        "indices_ds": indices_ds,
+        "event_masks": {"Heatwave": heat_mask, "Drought": drought_mask, "Compound": compound_mask},
+        "normal": normal_mask,
+    }
+
+    gridded, is_significant = compute_gridded_vulnerability(data)
+
+    cluster_vals = gridded.isel(lat=slice(10, 17), lon=slice(10, 17)).values
+    cluster_sig = is_significant.isel(lat=slice(10, 17), lon=slice(10, 17)).values
+    assert np.nanmean(cluster_vals) > 0.5
+    assert cluster_sig.mean() > 0.5
+
+    step = 3
+    sig_sub = is_significant.isel(lat=slice(None, None, step), lon=slice(None, None, step))
+    assert int(sig_sub.sum()) > 0
