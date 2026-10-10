@@ -161,3 +161,32 @@ def test_figure_06_can_use_the_public_demand_source_and_refuses_a_missing_one(tm
         st.enter_context(patch.object(f6, "load_demand_sources", lambda: {"cec": None, "eia861m": both["eia861m"]}))
         with pytest.raises(FileNotFoundError, match="cec"):
             f6.main(demand_source="cec")
+
+
+def test_figure_07_end_to_end(tmp_path, inputs):
+    import componergy.figures.risk_surface as f7
+    original = f7.compute_return_period_analysis
+    with ExitStack() as st:
+        _paths(st, inputs, tmp_path)
+        _geo(st, inputs)
+        st.enter_context(patch.object(f7, "compute_return_period_analysis",
+                                      lambda *a, **k: original(*a, **{**k, "n_boot": 40})))
+        f7.main()
+    out = tmp_path / "figure_07"
+    for name in ("figure_07_return_levels.csv", "figure_07_return_period_threshold_stability.csv",
+                 "figure_07_hazard_return_period.csv", "figure_07_risk_sensitivity.csv",
+                 "figure_07_risk_variants.csv", "figure_07_known_event_validation_by_variant.csv"):
+        assert (out / name).exists(), name
+    log = _check_log(out, "figure_07_systemic_vulnerability")
+    rp = log["Return period of the observed maximum (fitted, with uncertainty)"]
+    assert rp["empirical_return_period_years"] == pytest.approx((rp["n_months"] + 1) / 12.0)
+    assert rp["bootstrap_CI95_GEV"][0] <= rp["bootstrap_CI95_GEV"][1]
+    assert "stationarity" in rp and "GEV_goodness_of_fit" in rp
+    hz = log["Return period of the same month's climate hazard on the full record"]
+    assert hz["record_years"] > 70
+    assert "double calm" in " ".join(log).lower() or "Double-calm months in the manuscript product" in log
+    sens = pd.read_csv(out / "figure_07_risk_sensitivity.csv")
+    assert "observed generation shortfall x demand" in set(sens["Variant"])
+    _check_inference_outputs(out, "figure_07")
+    keys = pd.read_csv(out / "figure_07_region_abbreviations.csv")
+    assert keys["Abbreviation"].is_unique and set(keys["Region"]) == set(si.REGION_NAMES)
