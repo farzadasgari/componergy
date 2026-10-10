@@ -66,3 +66,15 @@ def test_county_region_shares_sum_to_one_and_identify_a_straddling_county():
     assert summary.loc["INSIDE", "N_regions_touched"] == 1 and not summary.loc["INSIDE", "Split"]
     assert summary.loc["STRADDLE", "N_regions_touched"] == 2
     assert 0.55 < summary.loc["STRADDLE", "Majority_share"] < 0.65 and summary.loc["STRADDLE", "Split"]
+
+
+def test_allocation_sensitivity_measures_how_much_consumption_changes_region():
+    counties, regions = _geo()
+    shares = county_region_shares(counties, regions)
+    dates = pd.date_range("2008-01-01", periods=60, freq="MS")
+    rng = np.random.default_rng(3)
+    rows = [{"Date": d, "CountyName": c, "Sector": "Residential", "Consumption (MWh)": v}
+            for d in dates for c, v in (("INSIDE", 100 + rng.normal()), ("STRADDLE", 100 + rng.normal()))]
+    r = allocation_sensitivity(pd.DataFrame(rows), shares)
+    assert 0.15 < r["share_of_consumption_changing_region"] < 0.25
+    assert set(r["per_region"]["Region"]) == {"West", "East"}
