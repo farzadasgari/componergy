@@ -75,3 +75,31 @@ def test_compute_sector_composites_fdr_corrects_across_all_sector_event_tests():
     assert row_b["p_value"] > row_a["p_value"]
     assert abs(row_b["Delta_GWh"]) < 0.2 * abs(row_a["Delta_GWh"])
     assert (comp["Delta_GWh"] == comp["Delta_native"]).all()
+
+
+def test_prepare_sector_data_heatwave_and_drought_are_mutually_exclusive():
+    import xarray as xr
+
+    rng = np.random.default_rng(2)
+    n = 120
+    times = pd.date_range("2008-01-01", periods=n, freq="MS")
+    lats = np.linspace(33, 41, 5)
+    lons = np.linspace(-123, -115, 5)
+
+    indices_ds = xr.Dataset(
+        {"sti": (("time", "lat", "lon"), rng.normal(0, 1, (n, 5, 5))),
+         "sapei_3m": (("time", "lat", "lon"), rng.normal(0, 1, (n, 5, 5))),
+         "scdhi_3m": (("time", "lat", "lon"), rng.normal(0, 1, (n, 5, 5)))},
+        coords={"time": times, "lat": lats, "lon": lons},
+    )
+
+    rows = []
+    for date in times:
+        for sector in ["Residential", "Commercial"]:
+            rows.append({"Date": date, "CountyName": "ALPHA", "Sector": sector,
+                         "Consumption (MWh)": float(rng.normal(1000, 50))})
+    long_df = pd.DataFrame(rows)
+
+    data = prepare_sector_data(indices_ds, long_df)
+    overlap = (data["event_masks"]["Heatwave"] & data["event_masks"]["Drought"]).sum()
+    assert overlap == 0
