@@ -56,8 +56,17 @@ def _check_inference_outputs(out, prefix):
         assert (out / f"{prefix}_{name}.csv").exists(), f"{prefix}_{name}.csv missing"
     rob = pd.read_csv(out / f"{prefix}_specification_robustness.csv")
     specs = set(rob["Specification"])
-    assert any("naive composite" in s for s in specs)  # the ORIGINAL method is shown ...
+    assert any("naive composite" in s for s in specs)
     assert {"month effects only", "month effects + linear trend",
-            "month + year fixed effects"} <= specs  # ... next to controlled ones
+            "month + year fixed effects"} <= specs
     amp = pd.read_csv(out / f"{prefix}_amplification.csv")
     assert {"Amplification_contrast", "CI_lo", "CI_hi", "p_value", "p_exact", "p_hac", "q_value"} <= set(amp.columns)
+
+
+def _check_log(out, stem):
+    log = json.load(open(out / f"{stem}.json"))
+    ev = log["Event definition (shared across Figures 2 and 4-7)"]
+    assert ev["baseline"] == "full_record"
+    assert {"episodes", "overlap", "counts_raw", "thresholds"} <= set(ev)
+    assert any("Amplification contrast" in k for k in log)
+    return log
