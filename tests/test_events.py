@@ -173,3 +173,15 @@ def test_exclusive_masks_remove_compound_months_from_heat_and_drought():
     assert ex["Compound"].equals(masks["Compound"])
     assert not (ex["Heatwave"] & ex["Compound"]).any() and not (ex["Drought"] & ex["Compound"]).any()
     assert int(ex["Heatwave"].sum()) == 1 and int(ex["Drought"].sum()) == 1
+
+
+def test_meta_reports_episodes_overlap_and_flags():
+    sti, sapei, scdhi = _warming_series()
+    _, _, meta, flags = build_event_masks(sti, sapei, scdhi, window_index=sti.index[600:800], return_flags=True)
+    assert set(flags) == {"heat", "drought", "compound", "valid"}
+    assert meta["episodes"]["Compound"] <= meta["counts_raw"]["Compound"]
+    ov = event_overlap_summary(flags)
+    assert ov == meta["overlap"]
+    assert ov["compound_with_both_criteria"] <= ov["compound_with_heat_criterion"]
+    assert ov["compound_with_neither_criterion"] + ov["compound_with_heat_criterion"] \
+           + ov["compound_with_drought_criterion"] - ov["compound_with_both_criteria"] == ov["compound_total"]
