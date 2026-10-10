@@ -54,3 +54,11 @@ def test_a_corrupted_mapping_raises_instead_of_being_papered_over(monkeypatch):
     monkeypatch.setitem(lab.REGION_ABBREV, "Sierra", "SD")
     with pytest.raises(ValueError, match="same label"):
         lab.region_label_table(["Sierra", "Sacramento-Delta"])
+
+
+def test_figures_4_and_7_use_the_shared_labels_not_their_own_copies():
+    import componergy.figures.zonal_consumption as f4
+    import componergy.figures.risk_surface as f7
+    import componergy.figures.labels as labels
+    assert f4.region_abbrev is labels.region_abbrev
+    assert f7.region_abbrev is labels.region_abbrev
