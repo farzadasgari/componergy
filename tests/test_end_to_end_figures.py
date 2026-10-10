@@ -91,6 +91,34 @@ def test_figure_02_end_to_end(tmp_path, inputs):
     _check_log(out, "figure_02_generation_response")
 
 
+def test_figure_03_end_to_end(tmp_path, inputs):
+    import componergy.figures.figure_03_regional as f3
+    fine = si.make_indices(n_lat=12, n_lon=12, seed=7)
+    fine.to_netcdf(tmp_path / "fine.nc")
+    with ExitStack() as st:
+        _paths(st, inputs, tmp_path)
+        st.enter_context(patch("componergy.paths.INDICES_FILE", tmp_path / "fine.nc"))
+        _geo(st, inputs)
+        f3.main()
+    out = tmp_path / "figure_03"
+    for name in ("figure_03_top_driver_by_region.csv", "figure_03_lag_scan.csv", "figure_03_lag_scan_legacy_method.csv",
+                 "figure_03_relative_importance.csv", "figure_03_incremental_r2.csv", "figure_03_driver_stats.csv",
+                 "figure_03A_heatmaps.jpg", "figure_03B_slope.jpg"):
+        assert (out / name).exists(), name
+    assert not (out / "figure_03_dominance.csv").exists()
+    lag, legacy = pd.read_csv(out / "figure_03_lag_scan.csv"), pd.read_csv(out / "figure_03_lag_scan_legacy_method.csv")
+    assert {"p_value", "p_ols_naive", "q_value", "lag", "slope", "r2"} <= set(lag.columns)
+    assert "p_ols_naive" not in legacy.columns
+    rel = pd.read_csv(out / "figure_03_relative_importance.csv")
+    assert set(rel["Predictor"]) == {"STI", "SAPEI", "SCDHI"} and set(rel["Lag"]) == {0, 2}
+    shares = rel.groupby(["Region", "Lag"])["LMG_share"].sum()
+    assert np.allclose(shares.values, 1.0, atol=1e-6)
+    inc = pd.read_csv(out / "figure_03_incremental_r2.csv")
+    assert {"p_value", "p_value_F_naive", "q_value"} <= set(inc.columns)
+    log = json.load(open(out / "figure_03_regional.json"))
+    assert any("dominance analysis" in k for k in log) and any("LEGACY" in k for k in log)
+
+
 def test_figure_04_end_to_end(tmp_path, inputs):
     import componergy.figures.zonal_consumption as f4
     with ExitStack() as st:
