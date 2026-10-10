@@ -125,3 +125,10 @@ def test_build_event_masks_rejects_unknown_baseline():
     sti, sapei, scdhi = _warming_series(n=120)
     with pytest.raises(ValueError):
         build_event_masks(sti, sapei, scdhi, baseline="nonsense")
+
+
+def test_heatwave_and_drought_masks_are_mutually_exclusive_and_normal_excludes_all_events():
+    sti, sapei, scdhi = _warming_series()
+    masks, normal, _ = build_event_masks(sti, sapei, scdhi, window_index=sti.index[600:800])
+    assert not (masks["Heatwave"] & masks["Drought"]).any()
+    assert not (normal & (masks["Heatwave"] | masks["Drought"] | masks["Compound"])).any()
