@@ -66,3 +66,12 @@ def test_compute_risk_surface_product_is_correct():
 
     assert risk_df["System_Risk"].iloc[0] == (-1) * 1
     assert risk_df["System_Risk"].iloc[2] == (-2) * (-1)
+
+
+def test_compute_return_period_weibull_plotting_position():
+    risk = pd.Series(np.arange(1, 13), index=pd.date_range("2020-01-01", periods=12, freq="MS"))
+    rp = compute_return_period(risk)
+
+    assert rp["System_Risk"].iloc[0] == 12
+    assert abs(rp["Return_Period_Years"].iloc[0] - (13 / 1) / 12) < 1e-9
+    assert rp["Return_Period_Years"].is_monotonic_decreasing
