@@ -28,3 +28,10 @@ def test_observed_statistic_matches_the_existing_best_lag_slope_exactly():
     assert mine["lag"] == ref["lag"] and mine["n"] == ref["n"]
     assert mine["slope"] == pytest.approx(ref["slope"], rel=1e-9)
     assert mine["r2"] == pytest.approx(ref["r2"], rel=1e-9)
+
+
+def test_a_true_lagged_link_is_recovered_at_the_right_lag_with_a_small_p():
+    x, y = _pair(link=0.6, lag=2, seed=1)
+    r = best_lag_randomization(x, y, n_perm=299)
+    assert r["lag"] == 2 and r["p_value"] < 0.01
+    assert r["p_value"] >= 1 / 300
