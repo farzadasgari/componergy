@@ -56,3 +56,13 @@ def _geo():
                                 geometry=[box(-121.8, 36.5, -121.2, 37.0), box(-120.6, 37.0, -119.6, 37.5)],
                                 crs="EPSG:4326")
     return counties, regions
+
+
+def test_county_region_shares_sum_to_one_and_identify_a_straddling_county():
+    counties, regions = _geo()
+    shares = county_region_shares(counties, regions)
+    assert np.allclose(shares.groupby("CountyName")["share"].sum().values, 1.0, atol=1e-6)
+    summary = county_split_summary(shares).set_index("CountyName")
+    assert summary.loc["INSIDE", "N_regions_touched"] == 1 and not summary.loc["INSIDE", "Split"]
+    assert summary.loc["STRADDLE", "N_regions_touched"] == 2
+    assert 0.55 < summary.loc["STRADDLE", "Majority_share"] < 0.65 and summary.loc["STRADDLE", "Split"]
