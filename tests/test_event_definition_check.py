@@ -43,3 +43,10 @@ def test_a_window_baseline_cannot_reproduce_counts_far_above_ten_percent():
     w = t[(t["Window"] == "2001-01 to 2025-08") & (t["Baseline"] == "window") & (t["Quantiles"] == "final 90/10/10")]
     assert (w["Heatwave"] < 0.13 * 296).all()
     assert MANUSCRIPT_EVENT_COUNTS[("2001-01-01", "2025-08-01")]["Heatwave"] > 0.2 * 296
+
+
+def test_download_defaults_follow_the_climate_record_you_actually_have():
+    cli = Path("scripts/run_download_pipeline.py").read_text()
+    assert re.search(r'--noaa-start-year".*default=1951', cli) and re.search(r'--noaa-end-year".*default=2026', cli)
+    reg = Path("src/componergy/download/registry.py").read_text()
+    assert "noaa_start_year: int = 1951" in reg and "noaa_end_year: int = 2026" in reg
