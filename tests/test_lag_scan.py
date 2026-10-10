@@ -56,3 +56,8 @@ def test_the_old_ols_p_value_at_the_best_lag_is_wildly_anticonservative_and_the_
         new += r["p_value"] < 0.05
     assert naive / n_sims > 0.40
     assert new / n_sims < 0.13
+
+
+def test_returns_none_when_no_lag_has_enough_pairs():
+    x, y = _pair(n=30)
+    assert best_lag_randomization(x, y, min_n=60, n_perm=9) is None
