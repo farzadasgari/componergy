@@ -56,3 +56,11 @@ def test_stage_names_are_unique_and_every_stage_points_at_a_real_script():
     assert len(set(STAGE_NAMES)) == len(STAGE_NAMES)
     for s in STAGES:
         assert Path("scripts", f"{s.script}.py").exists(), s.script
+
+
+def test_plan_orders_stages_selects_ranges_and_passes_flags_only_where_accepted():
+    p = plan(start="figure-02", end="figure-06", baseline="window", demand_source="eia861m", exists=lambda n: True)
+    assert [s["stage"] for s in p] == ["figure-02", "figure-03", "figure-04", "figure-05", "figure-06"]
+    cmd = {s["stage"]: s["command"] for s in p}
+    assert "--baseline" in cmd["figure-04"] and "--demand-source" not in cmd["figure-04"]
+    assert "--demand-source" in cmd["figure-06"] and "--baseline" not in cmd["figure-03"]
