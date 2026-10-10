@@ -122,3 +122,13 @@ def test_threshold_stability_returns_one_row_per_quantile_with_fewer_exceedances
     assert list(t["threshold_q"]) == [0.80, 0.85, 0.90, 0.95]
     assert t["n_exceedances"].is_monotonic_decreasing
     assert "return_level_20yr" in t.columns
+
+
+def test_stationarity_check_detects_a_trend_and_does_not_invent_one():
+    idx = pd.date_range("1951-01-01", periods=912, freq="MS")
+    rng = np.random.default_rng(5)
+    flat = pd.Series(rng.normal(0, 1, 912), index=idx)
+    trending = flat + np.linspace(0, 3, 912)
+    assert stationarity_check(trending)["annual_maxima_trend_p_value"] < 0.01
+    assert stationarity_check(trending)["annual_exceedance_count_trend_p_value"] < 0.01
+    assert stationarity_check(flat)["annual_maxima_trend_p_value"] > 0.05
