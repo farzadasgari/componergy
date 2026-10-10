@@ -32,3 +32,12 @@ def test_too_short_an_overlap_is_refused_rather_than_summarised():
     a = _seasonal()
     r = compare_demand_sources(a.iloc[:12], a.iloc[:12])
     assert r["n_months"] == 12 and "no meaningful comparison" in r["verdict"]
+
+
+def test_statewide_monthly_mwh_sums_every_county_and_sector():
+    dates = pd.date_range("2010-01-01", periods=3, freq="MS")
+    rows = [{"Date": d, "CountyName": c, "Sector": s, "Consumption (MWh)": float(v)}
+            for d in dates for c, v in (("A", 10), ("B", 20)) for s in ("Residential", "Commercial")]
+    out = statewide_monthly_mwh(pd.DataFrame(rows))
+    assert list(out.values) == [60.0, 60.0, 60.0]
+    assert out.name == "total_sales" and out.index.name is None
