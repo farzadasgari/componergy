@@ -23,3 +23,16 @@ def test_spi_is_approximately_standard_normal_within_every_calendar_month():
     by_month = spi.groupby(spi.index.month)
     assert np.allclose(by_month.mean().values, 0.0, atol=0.05)
     assert np.allclose(by_month.std().values, 1.0, atol=0.12)
+
+
+def test_temperature_dependence_detects_temperature_entering_the_drought_index():
+    rng = np.random.default_rng(1)
+    idx = _idx()
+    sti = pd.Series(rng.normal(size=len(idx)), index=idx)
+    spi = pd.Series(rng.normal(size=len(idx)), index=idx)
+    sapei = 0.6 * spi - 0.6 * sti + 0.3 * rng.normal(size=len(idx))
+    r = temperature_dependence(sti, sapei, spi)
+    assert r["corr_STI_SAPEI"] < -0.5 and abs(r["corr_STI_SPI"]) < 0.1
+    assert r["excess_r2_from_temperature"] > 0.25 and "twice" in r["verdict"]
+    clean = temperature_dependence(sti, spi + 0.1 * rng.normal(size=len(idx)), spi)
+    assert clean["excess_r2_from_temperature"] < 0.05 and "little evidence" in clean["verdict"]
