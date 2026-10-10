@@ -105,3 +105,11 @@ def test_window_baseline_gives_about_ten_percent_by_construction():
     window = sti.index[684:888]
     _, _, meta = build_event_masks(sti, sapei, scdhi, window_index=window, baseline="window")
     assert abs(meta["counts_raw"]["Heatwave"] / len(window) - 0.10) < 0.02
+
+
+def test_full_record_baseline_finds_more_heat_in_a_warmer_window():
+    sti, sapei, scdhi = _warming_series()
+    window = sti.index[684:888]
+    _, _, win = build_event_masks(sti, sapei, scdhi, window_index=window, baseline="window")
+    _, _, full = build_event_masks(sti, sapei, scdhi, window_index=window, baseline="full_record")
+    assert full["counts_raw"]["Heatwave"] > win["counts_raw"]["Heatwave"] * 1.4
