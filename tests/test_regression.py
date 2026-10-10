@@ -152,3 +152,52 @@ def test_year_fixed_effects_survive_an_event_that_fills_a_whole_year():
     normal = ~(masks["Heatwave"] | masks["Drought"] | masks["Compound"])
     res = event_effects(y, masks, normal, trend="year_fe")
     assert res["info"]["rank_deficient"] is True
+
+
+def test_shift_range_excludes_shifts_that_would_overlap_the_original_calendar():
+    s = shift_range(204, 12)
+    assert s.min() == 12 and s.max() == 204 - 12 and len(s) == 181
+    assert len(shift_range(10, 12)) >= 1
+
+
+def test_randomization_inference_reports_the_floor_of_the_exact_p_value():
+    null = np.random.default_rng(0).normal(0, 1, 181)
+    ri = randomization_inference(estimate=50.0, null=null)
+    assert ri["p_exact"] == pytest.approx(1 / 182)
+    assert ri["p_value"] < 1e-10
+    assert ri["n_shifts"] == 181
+
+
+def test_shift_null_matches_direct_refit_for_a_single_shift():
+    y = _series(seed=9, seasonal_amp=6.0)
+    masks, normal = _three_masks(y.index)
+    Z, _ = design_matrix(y.index, None, trend="linear")
+    D = np.column_stack([masks[k].values.astype(float) for k in ("Heatwave", "Drought", "Compound")])
+    null = shift_null_coefficients(y.values, Z, D, min_shift=12)
+
+    s = shift_range(len(y), 12)[7]
+    Xs = np.column_stack([Z, np.roll(D, int(s), axis=0)])
+    direct, *_ = np.linalg.lstsq(Xs, y.values, rcond=None)
+    np.testing.assert_allclose(null[7], direct[-3:], rtol=1e-8, atol=1e-9)
+
+
+def test_randomization_test_is_calibrated_under_the_null_with_clustered_events():
+    n_sims, rej_exact, rej_hac = 120, 0, 0
+    rng = np.random.default_rng(123)
+    idx = pd.date_range("2008-01-01", periods=204, freq="MS")
+    for _ in range(n_sims):
+        e = np.zeros(204)
+        for i in range(1, 204):
+            e[i] = 0.6 * e[i - 1] + rng.normal()
+        starts = rng.choice(np.arange(0, 190, 14), size=2, replace=False)
+        ev = np.zeros(204, bool)
+        for s in starts:
+            ev[s:s + 8] = True
+        masks = {"Heatwave": pd.Series(ev, index=idx), "Drought": pd.Series(False, index=idx),
+                 "Compound": pd.Series(False, index=idx)}
+        r = event_effects(pd.Series(e, index=idx), masks, pd.Series(~ev, index=idx), trend="linear",
+                          month_fe=True)["effects"].set_index("Event").loc["Heatwave"]
+        rej_exact += r["p_exact"] < 0.05
+        rej_hac += r["p_hac"] < 0.05
+    assert rej_exact / n_sims < 0.13
+    assert rej_hac / n_sims > rej_exact / n_sims
