@@ -14,3 +14,12 @@ def _series(seed=0):
     trend = np.linspace(-0.6, 0.6, len(idx))
     mk = lambda off: pd.Series(off + rng.normal(0, 0.9, len(idx)), index=idx)
     return mk(trend), mk(0.0), mk(0.0)
+
+
+def test_the_check_covers_every_combination_for_each_quoted_window():
+    sti, sapei, scdhi = _series()
+    t = event_definition_check(sti, sapei, scdhi)
+    assert len(t) == 2 * 2 * 2 * 2
+    assert set(t["Baseline"]) == {"full_record", "window"} and set(t["Smoothing_months"]) == {1, 3}
+    assert set(t["Quantiles"]) == {"final 90/10/10", "exploratory 85/15/12"}
+    assert set(t["N_window_months"]) == {204, 296}
