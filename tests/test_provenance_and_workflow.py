@@ -30,3 +30,7 @@ def test_directory_fingerprint_changes_when_a_file_is_added_removed_or_truncated
     assert directory_fingerprint(tmp_path) == base
     (tmp_path / "x.nc").write_bytes(b"12345")
     assert directory_fingerprint(tmp_path)["listing_sha256"] != base["listing_sha256"]
+
+
+def test_a_missing_path_is_recorded_as_missing_not_an_error(tmp_path):
+    assert describe_path(tmp_path / "nope.xlsx") == {"path": str(tmp_path / "nope.xlsx"), "exists": False}
