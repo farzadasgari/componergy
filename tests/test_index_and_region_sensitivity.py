@@ -36,3 +36,13 @@ def test_temperature_dependence_detects_temperature_entering_the_drought_index()
     assert r["excess_r2_from_temperature"] > 0.25 and "twice" in r["verdict"]
     clean = temperature_dependence(sti, spi + 0.1 * rng.normal(size=len(idx)), spi)
     assert clean["excess_r2_from_temperature"] < 0.05 and "little evidence" in clean["verdict"]
+
+
+def test_drought_agreement_counts_and_jaccard():
+    rng = np.random.default_rng(2)
+    idx = _idx()
+    spi = pd.Series(rng.normal(size=len(idx)), index=idx)
+    same = drought_definition_agreement(spi, spi)
+    assert same["jaccard"] == pytest.approx(1.0) and same["SAPEI_only"] == 0
+    other = drought_definition_agreement(pd.Series(rng.normal(size=len(idx)), index=idx), spi)
+    assert other["jaccard"] < 0.3
