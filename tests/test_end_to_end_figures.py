@@ -46,3 +46,18 @@ def _geo(stack, inputs):
                               return_value=inputs["counties"]))
     stack.enter_context(patch("componergy.preprocessing.consumption_cec.load_raw_consumption",
                               return_value=inputs["consumption"]))
+
+
+COMPOSITE_TABLES = ("amplification", "superadditivity", "placebo", "specification_robustness")
+
+
+def _check_inference_outputs(out, prefix):
+    for name in COMPOSITE_TABLES:
+        assert (out / f"{prefix}_{name}.csv").exists(), f"{prefix}_{name}.csv missing"
+    rob = pd.read_csv(out / f"{prefix}_specification_robustness.csv")
+    specs = set(rob["Specification"])
+    assert any("naive composite" in s for s in specs)  # the ORIGINAL method is shown ...
+    assert {"month effects only", "month effects + linear trend",
+            "month + year fixed effects"} <= specs  # ... next to controlled ones
+    amp = pd.read_csv(out / f"{prefix}_amplification.csv")
+    assert {"Amplification_contrast", "CI_lo", "CI_hi", "p_value", "p_exact", "p_hac", "q_value"} <= set(amp.columns)
