@@ -106,3 +106,12 @@ def test_bootstrap_return_period_interval_brackets_its_median_and_reports_both_m
         assert r[m]["n_valid"] > 25
         assert r[m]["p2_5"] <= r[m]["median"] <= r[m]["p97_5"]
     assert r["gev"]["p97_5"] > r["gev"]["p2_5"]
+
+
+def test_gev_goodness_of_fit_reports_a_statistic_in_range():
+    rng = np.random.default_rng(3)
+    idx = pd.date_range("1951-01-01", periods=912, freq="MS")
+    s = pd.Series(stats.genextreme.rvs(c=0.1, loc=2.0, scale=0.5, size=912, random_state=rng), index=idx)
+    g = gev_goodness_of_fit(s)
+    assert g["n_maxima"] == 76 and 0.0 <= g["ks_statistic"] <= 1.0
+    assert 0.0 <= g["ks_p_value_descriptive"] <= 1.0
