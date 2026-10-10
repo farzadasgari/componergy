@@ -69,3 +69,11 @@ def _persistent_series(n=204, seed=0, ar=0.8):
     for i in range(1, n):
         e[i] = ar * e[i - 1] + rng.normal()
     return pd.Series(e, index=idx)
+
+
+def test_decluster_runs_keeps_one_maximum_per_cluster():
+    idx = pd.date_range("2010-01-01", periods=16, freq="MS")
+    s = pd.Series([0, 5, 9, 6, 0, 0, 0, 0, 0, 7, 8, 0, 0, 0, 4, 0], index=idx, dtype=float)
+    out = decluster_runs(s, threshold=3.0, run_length=3)
+    assert list(out.values) == [9.0, 8.0, 4.0]
+    assert out.index[0] == idx[2]
