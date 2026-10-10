@@ -72,6 +72,25 @@ def _check_log(out, stem):
     return log
 
 
+def test_figure_02_end_to_end(tmp_path, inputs):
+    import componergy.figures.generation as f2
+    with ExitStack() as st:
+        _paths(st, inputs, tmp_path)
+        st.enter_context(patch.object(f2, "INDICES_FILE", inputs["indices"]))
+        st.enter_context(patch.object(f2, "GENERATION_MONTHLY_FILE", inputs["generation_csv"]))
+        st.enter_context(patch.object(f2, "FIGURES_DIR", tmp_path))
+        f2.main()
+    out = tmp_path / "figure_02"
+    comp = pd.read_csv(out / "figure_02_composite.csv")
+    assert {"total_share", "deseasonalized_share", "detrended_share", "adjusted_share"} <= set(comp["Mode"])
+    lag = pd.read_csv(out / "figure_02_lag_scan.csv")
+    assert {"adjusted_share"} <= set(lag["Mode"]) and {"p_value", "p_ols_naive", "q_value", "n_perm"} <= set(
+        lag.columns)
+    assert (lag["p_value"] >= 1 / 1000).all()
+    _check_inference_outputs(out, "figure_02")
+    _check_log(out, "figure_02_generation_response")
+
+
 def test_figure_04_end_to_end(tmp_path, inputs):
     import componergy.figures.zonal_consumption as f4
     with ExitStack() as st:
@@ -103,20 +122,22 @@ def test_figure_05_end_to_end(tmp_path, inputs):
     _check_log(out, "figure_05_sector_fingerprint")
 
 
-def test_figure_02_end_to_end(tmp_path, inputs):
-    import componergy.figures.generation as f2
+def test_figure_06_end_to_end_uses_cec_by_default_and_runs_the_alternative_source(tmp_path, inputs):
+    import componergy.figures.imbalance as f6
+    gen = inputs["generation"]
+    sources = {"cec": si.make_demand_mwh(gen, seed=10, start="2008-01-01", end="2024-12-01"),
+               "eia861m": si.make_demand_mwh(gen, seed=11)}
     with ExitStack() as st:
         _paths(st, inputs, tmp_path)
-        st.enter_context(patch.object(f2, "INDICES_FILE", inputs["indices"]))
-        st.enter_context(patch.object(f2, "GENERATION_MONTHLY_FILE", inputs["generation_csv"]))
-        st.enter_context(patch.object(f2, "FIGURES_DIR", tmp_path))
-        f2.main()
-    out = tmp_path / "figure_02"
-    comp = pd.read_csv(out / "figure_02_composite.csv")
-    assert {"total_share", "deseasonalized_share", "detrended_share", "adjusted_share"} <= set(comp["Mode"])
-    lag = pd.read_csv(out / "figure_02_lag_scan.csv")
-    assert {"adjusted_share"} <= set(lag["Mode"]) and {"p_value", "p_ols_naive", "q_value", "n_perm"} <= set(
-        lag.columns)
-    assert (lag["p_value"] >= 1 / 1000).all()
-    _check_inference_outputs(out, "figure_02")
-    _check_log(out, "figure_02_generation_response")
+        st.enter_context(patch.object(f6, "load_demand_sources", lambda: sources))
+        f6.main()
+    out = tmp_path / "figure_06"
+    log = _check_log(out, "figure_06_imbalance")
+    assert log["Overview"]["demand_source"] == "cec"
+    assert log["Overview"]["period_start"] == "2008-01-01" and log["Overview"]["period_end"] == "2024-12-01"
+    assert (out / "figure_06_event_metrics_eia861m_demand.csv").exists()
+    assert set(log["System boundary validation (per demand source)"]) == {"cec", "eia861m"}
+    assert "verdict" in log["Demand source cross-check (CEC vs EIA-861M)"]
+    m = pd.read_csv(out / "figure_06_event_metrics.csv")
+    assert {"RAF", "RAF_unadjusted", "RAF_p_shift_upper", "Delta_GWh", "q_value"} <= set(m.columns)
+    _check_inference_outputs(out, "figure_06")
