@@ -155,3 +155,10 @@ def test_event_counts_by_baseline_reports_both_baselines_for_all_events():
     assert set(table["Baseline"]) == {"window", "full_record"}
     assert set(table["Event"]) == {"Heatwave", "Drought", "Compound"}
     assert len(table) == 6
+
+
+def test_count_event_clusters_counts_runs_not_months():
+    m = pd.Series([0, 1, 1, 1, 0, 0, 1, 0, 1, 1], dtype=bool)
+    assert int(m.sum()) == 6 and count_event_clusters(m) == 3
+    assert count_event_clusters(pd.Series([], dtype=bool)) == 0
+    assert count_event_clusters(pd.Series([True] * 5)) == 1
