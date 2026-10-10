@@ -54,3 +54,15 @@ def test_compute_gridded_vulnerability_isolates_known_localized_signal():
     gridded, is_significant = compute_gridded_vulnerability(data)
     assert gridded.isel(lat=0, lon=0) > 0.5
     assert abs(float(gridded.isel(lat=1, lon=1))) < 0.3
+
+
+def test_compute_risk_surface_product_is_correct():
+    idx = pd.date_range("2010-01-01", periods=10, freq="MS")
+    data = {
+        "scdhi": pd.Series([1, -1, 2, -2, 0, 0.5, -0.5, 1.5, -1.5, 3], index=idx),
+        "demand_state_z": pd.Series([1, 1, -1, -1, 2, -2, 0.5, 0.5, -0.5, 1], index=idx),
+    }
+    risk_df = compute_risk_surface(data)
+
+    assert risk_df["System_Risk"].iloc[0] == (-1) * 1
+    assert risk_df["System_Risk"].iloc[2] == (-2) * (-1)
