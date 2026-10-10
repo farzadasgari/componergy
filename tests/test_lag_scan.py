@@ -11,3 +11,11 @@ def _ar1(n, phi, rng):
     for i in range(1, n):
         e[i] = phi * e[i - 1] + rng.normal()
     return e
+
+
+def _pair(n=204, phi=0.6, link=0.0, lag=2, seed=0):
+    rng = np.random.default_rng(seed)
+    idx = pd.date_range("2008-01-01", periods=n, freq="MS")
+    x = _ar1(n, phi, rng)
+    y = _ar1(n, phi, rng) + link * np.roll(x, lag)
+    return pd.Series(x, index=idx), pd.Series(y, index=idx)
