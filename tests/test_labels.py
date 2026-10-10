@@ -37,3 +37,8 @@ def test_an_unknown_region_falls_back_to_initials_without_colliding_with_a_known
     assert t.loc["Northern Coastal Cliffs", "Abbreviation"] != "NC"
     assert t["Abbreviation"].is_unique
     assert t.loc["Northern Coastal Cliffs", "Source"].startswith("fallback")
+
+
+def test_two_unknown_regions_with_the_same_initials_are_disambiguated():
+    t = region_label_table(["Alpha Beta", "Alpha Bravo"])
+    assert t["Abbreviation"].is_unique
