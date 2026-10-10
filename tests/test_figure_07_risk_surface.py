@@ -3,7 +3,11 @@ import pandas as pd
 import xarray as xr
 
 from componergy.figures.risk_surface import (
-    compute_gridded_vulnerability, compute_risk_surface, compute_return_period, region_abbrev,
+    compute_gridded_vulnerability,
+    compute_risk_surface,
+    compute_return_period,
+    region_abbrev,
+    compute_regional_evi
 )
 
 
@@ -75,3 +79,33 @@ def test_compute_return_period_weibull_plotting_position():
     assert rp["System_Risk"].iloc[0] == 12
     assert abs(rp["Return_Period_Years"].iloc[0] - (13 / 1) / 12) < 1e-9
     assert rp["Return_Period_Years"].is_monotonic_decreasing
+
+
+def test_compute_regional_evi_averages_delta_z_across_events():
+    rng = np.random.default_rng(0)
+    n = 200
+    idx = pd.date_range("2008-01-01", periods=n, freq="MS")
+
+    heat_mask = pd.Series([False] * n, index=idx)
+    heat_mask.iloc[:20] = True
+    drought_mask = pd.Series([False] * n, index=idx)
+    drought_mask.iloc[20:40] = True
+    compound_mask = pd.Series([False] * n, index=idx)
+    compound_mask.iloc[40:55] = True
+    normal_mask = ~(heat_mask | drought_mask | compound_mask)
+
+    region_a = pd.Series(rng.normal(0, 1, n), index=idx)
+    region_a.iloc[:20] += 2.0
+    region_a.iloc[20:40] -= 2.0
+
+    electricity_z = pd.DataFrame({"RegionA": region_a})
+    data = {
+        "electricity_raw": electricity_z,
+        "electricity_z": electricity_z,
+        "event_masks": {"Heatwave": heat_mask, "Drought": drought_mask, "Compound": compound_mask},
+        "normal": normal_mask,
+    }
+
+    evi, comp = compute_regional_evi(data)
+    assert "q_value" in comp.columns
+    assert abs(evi.loc["RegionA"]) < 1.0
