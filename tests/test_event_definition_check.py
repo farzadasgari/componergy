@@ -35,3 +35,11 @@ def test_the_combination_that_generated_the_reference_is_found_with_zero_distanc
     best = t[t["Best_for_window"]].iloc[0]
     assert best["Distance"] == 0
     assert (best["Baseline"], best["Smoothing_months"], best["Quantiles"]) == ("full_record", 1, "exploratory 85/15/12")
+
+
+def test_a_window_baseline_cannot_reproduce_counts_far_above_ten_percent():
+    sti, sapei, scdhi = _series()
+    t = event_definition_check(sti, sapei, scdhi)
+    w = t[(t["Window"] == "2001-01 to 2025-08") & (t["Baseline"] == "window") & (t["Quantiles"] == "final 90/10/10")]
+    assert (w["Heatwave"] < 0.13 * 296).all()
+    assert MANUSCRIPT_EVENT_COUNTS[("2001-01-01", "2025-08-01")]["Heatwave"] > 0.2 * 296
