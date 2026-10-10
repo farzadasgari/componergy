@@ -98,3 +98,10 @@ def _warming_series(n=900, seed=0, trend_total=1.2):
     sapei = pd.Series(rng.normal(0, 1, n), index=idx)
     scdhi = pd.Series(rng.normal(0, 1, n), index=idx)
     return sti, sapei, scdhi
+
+
+def test_window_baseline_gives_about_ten_percent_by_construction():
+    sti, sapei, scdhi = _warming_series()
+    window = sti.index[684:888]
+    _, _, meta = build_event_masks(sti, sapei, scdhi, window_index=window, baseline="window")
+    assert abs(meta["counts_raw"]["Heatwave"] / len(window) - 0.10) < 0.02
