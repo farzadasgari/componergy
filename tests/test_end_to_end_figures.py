@@ -101,3 +101,22 @@ def test_figure_05_end_to_end(tmp_path, inputs):
     assert np.allclose(comp["Delta_GWh"], comp["Delta_native"])
     _check_inference_outputs(out, "figure_05")
     _check_log(out, "figure_05_sector_fingerprint")
+
+
+def test_figure_02_end_to_end(tmp_path, inputs):
+    import componergy.figures.generation as f2
+    with ExitStack() as st:
+        _paths(st, inputs, tmp_path)
+        st.enter_context(patch.object(f2, "INDICES_FILE", inputs["indices"]))
+        st.enter_context(patch.object(f2, "GENERATION_MONTHLY_FILE", inputs["generation_csv"]))
+        st.enter_context(patch.object(f2, "FIGURES_DIR", tmp_path))
+        f2.main()
+    out = tmp_path / "figure_02"
+    comp = pd.read_csv(out / "figure_02_composite.csv")
+    assert {"total_share", "deseasonalized_share", "detrended_share", "adjusted_share"} <= set(comp["Mode"])
+    lag = pd.read_csv(out / "figure_02_lag_scan.csv")
+    assert {"adjusted_share"} <= set(lag["Mode"]) and {"p_value", "p_ols_naive", "q_value", "n_perm"} <= set(
+        lag.columns)
+    assert (lag["p_value"] >= 1 / 1000).all()
+    _check_inference_outputs(out, "figure_02")
+    _check_log(out, "figure_02_generation_response")
