@@ -119,3 +119,9 @@ def test_default_baseline_is_full_record():
     sti, sapei, scdhi = _warming_series()
     _, _, meta = build_event_masks(sti, sapei, scdhi, window_index=sti.index[600:800])
     assert meta["baseline"] == "full_record" == EVENT_BASELINES[0]
+
+
+def test_build_event_masks_rejects_unknown_baseline():
+    sti, sapei, scdhi = _warming_series(n=120)
+    with pytest.raises(ValueError):
+        build_event_masks(sti, sapei, scdhi, baseline="nonsense")
