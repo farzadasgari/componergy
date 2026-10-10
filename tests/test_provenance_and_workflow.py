@@ -64,3 +64,11 @@ def test_plan_orders_stages_selects_ranges_and_passes_flags_only_where_accepted(
     cmd = {s["stage"]: s["command"] for s in p}
     assert "--baseline" in cmd["figure-04"] and "--demand-source" not in cmd["figure-04"]
     assert "--demand-source" in cmd["figure-06"] and "--baseline" not in cmd["figure-03"]
+
+
+def test_plan_blocks_or_skips_stages_whose_inputs_are_missing():
+    missing_cec = lambda n: n != "COUNTY_CONSUMPTION_XLSX"
+    blocked = {s["stage"]: s["status"] for s in plan(only=["figure-04", "figure-02"], exists=missing_cec)}
+    assert blocked["figure-04"].startswith("BLOCKED") and blocked["figure-02"] == "run"
+    skipped = {s["stage"]: s["status"] for s in plan(only=["figure-04"], skip_missing=True, exists=missing_cec)}
+    assert skipped["figure-04"].startswith("skip")
