@@ -141,3 +141,23 @@ def test_figure_06_end_to_end_uses_cec_by_default_and_runs_the_alternative_sourc
     m = pd.read_csv(out / "figure_06_event_metrics.csv")
     assert {"RAF", "RAF_unadjusted", "RAF_p_shift_upper", "Delta_GWh", "q_value"} <= set(m.columns)
     _check_inference_outputs(out, "figure_06")
+
+
+def test_figure_06_can_use_the_public_demand_source_and_refuses_a_missing_one(tmp_path, inputs):
+    import componergy.figures.imbalance as f6
+    gen = inputs["generation"]
+    both = {"cec": si.make_demand_mwh(gen, seed=10, start="2008-01-01", end="2024-12-01"),
+            "eia861m": si.make_demand_mwh(gen, seed=11)}
+    with ExitStack() as st:
+        _paths(st, inputs, tmp_path)
+        st.enter_context(patch.object(f6, "load_demand_sources", lambda: both))
+        f6.main(demand_source="eia861m")
+    log = json.load(open(tmp_path / "figure_06" / "figure_06_imbalance.json"))
+    assert log["Overview"]["demand_source"] == "eia861m"
+    assert log["Overview"]["period_start"] == "2001-01-01"
+
+    with ExitStack() as st:
+        _paths(st, inputs, tmp_path / "second")
+        st.enter_context(patch.object(f6, "load_demand_sources", lambda: {"cec": None, "eia861m": both["eia861m"]}))
+        with pytest.raises(FileNotFoundError, match="cec"):
+            f6.main(demand_source="cec")
