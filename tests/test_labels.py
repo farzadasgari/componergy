@@ -29,3 +29,11 @@ def test_regression_the_generic_initials_rule_collided_on_these_regions():
     assert initials("Sacramento-Delta") == initials("Sonoran Desert") == "SD"
     assert region_abbrev("North Coast") != region_abbrev("North Central")
     assert region_abbrev("Sacramento-Delta") != region_abbrev("Sonoran Desert")
+
+
+def test_an_unknown_region_falls_back_to_initials_without_colliding_with_a_known_one():
+    t = region_label_table(["North Coast", "Northern Coastal Cliffs"]).set_index("Region")
+    assert t.loc["North Coast", "Abbreviation"] == "NC"
+    assert t.loc["Northern Coastal Cliffs", "Abbreviation"] != "NC"
+    assert t["Abbreviation"].is_unique
+    assert t.loc["Northern Coastal Cliffs", "Source"].startswith("fallback")
