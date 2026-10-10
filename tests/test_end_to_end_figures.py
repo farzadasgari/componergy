@@ -30,3 +30,10 @@ def inputs(tmp_path_factory):
     regions, counties = si.make_geography()
     return {"dir": d, "indices": d / "indices.nc", "generation_csv": d / "generation.csv", "generation": gen,
             "consumption": si.make_consumption_long(), "regions": regions, "counties": counties}
+
+
+def _paths(stack, inputs, out):
+    stack.enter_context(patch("componergy.paths.INDICES_FILE", inputs["indices"]))
+    stack.enter_context(patch("componergy.paths.GENERATION_MONTHLY_FILE", inputs["generation_csv"]))
+    stack.enter_context(patch("componergy.paths.FIGURES_DIR", out))
+    stack.enter_context(patch("componergy.paths.COUNTY_CONSUMPTION_XLSX", inputs["dir"] / "x.xlsx"))
