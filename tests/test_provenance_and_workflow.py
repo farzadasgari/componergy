@@ -49,3 +49,10 @@ def test_manifest_records_environment_seeds_inputs_and_outputs_and_comparison_fi
     m2 = build_manifest({"input": a}, {"missing_output": tmp_path / "o.nc"}, root=tmp_path)
     diff = compare_manifests(m1, m2)
     assert list(diff["changed_files"]) == ["inputs.input"]
+
+
+def test_stage_names_are_unique_and_every_stage_points_at_a_real_script():
+    from pathlib import Path
+    assert len(set(STAGE_NAMES)) == len(STAGE_NAMES)
+    for s in STAGES:
+        assert Path("scripts", f"{s.script}.py").exists(), s.script
