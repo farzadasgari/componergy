@@ -10,3 +10,11 @@ def _seasonal(n=204, seed=0, noise=0.02):
     rng = np.random.default_rng(seed)
     season = 1.0 + 0.25 * np.sin(2 * np.pi * (idx.month.values - 4) / 12)
     return pd.Series(20000 * season * (1 + rng.normal(0, noise, n)), index=idx)
+
+
+def test_identical_series_agree_perfectly():
+    a = _seasonal()
+    r = compare_demand_sources(a, a * 1.07)
+    assert r["corr_deseasonalized_anomalies"] > 0.999
+    assert abs(r["level_ratio_mean"] - 1 / 1.07) < 1e-9
+    assert "close agreement" in r["verdict"]
