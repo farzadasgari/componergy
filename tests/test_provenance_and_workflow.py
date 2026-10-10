@@ -72,3 +72,8 @@ def test_plan_blocks_or_skips_stages_whose_inputs_are_missing():
     assert blocked["figure-04"].startswith("BLOCKED") and blocked["figure-02"] == "run"
     skipped = {s["stage"]: s["status"] for s in plan(only=["figure-04"], skip_missing=True, exists=missing_cec)}
     assert skipped["figure-04"].startswith("skip")
+
+
+def test_plan_rejects_an_unknown_stage():
+    with pytest.raises(ValueError, match="unknown stage"):
+        plan(only=["figure-99"], exists=lambda n: True)
