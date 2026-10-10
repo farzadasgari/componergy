@@ -18,3 +18,11 @@ def test_identical_series_agree_perfectly():
     assert r["corr_deseasonalized_anomalies"] > 0.999
     assert abs(r["level_ratio_mean"] - 1 / 1.07) < 1e-9
     assert "close agreement" in r["verdict"]
+
+
+def test_shared_seasonality_alone_does_not_count_as_agreement():
+    a, b = _seasonal(seed=1, noise=0.03), _seasonal(seed=2, noise=0.03)
+    r = compare_demand_sources(a, b)
+    assert r["corr_raw_series"] > 0.95
+    assert r["corr_deseasonalized_anomalies"] < 0.4
+    assert "weak agreement" in r["verdict"]
