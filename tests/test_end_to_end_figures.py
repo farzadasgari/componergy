@@ -37,3 +37,12 @@ def _paths(stack, inputs, out):
     stack.enter_context(patch("componergy.paths.GENERATION_MONTHLY_FILE", inputs["generation_csv"]))
     stack.enter_context(patch("componergy.paths.FIGURES_DIR", out))
     stack.enter_context(patch("componergy.paths.COUNTY_CONSUMPTION_XLSX", inputs["dir"] / "x.xlsx"))
+
+
+def _geo(stack, inputs):
+    stack.enter_context(patch("componergy.download.climate_regions.get_california_climate_regions",
+                              return_value=inputs["regions"]))
+    stack.enter_context(patch("componergy.download.boundaries.get_california_counties",
+                              return_value=inputs["counties"]))
+    stack.enter_context(patch("componergy.preprocessing.consumption_cec.load_raw_consumption",
+                              return_value=inputs["consumption"]))
