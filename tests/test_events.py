@@ -147,3 +147,11 @@ def test_smoothing_is_applied_once_and_identically_for_every_caller():
     b = build_event_masks(sti, sapei, scdhi, window_index=sti.index[60:180])[0]
     for k in a:
         assert a[k].equals(b[k])
+
+
+def test_event_counts_by_baseline_reports_both_baselines_for_all_events():
+    sti, sapei, scdhi = _warming_series()
+    table = event_counts_by_baseline(sti, sapei, scdhi, window_index=sti.index[684:888])
+    assert set(table["Baseline"]) == {"window", "full_record"}
+    assert set(table["Event"]) == {"Heatwave", "Drought", "Compound"}
+    assert len(table) == 6
