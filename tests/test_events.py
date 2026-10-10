@@ -139,3 +139,11 @@ def test_months_with_missing_index_values_are_not_counted_as_normal():
     sti.iloc[100:105] = np.nan
     masks, normal, _ = build_event_masks(sti, sapei, scdhi)
     assert not normal.iloc[101:104].any()
+
+
+def test_smoothing_is_applied_once_and_identically_for_every_caller():
+    sti, sapei, scdhi = _warming_series(n=240)
+    a = build_event_masks(sti, sapei, scdhi, window_index=sti.index[60:180])[0]
+    b = build_event_masks(sti, sapei, scdhi, window_index=sti.index[60:180])[0]
+    for k in a:
+        assert a[k].equals(b[k])
