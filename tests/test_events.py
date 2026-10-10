@@ -162,3 +162,14 @@ def test_count_event_clusters_counts_runs_not_months():
     assert int(m.sum()) == 6 and count_event_clusters(m) == 3
     assert count_event_clusters(pd.Series([], dtype=bool)) == 0
     assert count_event_clusters(pd.Series([True] * 5)) == 1
+
+
+def test_exclusive_masks_remove_compound_months_from_heat_and_drought():
+    idx = pd.date_range("2010-01-01", periods=6, freq="MS")
+    masks = {"Heatwave": pd.Series([1, 1, 0, 0, 0, 0], index=idx, dtype=bool),
+             "Drought": pd.Series([0, 0, 1, 1, 0, 0], index=idx, dtype=bool),
+             "Compound": pd.Series([0, 1, 1, 0, 0, 1], index=idx, dtype=bool)}
+    ex = exclusive_event_masks(masks)
+    assert ex["Compound"].equals(masks["Compound"])
+    assert not (ex["Heatwave"] & ex["Compound"]).any() and not (ex["Drought"] & ex["Compound"]).any()
+    assert int(ex["Heatwave"].sum()) == 1 and int(ex["Drought"].sum()) == 1
