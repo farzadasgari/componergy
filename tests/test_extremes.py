@@ -94,3 +94,15 @@ def test_declustering_reduces_the_count_of_independent_exceedances_on_a_persiste
     assert dec["declustered"] is True and "declustered_r3" in dec["method"]
     assert dec["n_exceedances"] < raw["n_exceedances"]
     assert raw["method"] == "POT_GPD"  # unchanged default behaviour
+
+
+def test_bootstrap_return_period_interval_brackets_its_median_and_reports_both_methods():
+    rng = np.random.default_rng(0)
+    idx = pd.date_range("2008-01-01", periods=204, freq="MS")
+    s = pd.Series(stats.genextreme.rvs(c=0.1, loc=2.0, scale=0.5, size=204, random_state=rng), index=idx)
+    r = bootstrap_return_period(s, value=float(s.max()), n_boot=60, seed=1)
+    assert r["n_boot"] == 60 and r["block_months"] == 12
+    for m in ("gev", "pot_declustered"):
+        assert r[m]["n_valid"] > 25
+        assert r[m]["p2_5"] <= r[m]["median"] <= r[m]["p97_5"]
+    assert r["gev"]["p97_5"] > r["gev"]["p2_5"]
