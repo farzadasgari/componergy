@@ -26,3 +26,9 @@ def test_shared_seasonality_alone_does_not_count_as_agreement():
     assert r["corr_raw_series"] > 0.95
     assert r["corr_deseasonalized_anomalies"] < 0.4
     assert "weak agreement" in r["verdict"]
+
+
+def test_too_short_an_overlap_is_refused_rather_than_summarised():
+    a = _seasonal()
+    r = compare_demand_sources(a.iloc[:12], a.iloc[:12])
+    assert r["n_months"] == 12 and "no meaningful comparison" in r["verdict"]
