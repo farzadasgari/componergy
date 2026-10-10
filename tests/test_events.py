@@ -113,3 +113,9 @@ def test_full_record_baseline_finds_more_heat_in_a_warmer_window():
     _, _, win = build_event_masks(sti, sapei, scdhi, window_index=window, baseline="window")
     _, _, full = build_event_masks(sti, sapei, scdhi, window_index=window, baseline="full_record")
     assert full["counts_raw"]["Heatwave"] > win["counts_raw"]["Heatwave"] * 1.4
+
+
+def test_default_baseline_is_full_record():
+    sti, sapei, scdhi = _warming_series()
+    _, _, meta = build_event_masks(sti, sapei, scdhi, window_index=sti.index[600:800])
+    assert meta["baseline"] == "full_record" == EVENT_BASELINES[0]
