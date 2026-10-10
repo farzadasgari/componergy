@@ -43,3 +43,21 @@ def _three_masks(idx):
         "Compound": _mask(idx, {2011: [7, 8, 9], 2014: [7, 8], 2017: [7, 8, 9], 2021: [6, 7, 8]}),
     }
     return m, ~(m["Heatwave"] | m["Drought"] | m["Compound"])
+
+
+@pytest.mark.parametrize("lags", [0, 4, 12])
+def test_newey_west_matches_statsmodels_to_machine_precision(lags):
+    sm = pytest.importorskip("statsmodels.api")
+    y = _series(seed=3, ar=0.7)
+    ev = _mask(y.index, {2012: [6, 7, 8], 2013: [7, 8], 2019: [5, 6, 7, 8]})
+    X, names = design_matrix(y.index, {"ev": ev.values}, trend="linear")
+    mine = ols_hac(y.values, X, names, lags=lags, use_t=True)
+    ref = sm.OLS(y.values, X).fit(cov_type="HAC", cov_kwds={"maxlags": lags, "use_correction": True}, use_t=True)
+    np.testing.assert_allclose(mine["beta"], ref.params, rtol=1e-9, atol=1e-10)
+    np.testing.assert_allclose(mine["cov"], ref.cov_params(), rtol=1e-8, atol=1e-12)
+    np.testing.assert_allclose(mine["p"], ref.pvalues, rtol=1e-6, atol=1e-12)
+
+
+def test_design_matrix_rejects_unknown_trend():
+    with pytest.raises(ValueError):
+        design_matrix(pd.date_range("2010-01-01", periods=24, freq="MS"), trend="cubic")
