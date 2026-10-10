@@ -19,3 +19,13 @@ def test_the_eleven_real_regions_get_the_manuscript_labels_and_all_labels_are_un
     assert len(ELEVEN) == 11
     assert duplicate_labels(ELEVEN) == []
     assert region_label_table(ELEVEN)["Abbreviation"].is_unique
+
+
+def test_regression_the_generic_initials_rule_collided_on_these_regions():
+    def initials(n):
+        return "".join(p[0].upper() for p in [p for p in n.replace("-", " ").split() if p][:3])
+
+    assert initials("North Coast") == initials("North Central") == "NC"
+    assert initials("Sacramento-Delta") == initials("Sonoran Desert") == "SD"
+    assert region_abbrev("North Coast") != region_abbrev("North Central")
+    assert region_abbrev("Sacramento-Delta") != region_abbrev("Sonoran Desert")
