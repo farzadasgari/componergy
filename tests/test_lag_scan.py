@@ -44,3 +44,15 @@ def test_block_permutation_keeps_every_value_and_within_block_order():
     assert sorted(xp) == sorted(x) and len(xp) == 100
     starts = [i for i in range(0, 96, 24)]
     assert any(np.array_equal(xp[i:i + 24], x[j:j + 24]) for i in starts[:1] for j in (0, 24, 48, 72))
+
+
+def test_the_old_ols_p_value_at_the_best_lag_is_wildly_anticonservative_and_the_new_test_is_not():
+    n_sims, naive, new = 60, 0, 0
+    rng = np.random.default_rng(99)
+    for s in range(n_sims):
+        x, y = _pair(phi=0.6, seed=int(rng.integers(1, 10 ** 6)))
+        r = best_lag_randomization(x, y, n_perm=99, seed=s)
+        naive += r["p_ols_naive"] < 0.05
+        new += r["p_value"] < 0.05
+    assert naive / n_sims > 0.40
+    assert new / n_sims < 0.13
