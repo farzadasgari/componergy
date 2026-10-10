@@ -42,3 +42,8 @@ def test_an_unknown_region_falls_back_to_initials_without_colliding_with_a_known
 def test_two_unknown_regions_with_the_same_initials_are_disambiguated():
     t = region_label_table(["Alpha Beta", "Alpha Bravo"])
     assert t["Abbreviation"].is_unique
+
+
+def test_the_key_is_caption_ready_and_lists_every_region():
+    key = format_region_key(["North Coast", "North Central"])
+    assert key == "NC, North Coast; N-C, North Central"
