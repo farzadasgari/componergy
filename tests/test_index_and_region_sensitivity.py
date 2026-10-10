@@ -46,3 +46,13 @@ def test_drought_agreement_counts_and_jaccard():
     assert same["jaccard"] == pytest.approx(1.0) and same["SAPEI_only"] == 0
     other = drought_definition_agreement(pd.Series(rng.normal(size=len(idx)), index=idx), spi)
     assert other["jaccard"] < 0.3
+
+
+def _geo():
+    regions = gpd.GeoDataFrame({"Region": ["West", "East"]},
+                               geometry=[box(-122, 36, -120, 38), box(-120, 36, -118, 38)],
+                               crs="EPSG:4326")
+    counties = gpd.GeoDataFrame({"CountyName": ["INSIDE", "STRADDLE"]},
+                                geometry=[box(-121.8, 36.5, -121.2, 37.0), box(-120.6, 37.0, -119.6, 37.5)],
+                                crs="EPSG:4326")
+    return counties, regions
