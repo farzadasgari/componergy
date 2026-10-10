@@ -61,3 +61,31 @@ def test_newey_west_matches_statsmodels_to_machine_precision(lags):
 def test_design_matrix_rejects_unknown_trend():
     with pytest.raises(ValueError):
         design_matrix(pd.date_range("2010-01-01", periods=24, freq="MS"), trend="cubic")
+
+
+def test_seasonal_confound_is_not_reported_as_an_event_effect():
+    y = _series(seed=1, seasonal_amp=10.0, ar=0.3)
+    idx = y.index
+    masks = {"Heatwave": _mask(idx, {yy: [7] for yy in range(2008, 2014)}),
+             "Drought": _mask(idx, {yy: [8] for yy in range(2014, 2020)}),
+             "Compound": _mask(idx, {yy: [7, 8] for yy in range(2020, 2025)})}
+    normal = ~(masks["Heatwave"] | masks["Drought"] | masks["Compound"])
+
+    naive = y[masks["Compound"]].mean() - y[normal].mean()
+    assert naive > 5.0
+
+    eff = event_effects(y, masks, normal, trend="linear")["effects"].set_index("Event")
+    for ev in ("Heatwave", "Drought", "Compound"):
+        assert abs(eff.loc[ev, "Delta_native"]) < 1.5
+        assert eff.loc[ev, "CI_lo_native"] < 0 < eff.loc[ev, "CI_hi_native"]
+
+
+def test_trend_confound_is_removed_only_when_a_trend_is_modelled():
+    y = _series(seed=2, seasonal_amp=0.0, trend_per_decade=5.0, ar=0.2)
+    idx = y.index
+    late = _mask(idx, {yy: list(range(1, 13)) for yy in (2022, 2023, 2024)})
+    masks = {"Heatwave": late, "Drought": pd.Series(False, index=idx), "Compound": pd.Series(False, index=idx)}
+    no_trend = event_effects(y, masks, ~late, trend="none", month_fe=False)["effects"].set_index("Event")
+    with_trend = event_effects(y, masks, ~late, trend="linear", month_fe=False)["effects"].set_index("Event")
+    assert no_trend.loc["Heatwave", "Delta_native"] > 3.0
+    assert abs(with_trend.loc["Heatwave", "Delta_native"]) < 1.0
