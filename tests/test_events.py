@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import xarray as xr
-
+import pytest
 from componergy.analysis.events import (
     compute_percentile_threshold,
     classify_heatwave,
@@ -10,6 +10,12 @@ from componergy.analysis.events import (
     normal_mask_exclude_all_events,
     normal_mask_opposite_extreme,
     compute_delta_z,
+    build_event_masks,
+    event_counts_by_baseline,
+    count_event_clusters,
+    exclusive_event_masks,
+    event_overlap_summary,
+    EVENT_BASELINES,
 )
 
 
@@ -82,3 +88,13 @@ def test_normal_mask_opposite_extreme_differs_from_exclude_all_events():
     normal_opposite = normal_mask_opposite_extreme(scdhi, 0.90)
 
     assert not bool((normal_exclude == normal_opposite).all())
+
+
+def _warming_series(n=900, seed=0, trend_total=1.2):
+    idx = pd.date_range("1951-01-01", periods=n, freq="MS")
+    rng = np.random.default_rng(seed)
+    trend = np.linspace(-trend_total / 2, trend_total / 2, n)
+    sti = pd.Series(trend + rng.normal(0, 0.9, n), index=idx)
+    sapei = pd.Series(rng.normal(0, 1, n), index=idx)
+    scdhi = pd.Series(rng.normal(0, 1, n), index=idx)
+    return sti, sapei, scdhi
