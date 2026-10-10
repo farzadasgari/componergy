@@ -89,3 +89,66 @@ def test_trend_confound_is_removed_only_when_a_trend_is_modelled():
     with_trend = event_effects(y, masks, ~late, trend="linear", month_fe=False)["effects"].set_index("Event")
     assert no_trend.loc["Heatwave", "Delta_native"] > 3.0
     assert abs(with_trend.loc["Heatwave", "Delta_native"]) < 1.0
+
+
+def test_effects_and_amplification_contrast_are_recovered():
+    y = _series(seed=4, seasonal_amp=8.0, ar=0.4)
+    masks, normal = _three_masks(y.index)
+    y = y.copy()
+    y[masks["Heatwave"]] += 2.0
+    y[masks["Drought"]] += 1.0
+    y[masks["Compound"]] += 6.0
+
+    res = event_effects(y, masks, normal, trend="linear")
+    eff = res["effects"].set_index("Event")
+    for ev, truth in {"Heatwave": 2.0, "Drought": 1.0, "Compound": 6.0}.items():
+        assert eff.loc[ev, "CI_lo_native"] < truth < eff.loc[ev, "CI_hi_native"]
+
+    c = amplification_contrast(res)
+    assert c["ci_lo"] < 3.0 < c["ci_hi"]
+    assert c["p_value"] < 0.05 and c["p_exact"] < 0.05
+    assert abs(c["additive_expectation"] - 3.0) < 1.5
+
+
+def test_amplification_contrast_is_null_when_effects_are_purely_additive():
+    y = _series(seed=5, seasonal_amp=8.0, ar=0.4)
+    masks, normal = _three_masks(y.index)
+    y = y.copy()
+    y[masks["Heatwave"]] += 2.0
+    y[masks["Drought"]] += 1.0
+    y[masks["Compound"]] += 3.0
+    c = amplification_contrast(event_effects(y, masks, normal))
+    assert c["ci_lo"] < 0 < c["ci_hi"]
+    assert c["p_value"] > 0.05
+
+
+def test_amplification_contrast_is_nan_when_a_category_is_too_small():
+    y = _series(seed=6)
+    idx = y.index
+    masks = {"Heatwave": _mask(idx, {2010: [7]}), "Drought": _mask(idx, {2012: [6, 7, 8]}),
+             "Compound": _mask(idx, {2014: [6, 7, 8]})}
+    normal = ~(masks["Heatwave"] | masks["Drought"] | masks["Compound"])
+    res = event_effects(y, masks, normal)
+    assert np.isnan(amplification_contrast(res)["contrast"])
+    eff = res["effects"].set_index("Event")
+    assert np.isnan(eff.loc["Heatwave", "Delta_native"]) and eff.loc["Heatwave", "N_event"] == 1
+
+
+def test_months_that_are_neither_normal_nor_event_are_dropped_and_counted():
+    y = _series(seed=7)
+    idx = y.index
+    masks = {"Heatwave": _mask(idx, {2010: [6, 7, 8]}), "Drought": _mask(idx, {2012: [6, 7, 8]}),
+             "Compound": _mask(idx, {2014: [6, 7, 8]})}
+    other = _mask(idx, {2016: [6, 7, 8, 9]})
+    normal = ~(masks["Heatwave"] | masks["Drought"] | masks["Compound"] | other)
+    assert event_effects(y, masks, normal)["info"]["n_dropped_other"] == 4
+
+
+def test_year_fixed_effects_survive_an_event_that_fills_a_whole_year():
+    y = _series(seed=8, seasonal_amp=3.0)
+    idx = y.index
+    masks = {"Heatwave": _mask(idx, {2015: list(range(1, 13))}), "Drought": _mask(idx, {2012: [6, 7, 8]}),
+             "Compound": _mask(idx, {2018: [6, 7, 8]})}
+    normal = ~(masks["Heatwave"] | masks["Drought"] | masks["Compound"])
+    res = event_effects(y, masks, normal, trend="year_fe")
+    assert res["info"]["rank_deficient"] is True
