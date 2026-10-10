@@ -70,3 +70,20 @@ def _check_log(out, stem):
     assert {"episodes", "overlap", "counts_raw", "thresholds"} <= set(ev)
     assert any("Amplification contrast" in k for k in log)
     return log
+
+
+def test_figure_04_end_to_end(tmp_path, inputs):
+    import componergy.figures.zonal_consumption as f4
+    with ExitStack() as st:
+        _paths(st, inputs, tmp_path)
+        _geo(st, inputs)
+        f4.main()
+    out = tmp_path / "figure_04"
+    assert (out / "figure_04_zonal_consumption.jpg").stat().st_size > 5_000
+    comp = pd.read_csv(out / "figure_04_event_composites.csv")
+    assert {"Region", "Event", "Delta_pct", "Delta_z", "q_value", "p_exact", "Delta_native"} <= set(comp.columns)
+    assert set(comp["Event"]) == {"Heatwave", "Drought", "Compound"}
+    _check_inference_outputs(out, "figure_04")
+    keys = pd.read_csv(out / "figure_04_region_abbreviations.csv")
+    assert keys["Abbreviation"].is_unique and set(keys["Region"]) == set(si.REGION_NAMES)
+    _check_log(out, "figure_04_zonal_consumption")
