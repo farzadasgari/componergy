@@ -87,3 +87,17 @@ def test_figure_04_end_to_end(tmp_path, inputs):
     keys = pd.read_csv(out / "figure_04_region_abbreviations.csv")
     assert keys["Abbreviation"].is_unique and set(keys["Region"]) == set(si.REGION_NAMES)
     _check_log(out, "figure_04_zonal_consumption")
+
+
+def test_figure_05_end_to_end(tmp_path, inputs):
+    import componergy.figures.sector as f5
+    with ExitStack() as st:
+        _paths(st, inputs, tmp_path)
+        _geo(st, inputs)
+        f5.main()
+    out = tmp_path / "figure_05"
+    comp = pd.read_csv(out / "figure_05_sector_composites.csv")
+    assert {"Sector", "Delta_GWh", "Delta_pct", "Delta_z", "q_value"} <= set(comp.columns)
+    assert np.allclose(comp["Delta_GWh"], comp["Delta_native"])
+    _check_inference_outputs(out, "figure_05")
+    _check_log(out, "figure_05_sector_fingerprint")
