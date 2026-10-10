@@ -77,3 +77,11 @@ def test_decluster_runs_keeps_one_maximum_per_cluster():
     out = decluster_runs(s, threshold=3.0, run_length=3)
     assert list(out.values) == [9.0, 8.0, 4.0]
     assert out.index[0] == idx[2]
+
+
+def test_decluster_bridges_a_short_gap_but_not_a_long_one():
+    idx = pd.date_range("2010-01-01", periods=12, freq="MS")
+    s = pd.Series([5, 0, 6, 0, 0, 0, 0, 7, 0, 0, 0, 8], index=idx, dtype=float)
+    assert len(decluster_runs(s, 3.0, run_length=3)) == 3
+    assert len(
+        decluster_runs(s, 3.0, run_length=1)) == 4
