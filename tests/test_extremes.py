@@ -85,3 +85,12 @@ def test_decluster_bridges_a_short_gap_but_not_a_long_one():
     assert len(decluster_runs(s, 3.0, run_length=3)) == 3
     assert len(
         decluster_runs(s, 3.0, run_length=1)) == 4
+
+
+def test_declustering_reduces_the_count_of_independent_exceedances_on_a_persistent_series():
+    s = _persistent_series()
+    raw = fit_pot_gpd(s, decluster_run=None)
+    dec = fit_pot_gpd(s, decluster_run=3)
+    assert dec["declustered"] is True and "declustered_r3" in dec["method"]
+    assert dec["n_exceedances"] < raw["n_exceedances"]
+    assert raw["method"] == "POT_GPD"  # unchanged default behaviour
