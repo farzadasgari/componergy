@@ -47,3 +47,10 @@ def test_two_unknown_regions_with_the_same_initials_are_disambiguated():
 def test_the_key_is_caption_ready_and_lists_every_region():
     key = format_region_key(["North Coast", "North Central"])
     assert key == "NC, North Coast; N-C, North Central"
+
+
+def test_a_corrupted_mapping_raises_instead_of_being_papered_over(monkeypatch):
+    import componergy.figures.labels as lab
+    monkeypatch.setitem(lab.REGION_ABBREV, "Sierra", "SD")
+    with pytest.raises(ValueError, match="same label"):
+        lab.region_label_table(["Sierra", "Sacramento-Delta"])
