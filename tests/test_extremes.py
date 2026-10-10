@@ -115,3 +115,10 @@ def test_gev_goodness_of_fit_reports_a_statistic_in_range():
     g = gev_goodness_of_fit(s)
     assert g["n_maxima"] == 76 and 0.0 <= g["ks_statistic"] <= 1.0
     assert 0.0 <= g["ks_p_value_descriptive"] <= 1.0
+
+
+def test_threshold_stability_returns_one_row_per_quantile_with_fewer_exceedances_higher_up():
+    t = threshold_stability(_persistent_series(n=600, seed=2), quantiles=(0.80, 0.85, 0.90, 0.95))
+    assert list(t["threshold_q"]) == [0.80, 0.85, 0.90, 0.95]
+    assert t["n_exceedances"].is_monotonic_decreasing
+    assert "return_level_20yr" in t.columns
