@@ -132,3 +132,10 @@ def test_heatwave_and_drought_masks_are_mutually_exclusive_and_normal_excludes_a
     masks, normal, _ = build_event_masks(sti, sapei, scdhi, window_index=sti.index[600:800])
     assert not (masks["Heatwave"] & masks["Drought"]).any()
     assert not (normal & (masks["Heatwave"] | masks["Drought"] | masks["Compound"])).any()
+
+
+def test_months_with_missing_index_values_are_not_counted_as_normal():
+    sti, sapei, scdhi = _warming_series(n=240)
+    sti.iloc[100:105] = np.nan
+    masks, normal, _ = build_event_masks(sti, sapei, scdhi)
+    assert not normal.iloc[101:104].any()
