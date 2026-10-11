@@ -47,3 +47,15 @@ def test_identical_variants_agree_perfectly_and_share_the_peak_month():
     assert bool(cmp.loc["copy", "Same_peak_month_as_reference"]) is True
     assert cmp.loc["copy", "Top10_overlap_with_reference"] == 10
     assert cmp.loc[REFERENCE, "Rank_of_reference_peak_month"] == 1
+
+
+def test_observed_generation_variant_is_included_only_when_generation_is_supplied():
+    rng = np.random.default_rng(1)
+    idx = _idx()
+    g = pd.Series(rng.normal(0, 1, len(idx)), index=idx)
+    d = pd.Series(rng.normal(0, 1, len(idx)), index=idx)
+    gen = pd.Series(rng.normal(0, 1, len(idx)), index=idx)
+    assert "observed generation shortfall x demand" not in build_risk_variants(g, d).columns
+    v = build_risk_variants(g, d, generation_z=gen)
+    assert "observed generation shortfall x demand" in v.columns
+    np.testing.assert_allclose(v["observed generation shortfall x demand"], (-gen) * d)
