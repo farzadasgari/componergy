@@ -79,9 +79,6 @@ def test_cooccurrence_reports_nan_for_missing_region_sector_pair():
 
 
 def test_s1_thresholds_come_from_the_full_climate_record_not_the_consumption_window():
-    import numpy as np
-    import pandas as pd
-    from componergy.figures.cooccurrence import compute_cooccurrence_frequency
     idx = pd.date_range("1951-01-01", "2024-12-01", freq="MS")
     rng = np.random.default_rng(0)
     scdhi = pd.Series(np.linspace(1.0, -1.0, len(idx)) + rng.normal(0, 0.6, len(idx)), index=idx)  # drying
