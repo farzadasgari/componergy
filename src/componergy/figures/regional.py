@@ -130,8 +130,7 @@ def prepare_data(indices_ds: xr.Dataset, consumption_long_df: pd.DataFrame, regi
 def plot_heatmap(ax, data, regions_order, row_label, vlim=2.5, cmap="viridis"):
     """One heatmap panel: regions on the y-axis, time on the x-axis."""
     mat = data[regions_order].T.values
-    cmap_obj = plt.get_cmap(cmap).copy()
-    cmap_obj.set_bad(color="#dddddd")
+    cmap_obj = plt.get_cmap(cmap).with_extremes(bad="#dddddd")
     im = ax.imshow(mat, aspect="auto", interpolation="nearest", vmin=-vlim, vmax=vlim, cmap=cmap_obj)
     ax.set_yticks(np.arange(len(regions_order)))
     ax.set_yticklabels(regions_order)

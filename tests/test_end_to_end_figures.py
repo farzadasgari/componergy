@@ -92,7 +92,7 @@ def test_figure_02_end_to_end(tmp_path, inputs):
 
 
 def test_figure_03_end_to_end(tmp_path, inputs):
-    import componergy.figures.figure_03_regional as f3
+    import componergy.figures.regional as f3
     fine = si.make_indices(n_lat=12, n_lon=12, seed=7)
     fine.to_netcdf(tmp_path / "fine.nc")
     with ExitStack() as st:

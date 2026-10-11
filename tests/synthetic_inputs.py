@@ -85,3 +85,12 @@ def make_geography(n_counties=10):
         names.append(f"COUNTY{c:02d}")
     counties = gpd.GeoDataFrame({"CountyName": names}, geometry=polys, crs="EPSG:4326")
     return regions, counties
+
+
+def make_no_event_effect_series(values, index, event_mask, trend="linear"):
+    from componergy.analysis.regression import design_matrix
+
+    dummy = np.asarray(pd.Series(event_mask).reindex(index).fillna(False), dtype=float)
+    X, names = design_matrix(index, {"Event": dummy}, trend=trend)
+    beta, *_ = np.linalg.lstsq(X, np.asarray(values, dtype=float), rcond=None)
+    return pd.Series(values - beta[names.index("Event")] * dummy, index=index)

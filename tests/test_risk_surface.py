@@ -96,9 +96,10 @@ def test_compute_regional_evi_averages_delta_z_across_events():
     region_a.iloc[:20] += 2.0
     region_a.iloc[20:40] -= 2.0
 
-    electricity_z = pd.DataFrame({"RegionA": region_a})
+    electricity_raw = pd.DataFrame({"RegionA": region_a})
     data = {
-        "electricity_z": electricity_z,
+        "electricity_raw": electricity_raw,
+        "electricity_z": electricity_raw.apply(lambda s: (s - s.mean()) / s.std()),
         "event_masks": {"Heatwave": heat_mask, "Drought": drought_mask, "Compound": compound_mask},
         "normal": normal_mask,
     }
