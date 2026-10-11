@@ -21,3 +21,10 @@ def test_lmg_shares_add_up_to_the_joint_r2():
     y = 1.0 * a + 0.5 * b + rng.normal(size=len(a))
     d = lmg_decomposition(y, np.column_stack([a, b, a + b + 0.1 * rng.normal(size=len(a))]))
     assert d["lmg"].sum() == pytest.approx(d["total_r2"], rel=1e-9)
+
+
+def test_identical_predictors_split_the_credit_equally():
+    a, _, rng = _data(seed=1)
+    y = a + rng.normal(size=len(a))
+    d = lmg_decomposition(y, np.column_stack([a, a.copy()]))
+    assert d["lmg"][0] == pytest.approx(d["lmg"][1], rel=1e-9)
