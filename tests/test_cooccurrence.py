@@ -2,7 +2,9 @@ import numpy as np
 import pandas as pd
 
 from componergy.figures.cooccurrence import (
-    aggregate_consumption_to_region_sector, compute_cooccurrence_frequency, S1_SECTORS,
+    aggregate_consumption_to_region_sector,
+    compute_cooccurrence_frequency,
+    S1_SECTORS,
 )
 
 
@@ -74,3 +76,18 @@ def test_cooccurrence_reports_nan_for_missing_region_sector_pair():
     out = compute_cooccurrence_frequency(regional_scdhi, region_sector, sectors=S1_SECTORS)
     missing = out[out["Sector"] == "Industrial"]["Cooccurrence_Frequency"]
     assert missing.isna().all()
+
+
+def test_s1_thresholds_come_from_the_full_climate_record_not_the_consumption_window():
+    import numpy as np
+    import pandas as pd
+    from componergy.figures.cooccurrence import compute_cooccurrence_frequency
+    idx = pd.date_range("1951-01-01", "2024-12-01", freq="MS")
+    rng = np.random.default_rng(0)
+    scdhi = pd.Series(np.linspace(1.0, -1.0, len(idx)) + rng.normal(0, 0.6, len(idx)), index=idx)  # drying
+    win = pd.date_range("2008-01-01", "2024-12-01", freq="MS")
+    cols = pd.MultiIndex.from_tuples([("R1", "Residential")])
+    demand = pd.DataFrame(rng.normal(1000, 20, (len(win), 1)), index=win, columns=cols)
+    out = compute_cooccurrence_frequency(pd.DataFrame({"R1": scdhi}), demand,
+                                         sectors={"Residential": "Residential"})
+    assert out["N_CDHE_months"].iloc[0] > 0.2 * len(win)
