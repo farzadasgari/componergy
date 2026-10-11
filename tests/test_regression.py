@@ -201,3 +201,49 @@ def test_randomization_test_is_calibrated_under_the_null_with_clustered_events()
         rej_hac += r["p_hac"] < 0.05
     assert rej_exact / n_sims < 0.13
     assert rej_hac / n_sims > rej_exact / n_sims
+
+
+def test_normal_baseline_anomalies_average_zero_in_normal_months_and_recover_the_effect():
+    y = _series(seed=10, seasonal_amp=8.0, ar=0.3)
+    masks, normal = _three_masks(y.index)
+    ev = masks["Compound"]
+    y = y.copy()
+    y[ev] += 4.0
+    anom, base = normal_baseline_anomalies(y, normal | masks["Heatwave"] | masks["Drought"] & ~ev)
+    assert 3.0 < anom[ev].mean() < 5.0
+    assert base.index.equals(y.index)
+
+
+def test_baseline_adjusted_z_has_unit_standard_deviation_per_column():
+    y = pd.DataFrame({"a": _series(seed=1), "b": 5 * _series(seed=2)})
+    z = baseline_adjusted_z(y, pd.Series(True, index=y.index))
+    np.testing.assert_allclose(z.std(ddof=1).values, [1.0, 1.0], rtol=1e-9)
+
+
+def test_adjusted_composite_table_keeps_the_schema_the_figures_read():
+    y = pd.DataFrame({"R1": _series(seed=11), "R2": _series(seed=12)})
+    masks, normal = _three_masks(y.index)
+    t = adjusted_composite_table(y, masks, normal)
+    need = {"Event", "Source", "N_event", "N_normal", "Mean_event", "Mean_normal", "Difference", "tstat",
+            "p_value", "Delta_native", "Delta_pct", "Delta_z", "CI_lo_native", "CI_hi_native",
+            "p_exact", "p_hac", "Scale"}
+    assert need <= set(t.columns)
+    assert len(t) == 6 and set(t["Source"]) == {"R1", "R2"}
+    np.testing.assert_allclose(t["Difference"], t["Delta_z"])
+    np.testing.assert_allclose(t["Mean_event"] - t["Mean_normal"], t["Delta_native"])
+
+
+def test_amplification_table_is_fdr_corrected_and_separates_real_from_null_series():
+    idx = pd.date_range("2008-01-01", periods=204, freq="MS")
+    masks, normal = _three_masks(idx)
+    real = _series(seed=21, seasonal_amp=6.0, ar=0.3)
+    real = real.copy()
+    real[masks["Heatwave"]] += 2.0
+    real[masks["Drought"]] += 1.0
+    real[masks["Compound"]] += 7.0
+    flat = _series(seed=22, seasonal_amp=6.0, ar=0.3)
+    t = amplification_table(pd.DataFrame({"Real": real, "Flat": flat}), masks, normal, label="Region")
+    t = t.set_index("Region")
+    assert "q_value" in t.columns
+    assert t.loc["Real", "Amplification_contrast"] > 2.0 and t.loc["Real", "p_value"] < 0.05
+    assert t.loc["Flat", "CI_lo"] < 0 < t.loc["Flat", "CI_hi"]
