@@ -43,3 +43,14 @@ def test_variance_inflation_flags_a_collinear_pair():
     a, _, rng = _data(seed=3)
     vif = variance_inflation(np.column_stack([a, a + 0.05 * rng.normal(size=len(a)), rng.normal(size=len(a))]))
     assert vif[0] > 50 and vif[1] > 50 and vif[2] < 1.5
+
+
+def test_lmg_table_reports_shares_intervals_and_vif_per_predictor():
+    a, b, rng = _data(seed=4)
+    X = pd.DataFrame({"STI": a, "SAPEI": b, "SCDHI": 0.6 * a - 0.5 * b + 0.3 * rng.normal(size=len(a))})
+    y = pd.Series(a - 0.4 * b + rng.normal(size=len(a)))
+    t = lmg_table(y, X, n_boot=60).set_index("Predictor")
+    assert set(t.index) == {"STI", "SAPEI", "SCDHI"}
+    assert t["LMG_share"].sum() == pytest.approx(1.0, rel=1e-6)
+    assert (t["CI_lo_share"] <= t["LMG_share"] + 1e-9).all() or t["CI_lo_share"].notna().all()
+    assert t["VIF"].max() > 1.5 and t["n"].iloc[0] == len(a)
