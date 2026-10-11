@@ -33,3 +33,17 @@ def test_double_calm_share_counts_positive_months_with_two_negative_factors():
     assert r["n_positive_risk_months"] == 3
     assert r["n_positive_from_both_negative"] == 1
     assert abs(r["share_of_positive_months_that_are_double_calm"] - 1 / 3) < 1e-12
+
+
+def test_identical_variants_agree_perfectly_and_share_the_peak_month():
+    rng = np.random.default_rng(0)
+    idx = _idx()
+    g = pd.Series(rng.normal(0, 1, len(idx)), index=idx)
+    d = pd.Series(rng.normal(0, 1, len(idx)), index=idx)
+    v = build_risk_variants(g, d)
+    v["copy"] = v[REFERENCE]
+    cmp = compare_risk_variants(v).set_index("Variant")
+    assert cmp.loc["copy", "Spearman_vs_reference"] == 1.0
+    assert bool(cmp.loc["copy", "Same_peak_month_as_reference"]) is True
+    assert cmp.loc["copy", "Top10_overlap_with_reference"] == 10
+    assert cmp.loc[REFERENCE, "Rank_of_reference_peak_month"] == 1
