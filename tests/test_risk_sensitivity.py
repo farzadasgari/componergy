@@ -59,3 +59,13 @@ def test_observed_generation_variant_is_included_only_when_generation_is_supplie
     v = build_risk_variants(g, d, generation_z=gen)
     assert "observed generation shortfall x demand" in v.columns
     np.testing.assert_allclose(v["observed generation shortfall x demand"], (-gen) * d)
+
+
+def test_a_uncorrelated_definition_disagrees_about_the_ranking():
+    rng = np.random.default_rng(2)
+    idx = _idx(240)
+    g = pd.Series(rng.normal(0, 1, len(idx)), index=idx)
+    d = pd.Series(rng.normal(0, 1, len(idx)), index=idx)
+    gen = pd.Series(rng.normal(0, 1, len(idx)), index=idx)
+    cmp = compare_risk_variants(build_risk_variants(g, d, generation_z=gen)).set_index("Variant")
+    assert abs(cmp.loc["observed generation shortfall x demand", "Spearman_vs_reference"]) < 0.3
