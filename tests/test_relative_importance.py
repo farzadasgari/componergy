@@ -28,3 +28,12 @@ def test_identical_predictors_split_the_credit_equally():
     y = a + rng.normal(size=len(a))
     d = lmg_decomposition(y, np.column_stack([a, a.copy()]))
     assert d["lmg"][0] == pytest.approx(d["lmg"][1], rel=1e-9)
+
+
+def test_a_noise_predictor_gets_almost_none_of_the_credit_when_others_explain_y():
+    a, b, rng = _data(seed=2)
+    y = 2 * a + b + 0.5 * rng.normal(size=len(a))
+    noise = rng.normal(size=len(a))
+    d = lmg_decomposition(y, np.column_stack([a, b, noise]))
+    assert d["lmg"][2] < 0.02 * d["total_r2"]
+    assert d["lmg"][0] > d["lmg"][1]
