@@ -54,3 +54,12 @@ def test_lmg_table_reports_shares_intervals_and_vif_per_predictor():
     assert t["LMG_share"].sum() == pytest.approx(1.0, rel=1e-6)
     assert (t["CI_lo_share"] <= t["LMG_share"] + 1e-9).all() or t["CI_lo_share"].notna().all()
     assert t["VIF"].max() > 1.5 and t["n"].iloc[0] == len(a)
+
+
+def test_incremental_r2_permutation_separates_a_real_added_effect_from_noise():
+    a, b, rng = _data(seed=5)
+    y = pd.Series(a + 0.8 * b + rng.normal(size=len(a)))
+    real = incremental_r2_block_permutation(y, pd.Series(a), pd.Series(b), n_perm=299)
+    noise = incremental_r2_block_permutation(y, pd.Series(a), pd.Series(rng.normal(size=len(a))), n_perm=299)
+    assert real["p_value"] < 0.02 and real["delta_r2"] > 0.05
+    assert noise["p_value"] > 0.05
