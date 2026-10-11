@@ -4,7 +4,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from componergy.analysis.event_definition_check import event_definition_check, MANUSCRIPT_EVENT_COUNTS
+from componergy.analysis.event_definition_check import event_definition_check
 from componergy.analysis.events import build_event_masks
 
 
@@ -16,33 +16,44 @@ def _series(seed=0):
     return mk(trend), mk(0.0), mk(0.0)
 
 
-def test_the_check_covers_every_combination_for_each_quoted_window():
+def test_the_check_has_eight_rows_and_uses_only_the_90_10_10_definition(monkeypatch):
+    import componergy.analysis.event_definition_check as edc
+
+    seen = []
+
+    def spy(*args, **kwargs):
+        out = build_event_masks(*args, **kwargs)
+        seen.append(out[2]["quantiles"])
+        return out
+
+    monkeypatch.setattr(edc, "build_event_masks", spy)
     sti, sapei, scdhi = _series()
-    t = event_definition_check(sti, sapei, scdhi)
-    assert len(t) == 2 * 2 * 2 * 2
+    t = edc.event_definition_check(sti, sapei, scdhi)
+    assert len(t) == 2 * 2 * 2
     assert set(t["Baseline"]) == {"full_record", "window"} and set(t["Smoothing_months"]) == {1, 3}
-    assert set(t["Quantiles"]) == {"final 90/10/10", "exploratory 85/15/12"}
     assert set(t["N_window_months"]) == {204, 296}
+    assert len(seen) == 8 and all(q == {"heat": 0.90, "drought": 0.10, "compound": 0.10} for q in seen)
 
 
-def test_the_combination_that_generated_the_reference_is_found_with_zero_distance():
-    sti, sapei, scdhi = _series(seed=3)
-    win = sti.index[(sti.index >= "2008-01-01") & (sti.index <= "2024-12-01")]
-    _, _, meta = build_event_masks(sti, sapei, scdhi, window_index=win, smooth_months=1, baseline="full_record",
-                                   heat_q=0.85, drought_q=0.15, compound_q=0.12)
-    ref = {("2008-01-01", "2024-12-01"): {"n_months": 204, **meta["counts_raw"]}}
-    t = event_definition_check(sti, sapei, scdhi, reference=ref)
-    best = t[t["Best_for_window"]].iloc[0]
-    assert best["Distance"] == 0
-    assert (best["Baseline"], best["Smoothing_months"], best["Quantiles"]) == ("full_record", 1, "exploratory 85/15/12")
-
-
-def test_a_window_baseline_cannot_reproduce_counts_far_above_ten_percent():
+def test_a_window_baseline_gives_about_ten_percent_by_construction():
     sti, sapei, scdhi = _series()
     t = event_definition_check(sti, sapei, scdhi)
-    w = t[(t["Window"] == "2001-01 to 2025-08") & (t["Baseline"] == "window") & (t["Quantiles"] == "final 90/10/10")]
-    assert (w["Heatwave"] < 0.13 * 296).all()
-    assert MANUSCRIPT_EVENT_COUNTS[("2001-01-01", "2025-08-01")]["Heatwave"] > 0.2 * 296
+    w = t[t["Baseline"] == "window"]
+    for col in ("Heatwave_raw", "Drought_raw", "Compound"):
+        assert (w[col] < 0.13 * w["N_window_months"]).all()
+
+
+def test_a_full_record_baseline_gives_a_higher_heat_share_on_a_warming_series():
+    sti, sapei, scdhi = _series()
+    t = event_definition_check(sti, sapei, scdhi)
+    wide = t.pivot_table(index=["Window", "Smoothing_months"], columns="Baseline", values="Share_raw_Heatwave")
+    assert (wide["full_record"] > wide["window"]).all()
+
+
+def test_build_event_masks_defaults_to_the_90_10_10_definition():
+    sti, sapei, scdhi = _series()
+    _, _, meta = build_event_masks(sti, sapei, scdhi)
+    assert meta["quantiles"] == {"heat": 0.90, "drought": 0.10, "compound": 0.10}
 
 
 def test_download_defaults_follow_the_climate_record_you_actually_have():

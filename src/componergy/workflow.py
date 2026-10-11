@@ -29,7 +29,7 @@ STAGES = (
           needs=("EIA_DEMAND_RAW_FILE_1990_2009", "EIA_DEMAND_RAW_FILE_2010_PRESENT")),
     Stage("consumption", "run_consumption_pipeline", "CEC county consumption (RESTRICTED)",
           needs=("COUNTY_CONSUMPTION_XLSX",)),
-    Stage("event-check", "run_event_definition_check", "which event definition reproduces the quoted counts",
+    Stage("event-check", "run_event_definition_check", "event-count sensitivity to baseline and smoothing (90/10/10)",
           needs=("INDICES_FILE",)),
     Stage("sensitivity", "run_sensitivity_checks", "index construction + county-to-region sensitivity",
           needs=("INDICES_FILE",)),
