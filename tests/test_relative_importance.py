@@ -37,3 +37,9 @@ def test_a_noise_predictor_gets_almost_none_of_the_credit_when_others_explain_y(
     d = lmg_decomposition(y, np.column_stack([a, b, noise]))
     assert d["lmg"][2] < 0.02 * d["total_r2"]
     assert d["lmg"][0] > d["lmg"][1]
+
+
+def test_variance_inflation_flags_a_collinear_pair():
+    a, _, rng = _data(seed=3)
+    vif = variance_inflation(np.column_stack([a, a + 0.05 * rng.normal(size=len(a)), rng.normal(size=len(a))]))
+    assert vif[0] > 50 and vif[1] > 50 and vif[2] < 1.5
