@@ -77,6 +77,8 @@ def test_compute_sector_composites_fdr_corrects_across_all_sector_event_tests():
     assert abs(row_a["q_value"] - len(comp) * row_a["p_value"]) < 1e-12
     assert row_a["q_value"] < 0.05
     assert row_b["q_value"] > 0.05
+    assert abs(row_b["Delta_GWh"]) < 0.2 * abs(row_a["Delta_GWh"])
+    assert (comp["Delta_GWh"] == comp["Delta_native"]).all()
 
 
 def test_prepare_sector_data_heatwave_and_drought_are_mutually_exclusive():

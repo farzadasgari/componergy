@@ -60,3 +60,6 @@ def test_compute_zonal_composites_fdr_corrects_across_all_region_event_tests():
     assert row_b["q_value"] > 0.05
     assert row_a["Delta_pct"] > 10
     assert abs(row_b["Delta_pct"]) < 5
+    assert abs(row_b["Delta_native"]) < 0.2 * abs(
+        row_a["Delta_native"])
+    assert {"p_exact", "p_hac", "Delta_native", "CI_lo_native", "CI_hi_native"} <= set(comp.columns)
