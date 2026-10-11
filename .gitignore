@@ -1,6 +1,7 @@
 # Byte-compiled / cache
 __pycache__/
 *.pyc
+.pytest_cache/
 
 # Virtual environments
 venv/
@@ -8,6 +9,7 @@ venv/
 
 # IDE
 .idea/
+.vscode/
 
 # Packaging
 *.egg-info/
@@ -15,19 +17,21 @@ build/
 dist/
 
 # Data
-data/
-!data/raw/.gitkeep
-!data/intermediate/.gitkeep
-!data/processed/.gitkeep
+data/*
+!data/README.md
 
 # Figures
 /figures/
+outputs/
+plots/
 
 # Env / secrets
 .env
+config.py
 
 # OS
 .DS_Store
+Thumbs.db
 
 # Jupyter
 .ipynb_checkpoints/
