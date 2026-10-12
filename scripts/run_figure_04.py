@@ -13,10 +13,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--sapei-var", default="sapei_3m", help="Which SAPEI timescale column to use.")
     parser.add_argument("--scdhi-var", default="scdhi_3m", help="Which SCDHI timescale column to use.")
     parser.add_argument("--baseline", choices=["full_record", "window"], default="full_record",
-                        help="Where event percentile thresholds are computed: the whole climate record "
-                             "(default; the convention in extremes work, and what the manuscript's event "
-                             "counts imply) or only the analysis window (forces ~10%% of months to be "
-                             "events in any window). See analysis.events.")
+                        help="Where event percentile thresholds are computed. \"full_record\" (default): "
+                             "thresholds come from the whole 1951-2026 record, so an event means the same "
+                             "thing in every figure and study window. \"window\": recomputes thresholds "
+                             "inside each analysis window, which forces ~10%% of months to be events by "
+                             "construction; kept only as a sensitivity option. See analysis.events.")
     return parser.parse_args()
 
 

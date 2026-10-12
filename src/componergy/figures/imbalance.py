@@ -433,8 +433,8 @@ def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m", baseline: str
         ),
         "Demand source": {
             "primary": demand_source,
-            "why": ("CEC is the default because the manuscript's Supplementary Methods attribute demand "
-                    "mainly to the CEC; EIA-861M is the public alternative and cross-check."),
+            "why": ("CEC is the current default, pending a decision on the primary source; EIA-861M "
+                    "is computed alongside it as a cross-check."),
             "alternative_source": alt_name if alt_comp is not None else "not available",
             "alternative_period": alt_period,
         },
