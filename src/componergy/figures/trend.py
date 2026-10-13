@@ -174,12 +174,12 @@ def build_figure_01(indices_ds: xr.Dataset, sapei_var: str = "sapei_3m", scdhi_v
     drought_mask = classify_drought(indices_ds[sapei_var])
     compound_mask = classify_compound(indices_ds[scdhi_var])
 
-    sti_foot = compute_footprint_fraction(heat_mask).to_series().rolling(SMOOTH_MONTHS, center=True,
-                                                                         min_periods=1).mean()
-    sapei_foot = compute_footprint_fraction(drought_mask).to_series().rolling(SMOOTH_MONTHS, center=True,
-                                                                              min_periods=1).mean()
-    scdhi_foot = compute_footprint_fraction(compound_mask).to_series().rolling(SMOOTH_MONTHS, center=True,
-                                                                               min_periods=1).mean()
+    sti_foot = compute_footprint_fraction(heat_mask, indices_ds["sti"]).to_series().rolling(
+        SMOOTH_MONTHS, center=True, min_periods=1).mean()
+    sapei_foot = compute_footprint_fraction(drought_mask, indices_ds[sapei_var]).to_series().rolling(
+        SMOOTH_MONTHS, center=True, min_periods=1).mean()
+    scdhi_foot = compute_footprint_fraction(compound_mask, indices_ds[scdhi_var]).to_series().rolling(
+        SMOOTH_MONTHS, center=True, min_periods=1).mean()
 
     sti_fitted, sti_ci = compute_linear_trend_with_ci(sti_z)
     sapei_fitted, sapei_ci = compute_linear_trend_with_ci(sapei_z)
@@ -262,11 +262,11 @@ def build_figure_01(indices_ds: xr.Dataset, sapei_var: str = "sapei_3m", scdhi_v
                                    "n_months": int(sapei_z.notna().sum())},
         "SCDHI statewide signal": {"mean": float(scdhi_z.mean()), "std": float(scdhi_z.std()),
                                    "n_months": int(scdhi_z.notna().sum())},
-        "Heatwave footprint (STI >= 90th pct)": {"mean_fraction": float(sti_foot.mean()),
+        "Heatwave footprint (STI > 90th pct)": {"mean_fraction": float(sti_foot.mean()),
                                                  "max_fraction": float(sti_foot.max())},
-        "Drought footprint (SAPEI <= 10th pct)": {"mean_fraction": float(sapei_foot.mean()),
+        "Drought footprint (SAPEI < 10th pct)": {"mean_fraction": float(sapei_foot.mean()),
                                                   "max_fraction": float(sapei_foot.max())},
-        "Compound footprint (SCDHI <= 10th pct)": {"mean_fraction": float(scdhi_foot.mean()),
+        "Compound footprint (SCDHI < 10th pct)": {"mean_fraction": float(scdhi_foot.mean()),
                                                    "max_fraction": float(scdhi_foot.max())},
         "STI trend map": {
             "mean_slope_per_decade": float(np.nanmean(sti_slope.values)),

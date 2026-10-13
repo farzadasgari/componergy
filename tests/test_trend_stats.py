@@ -49,8 +49,29 @@ def test_footprint_fraction_matches_manual_calc():
         np.array([[True, False], [True, True]]),
         dims=("lat", "lon"), coords={"lat": lats, "lon": lons},
     )
-    frac = compute_footprint_fraction(bool_da)
+    index = xr.zeros_like(bool_da, dtype=float)
+    frac = compute_footprint_fraction(bool_da, index)
     assert abs(float(frac.values) - 0.75) < 1e-9
+
+
+def test_footprint_fraction_excludes_cells_outside_mask_from_denominator():
+    times = pd.date_range("2000-01-01", periods=2, freq="MS")
+    lats = [35.0, 36.0]
+    lons = [-121.0, -120.0, -119.0, -118.0]
+    # Left half of the grid is valid (inside the mask), right half is all-NaN.
+    index = np.full((2, 2, 4), np.nan)
+    index[:, :, :2] = 1.0
+    index[1, 0, 0] = np.nan  # a single missing value does not remove the cell from the mask
+    index_da = xr.DataArray(index, dims=("time", "lat", "lon"),
+                            coords={"time": times, "lat": lats, "lon": lons})
+    extreme = np.zeros((2, 2, 4), dtype=bool)
+    extreme[0, 0, 0] = True  # 1 of 4 valid cells
+    extreme[1, :, :2] = [[False, True], [True, True]]  # 3 of 4 valid cells
+    extreme_da = xr.DataArray(extreme, dims=index_da.dims, coords=index_da.coords)
+
+    frac = compute_footprint_fraction(extreme_da, index_da)
+
+    assert np.allclose(frac.values, [0.25, 0.75])
 
 
 def _make_known_trend_grid(true_slope_per_year, n_years=30, noise_std=0.0, seed=0):

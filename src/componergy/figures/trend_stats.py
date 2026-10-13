@@ -26,9 +26,17 @@ def compute_statewide_mean(da: xr.DataArray, weights: xr.DataArray) -> xr.DataAr
     return numerator / valid_weight
 
 
-def compute_footprint_fraction(is_extreme: xr.DataArray) -> xr.DataArray:
-    """Fraction of grid cells where `is_extreme` is True, per timestep."""
-    return is_extreme.mean(dim=["lat", "lon"], skipna=True)
+def compute_footprint_fraction(is_extreme: xr.DataArray, index: xr.DataArray) -> xr.DataArray:
+    """
+    Fraction of valid grid cells where `is_extreme` is True, per timestep.
+
+    The denominator is the set of cells where `index` (the field the mask
+    was derived from) has at least one non-NaN value over the record, i.e.
+    cells inside the California mask. Cells outside it are excluded rather
+    than counted as non-extreme.
+    """
+    valid = index.notnull().any("time") if "time" in index.dims else index.notnull()
+    return is_extreme.where(valid).mean(dim=["lat", "lon"], skipna=True)
 
 
 def annualize_monthly(da: xr.DataArray) -> xr.DataArray:
