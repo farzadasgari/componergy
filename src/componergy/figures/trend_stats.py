@@ -39,9 +39,25 @@ def compute_footprint_fraction(is_extreme: xr.DataArray, index: xr.DataArray) ->
     return is_extreme.where(valid).mean(dim=["lat", "lon"], skipna=True)
 
 
+def incomplete_calendar_years(da: xr.DataArray) -> list[int]:
+    """
+    Calendar years that do not have all 12 valid months.
+
+    A year is complete only if all 12 calendar months are present on the
+    time axis and every valid cell (non-NaN somewhere in the record) has a
+    non-NaN value in each of them. Anything else -- a partial final year,
+    or leading months left NaN by an accumulation window -- is incomplete.
+    """
+    valid_cell = da.notnull().any("time")
+    month_complete = (da.notnull() | ~valid_cell).all(dim=[d for d in da.dims if d != "time"])
+    n_complete = month_complete.groupby("time.year").sum("time")
+    return [int(y) for y in n_complete["year"].values[n_complete.values < 12]]
+
+
 def annualize_monthly(da: xr.DataArray) -> xr.DataArray:
-    """Mean of monthly values within each calendar year."""
-    return da.groupby("time.year").mean("time")
+    """Mean of monthly values within each calendar year, keeping only complete years (see incomplete_calendar_years)."""
+    annual = da.groupby("time.year").mean("time")
+    return annual.drop_sel(year=incomplete_calendar_years(da))
 
 
 def compute_trend_per_decade(da_annual: xr.DataArray) -> tuple[xr.DataArray, xr.DataArray]:

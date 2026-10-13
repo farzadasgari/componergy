@@ -19,7 +19,7 @@ import cartopy.feature as cfeature
 from componergy.download.boundaries import get_california_boundary
 from componergy.figures.trend_stats import (
     compute_area_weights, compute_statewide_mean, compute_footprint_fraction,
-    annualize_monthly, compute_trend_per_decade, compute_linear_trend_with_ci,
+    annualize_monthly, incomplete_calendar_years, compute_trend_per_decade, compute_linear_trend_with_ci,
 )
 from componergy.figures.stats_log import write_figure_log
 from componergy.figures.composite_stats import apply_fdr_to_grid
@@ -244,6 +244,14 @@ def build_figure_01(indices_ds: xr.Dataset, sapei_var: str = "sapei_3m", scdhi_v
     axF = fig.add_subplot(gs[2, 2], projection=PC)
     plot_trend_map(axF, scdhi_slope, scdhi_q, vmin_scdhi, vmax_scdhi, "SCDHI trend per decade", "F", extent, boundary)
 
+    annual_years = {}
+    for name, var, annual in [("sti", "sti", sti_annual), ("sapei", sapei_var, sapei_annual),
+                              ("scdhi", scdhi_var, scdhi_annual)]:
+        dropped = incomplete_calendar_years(indices_ds[var])
+        annual_years[f"{name}_dropped_years"] = ", ".join(str(y) for y in dropped) or "none"
+        annual_years[f"{name}_years_used"] = (f"{int(annual['year'].min())}-{int(annual['year'].max())}"
+                                              f" (n={annual.sizes['year']})")
+
     log_sections = {
         "Overview": {
             "sapei_variable": sapei_var,
@@ -268,6 +276,7 @@ def build_figure_01(indices_ds: xr.Dataset, sapei_var: str = "sapei_3m", scdhi_v
                                                   "max_fraction": float(sapei_foot.max())},
         "Compound footprint (SCDHI < 10th pct)": {"mean_fraction": float(scdhi_foot.mean()),
                                                    "max_fraction": float(scdhi_foot.max())},
+        "Annual trend years (complete calendar years only)": annual_years,
         "STI trend map": {
             "mean_slope_per_decade": float(np.nanmean(sti_slope.values)),
             "fraction_significant_fdr": float(np.nanmean((sti_q < ALPHA_SIG).values)),

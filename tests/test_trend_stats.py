@@ -7,6 +7,7 @@ from componergy.figures.trend_stats import (
     compute_statewide_mean,
     compute_footprint_fraction,
     annualize_monthly,
+    incomplete_calendar_years,
     compute_trend_per_decade,
     compute_linear_trend_with_ci,
 )
@@ -87,6 +88,35 @@ def _make_known_trend_grid(true_slope_per_year, n_years=30, noise_std=0.0, seed=
         coords={"time": times, "lat": [35.0, 38.0], "lon": [-120.0, -119.0]},
     )
     return da, times, values
+
+
+def _monthly_grid(times, values):
+    return xr.DataArray(
+        np.broadcast_to(np.asarray(values)[:, None, None], (len(times), 2, 2)).copy(),
+        dims=("time", "lat", "lon"),
+        coords={"time": times, "lat": [35.0, 38.0], "lon": [-120.0, -119.0]},
+    )
+
+
+def test_annualize_drops_partial_last_year():
+    times = pd.date_range("2000-01-01", "2002-08-01", freq="MS")  # 2002 has Jan-Aug only
+    da = _monthly_grid(times, times.year.values.astype(float))
+
+    annual = annualize_monthly(da)
+
+    assert incomplete_calendar_years(da) == [2002]
+    assert list(annual["year"].values) == [2000, 2001]
+    assert np.allclose(annual.isel(lat=0, lon=0).values, [2000.0, 2001.0])
+
+
+def test_annualize_drops_year_with_leading_nan_months_but_ignores_cells_outside_mask():
+    times = pd.date_range("2000-01-01", "2001-12-01", freq="MS")
+    da = _monthly_grid(times, np.ones(len(times)))
+    da[:2] = np.nan  # accumulation window: first two months undefined everywhere
+    da[:, 1, 1] = np.nan  # cell outside the mask, NaN for the whole record
+
+    assert incomplete_calendar_years(da) == [2000]
+    assert list(annualize_monthly(da)["year"].values) == [2001]
 
 
 def test_trend_per_decade_recovers_exact_noiseless_slope():
