@@ -31,6 +31,7 @@ from componergy.figures.composite_outputs import write_composite_inference, INFE
 
 Q_ALPHA_FDR = 0.05
 Q_ALPHA_FDR_MARGINAL = 0.10
+TREND = "linear"  # trend term of every adjusted estimate in this figure
 
 plt.rcParams.update({
     "font.family": "serif",
@@ -94,7 +95,7 @@ def prepare_zonal_data(indices_ds: xr.Dataset, consumption_long_df: pd.DataFrame
     }
 
 
-def compute_zonal_composites(data: dict, trend: str = "linear") -> pd.DataFrame:
+def compute_zonal_composites(data: dict, trend: str = TREND) -> pd.DataFrame:
     """Event effect per region, controlling for season and trend, FDR-corrected."""
     adj = adjusted_composite_table(data["electricity_raw"], data["event_masks"], data["normal"], trend=trend)
     adj["q_value"] = benjamini_hochberg_fdr(adj["p_value"].values)
@@ -280,7 +281,7 @@ def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m", baseline: str
 
     print("computing amplification, robustness and placebo tables...")
     inference = write_composite_inference(data["electricity_raw"], data["event_masks"], data["normal"],
-                                          out_dir, "figure_04", label="Region")
+                                          out_dir, "figure_04", label="Region", trend=TREND)
     label_table = region_label_table(data["regions_order"])
     atomic_to_csv(label_table, out_dir / "figure_04_region_abbreviations.csv", index=False)
 

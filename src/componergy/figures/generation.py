@@ -26,6 +26,7 @@ from componergy.figures.composite_outputs import write_composite_inference, INFE
 from componergy.paths import INDICES_FILE, GENERATION_MONTHLY_FILE, FIGURES_DIR
 
 SMOOTH_MONTHS = 3
+TREND = "quadratic"  # trend term of every adjusted estimate in this figure
 LAGS = range(-6, 7)
 SOURCE_COLUMNS = ["Fossil", "Hydro", "Solar", "Wind", "Nuclear", "Other Renewable"]
 
@@ -225,7 +226,7 @@ def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m", baseline: str
     comp_detrended = compute_composite_table(data["mix_z_detrended"], data["event_masks"], data["normal"])
     comp_detrended.insert(0, "Mode", "detrended_share")
     comp_adjusted = adjusted_composite_table(data["mix_pct_sm"], data["event_masks"], data["normal"],
-                                             trend="quadratic")
+                                             trend=TREND)
     comp_adjusted.insert(0, "Mode", "adjusted_share")
     comp_all = pd.concat([comp_total, comp_local, comp_detrended, comp_adjusted], ignore_index=True)
 
@@ -234,8 +235,8 @@ def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m", baseline: str
     )
 
     always_on = pd.Series(True, index=data["mix_pct_sm"].index)
-    adj_mix = baseline_adjusted_z(data["mix_pct_sm"], always_on, trend="quadratic")
-    adj_drivers = {k: baseline_adjusted_z(v, always_on, trend="quadratic") for k, v in data["drivers"].items()}
+    adj_mix = baseline_adjusted_z(data["mix_pct_sm"], always_on, trend=TREND)
+    adj_drivers = {k: baseline_adjusted_z(v, always_on, trend=TREND) for k, v in data["drivers"].items()}
     lag_rows, k = [], 0
     for mode_name, mix_z, drivers in [
         ("total_share", data["mix_z_total"], data["drivers"]),
@@ -282,7 +283,7 @@ def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m", baseline: str
 
     print("computing amplification, robustness and placebo tables...")
     inference = write_composite_inference(data["mix_pct_sm"], data["event_masks"], data["normal"], out_dir,
-                                          "figure_02", label="Source", trend="quadratic")
+                                          "figure_02", label="Source", trend=TREND)
     atomic_to_csv(slope_df, out_dir / "figure_02_lag_scan.csv", index=False)
 
     log_sections = {

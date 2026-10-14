@@ -33,6 +33,7 @@ from componergy.analysis.system_boundary import validate_system_boundary, comput
 from componergy.figures.composite_outputs import write_composite_inference, INFERENCE_NOTE
 
 SMOOTH_MONTHS = 3
+TREND = "linear"  # trend term of every adjusted estimate in this figure
 RISK_Q = 0.90
 N_BOOT = 5000
 BOOT_SEED = 42
@@ -151,7 +152,7 @@ def raf_shift_test(values, event_mask, normal_mask, thr, min_shift=DEFAULT_MIN_S
             "p_two_sided": float((1 + np.sum(np.abs(null - null.mean()) >= abs(observed - null.mean()))) / (S + 1))}
 
 
-def compute_imbalance_composites(data: dict, risk_q=RISK_Q, n_boot=N_BOOT, seed=BOOT_SEED, trend="linear"):
+def compute_imbalance_composites(data: dict, risk_q=RISK_Q, n_boot=N_BOOT, seed=BOOT_SEED, trend=TREND):
     """Season- and trend-adjusted event effect on the imbalance, plus RAF, per event."""
     imb_gwh, normal = data["imb_gwh"], data["normal"]
     imb_adj = data.get("imb_adj")
@@ -385,7 +386,7 @@ def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m", baseline: str
 
     print("computing amplification, robustness and placebo tables...")
     inference = write_composite_inference(data["imb_gwh"].to_frame("Imbalance"), data["event_masks"],
-                                          data["normal"], out_dir, "figure_06", label="Metric")
+                                          data["normal"], out_dir, "figure_06", label="Metric", trend=TREND)
 
     # The OTHER demand source, if present: same analysis, so the choice of source is measured.
     alt_comp, alt_period = None, None
