@@ -46,6 +46,8 @@ STAGES = (
           accepts_baseline=True, accepts_demand_source=True),
     Stage("figure-07", "run_figure_07", "systemic vulnerability", needs=("INDICES_FILE", "COUNTY_CONSUMPTION_XLSX"),
           accepts_baseline=True),
+    Stage("robustness", "run_robustness", "compound effect + amplification over baseline x smoothing",
+          needs=("INDICES_FILE", "GENERATION_MONTHLY_FILE", "COUNTY_CONSUMPTION_XLSX")),
     Stage("supplementary", "run_supplementary_figures", "S1-S7", needs=("INDICES_FILE",)),
     Stage("review", "run_review_analyses", "review-response analyses + study-period table", needs=("INDICES_FILE",)),
     Stage("manifest", "make_run_manifest", "checksums, versions, seeds"),

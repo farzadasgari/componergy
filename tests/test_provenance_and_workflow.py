@@ -77,3 +77,11 @@ def test_plan_blocks_or_skips_stages_whose_inputs_are_missing():
 def test_plan_rejects_an_unknown_stage():
     with pytest.raises(ValueError, match="unknown stage"):
         plan(only=["figure-99"], exists=lambda n: True)
+
+
+def test_robustness_stage_runs_after_figure_07_and_before_supplementary():
+    names = list(STAGE_NAMES)
+    assert names.index("figure-07") + 1 == names.index("robustness") == names.index("supplementary") - 1
+    p = plan(start="figure-07", end="supplementary", baseline="window", exists=lambda n: True)
+    assert [s["stage"] for s in p] == ["figure-07", "robustness", "supplementary"]
+    assert "--baseline" not in p[1]["command"]  # it runs both baselines itself
