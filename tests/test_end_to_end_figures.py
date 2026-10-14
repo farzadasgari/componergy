@@ -218,3 +218,28 @@ def test_figure_07_end_to_end(tmp_path, inputs):
     _check_inference_outputs(out, "figure_07")
     keys = pd.read_csv(out / "figure_07_region_abbreviations.csv")
     assert keys["Abbreviation"].is_unique and set(keys["Region"]) == set(si.REGION_NAMES)
+
+
+def test_robustness_stage_end_to_end_writes_every_family_and_then_skips(tmp_path, inputs, capsys):
+    import componergy.figures.imbalance as f6
+    from componergy.analysis.robustness import COLUMNS
+    from scripts import run_robustness
+    gen = inputs["generation"]
+    sources = {"cec": si.make_demand_mwh(gen, seed=10, start="2008-01-01", end="2024-12-01"), "eia861m": None}
+    with ExitStack() as st:
+        _paths(st, inputs, tmp_path)
+        _geo(st, inputs)
+        st.enter_context(patch.object(f6, "load_demand_sources", lambda: sources))
+        st.enter_context(patch("sys.argv", ["run_robustness"]))
+        run_robustness.main()
+        out = tmp_path / "robustness"
+        t = pd.read_csv(out / "robustness_long.csv")
+        assert tuple(t.columns) == COLUMNS
+        n_regions = t.loc[t["family"] == "regional_demand", "outcome"].nunique()
+        assert len(t) == 4 * (1 + n_regions + 6)
+        assert t.groupby(["baseline", "smoothing"]).size().nunique() == 1
+        assert "p-value floor" in (out / "robustness.log").read_text()
+        before = (out / "robustness_long.csv").stat().st_mtime_ns
+        run_robustness.main()
+        assert (out / "robustness_long.csv").stat().st_mtime_ns == before
+        assert "skipping" in capsys.readouterr().out
