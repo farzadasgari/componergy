@@ -238,7 +238,12 @@ def test_robustness_stage_end_to_end_writes_every_family_and_then_skips(tmp_path
         n_regions = t.loc[t["family"] == "regional_demand", "outcome"].nunique()
         assert len(t) == 4 * (1 + n_regions + 6)
         assert t.groupby(["baseline", "smoothing"]).size().nunique() == 1
-        assert "p-value floor" in (out / "robustness.log").read_text()
+        log = (out / "robustness.log").read_text()
+        assert "p-value floor" in log
+        assert t.groupby("family")["trend"].unique().map(tuple).to_dict() == {
+            "imbalance": ("linear",), "regional_demand": ("linear",), "generation_share": ("quadratic",)}
+        assert "CONSISTENCY WITH MAIN FIGURES" in log and log.count(": SKIPPED (missing") == 3
+        assert "consistency with main figures: 0 OK, 0 MISMATCH, 3 SKIPPED" in capsys.readouterr().out
         before = (out / "robustness_long.csv").stat().st_mtime_ns
         run_robustness.main()
         assert (out / "robustness_long.csv").stat().st_mtime_ns == before

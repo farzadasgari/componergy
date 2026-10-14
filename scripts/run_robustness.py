@@ -28,7 +28,8 @@ def main() -> None:
 
     from componergy.analysis.regions import build_county_to_region_map
     from componergy.analysis.robustness import (
-        BASELINES, SMOOTHINGS, TREND, MDE80_FACTOR, COLUMNS, family_rows, shift_summary,
+        BASELINES, SMOOTHINGS, FAMILY_TRENDS, MDE80_FACTOR, COLUMNS, family_rows, shift_summary,
+        consistency_section,
     )
     from componergy.download.boundaries import get_california_counties
     from componergy.download.climate_regions import get_california_climate_regions
@@ -63,7 +64,7 @@ def main() -> None:
                                       ("regional_demand", zonal["electricity_raw"], zonal),
                                       ("generation_share", gen["mix_pct_sm"], gen)):
                 r, s = family_rows(raw_df, d["event_masks"], d["normal"], d["event_meta"], family,
-                                   baseline, smoothing)
+                                   baseline, smoothing, FAMILY_TRENDS[family])
                 rows.append(r)
                 shifts.append(s)
                 periods[family] = f"{raw_df.index.min().date()} to {raw_df.index.max().date()}"
@@ -76,9 +77,12 @@ def main() -> None:
 
     out_dir.mkdir(parents=True, exist_ok=True)
     atomic_to_csv(table, csv_path, index=False)
+    consistency, counts = consistency_section(table, FIGURES_DIR)
     lines = [
         "Robustness: compound effect and amplification contrast over baseline x smoothing",
-        f"grid: baseline {BASELINES} x smoothing {SMOOTHINGS} months; events 90/10/10; month FE + {TREND} trend;",
+        f"grid: baseline {BASELINES} x smoothing {SMOOTHINGS} months; events 90/10/10; month FE + trend;",
+        "trend per family, the one its main figure uses: "
+        + ", ".join(f"{k} {v}" for k, v in FAMILY_TRENDS.items()) + ";",
         "inference: calendar-shift randomization; BH-FDR within family.",
         "",
         "periods: " + "; ".join(f"{k} {v}" for k, v in periods.items()),
@@ -94,6 +98,8 @@ def main() -> None:
         "  A_p: studentized randomization p of A; A_q: BH across the family's outcomes",
         f"  MDE80 = {MDE80_FACTOR} * SE_A (two-sided alpha 0.05, power 0.80)",
         "  NaN = not defined (e.g. fewer than 3 event months), never filled",
+        "  trend: trend term of the month-FE fit for this row (the TREND constant of the family's main figure: "
+        "figure_02 generation, figure_04 zonal_consumption, figure_06 imbalance)",
         "",
         "shift counts S and p-value floor 1/(S+1), per baseline:",
         per_baseline.to_string(),
@@ -101,9 +107,15 @@ def main() -> None:
         "by baseline, smoothing and family:",
         summary.to_string(index=False),
         "",
+        "CONSISTENCY WITH MAIN FIGURES",
+        *consistency,
+        f"summary: {counts['OK']} OK, {counts['MISMATCH']} MISMATCH, {counts['SKIPPED']} SKIPPED",
+        "",
     ]
     log_path.write_text("\n".join(lines), encoding="utf-8")
     print(f"wrote {csv_path} ({len(table)} rows) and {log_path}")
+    print(f"consistency with main figures: {counts['OK']} OK, {counts['MISMATCH']} MISMATCH, "
+          f"{counts['SKIPPED']} SKIPPED")
 
 
 if __name__ == "__main__":
