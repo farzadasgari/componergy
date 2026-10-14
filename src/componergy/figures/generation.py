@@ -72,7 +72,7 @@ def prepare_data(indices_ds: xr.Dataset, generation_df: pd.DataFrame, sapei_var=
     sti_full, sapei_full, scdhi_full = sti, sapei, scdhi  # untrimmed record: the event baseline
 
     mix_pct = generation_df[SOURCE_COLUMNS].div(generation_df["Total"], axis=0) * 100.0
-    mix_pct_sm = mix_pct.rolling(SMOOTH_MONTHS, center=True, min_periods=1).mean()
+    mix_pct_sm = mix_pct.rolling(smooth_months, center=True, min_periods=1).mean()
 
     common = mix_pct_sm.index.intersection(sti.index).intersection(sapei.index).intersection(scdhi.index)
     mix_pct_sm = mix_pct_sm.loc[common]
