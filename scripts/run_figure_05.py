@@ -8,7 +8,7 @@ from componergy.figures.sector import main as figure_main
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Generate Figure 5 (sector fingerprint wheel).")
+    parser = argparse.ArgumentParser(description="Generate Figure 5 (sector fingerprint dot-and-whisker plot).")
     parser.add_argument("--sapei-var", default="sapei_3m", help="Which SAPEI timescale column to use.")
     parser.add_argument("--scdhi-var", default="scdhi_3m", help="Which SCDHI timescale column to use.")
     parser.add_argument("--baseline", choices=["full_record", "window"], default="full_record",

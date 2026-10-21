@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 import pandas as pd
 import xarray as xr
 
@@ -42,3 +43,27 @@ def test_extract_site_series_picks_distinct_cells_for_distinct_sites():
     df = extract_site_series(ds, {"STI": "sti"})
     cells = df.groupby("Site")[["Grid_Lat", "Grid_Lon"]].first()
     assert len(cells.drop_duplicates()) == len(REPRESENTATIVE_SITES)
+
+
+def test_extract_site_series_moves_off_an_empty_cell_to_the_nearest_cell_with_data():
+    ds = _ds()
+    name, lat, lon = REPRESENTATIVE_SITES[0]
+    i = int(np.abs(ds["lat"].values - lat).argmin())
+    j = int(np.abs(ds["lon"].values - lon).argmin())
+    for var in ds.data_vars:
+        ds[var][:, i, j] = np.nan
+    df = extract_site_series(ds, {"STI": "sti", "SAPEI": "sapei_3m", "SCDHI": "scdhi_3m"},
+                             sites=[(name, lat, lon)])
+    assert (df["Grid_Lat"].iloc[0], df["Grid_Lon"].iloc[0]) != (ds["lat"].values[i], ds["lon"].values[j])
+    assert df[["STI", "SAPEI", "SCDHI"]].notna().any().all()
+
+
+def test_no_representative_site_samples_an_empty_cell():
+    from componergy.paths import INDICES_FILE
+    if not INDICES_FILE.exists():
+        pytest.skip(f"{INDICES_FILE} not on disk")
+    with xr.open_dataset(INDICES_FILE) as ds:
+        df = extract_site_series(ds, {"STI": "sti", "SAPEI": "sapei_3m", "SCDHI": "scdhi_3m"})
+    empty = [site for site, sub in df.groupby("Site")
+             if not sub[["STI", "SAPEI", "SCDHI"]].notna().any().all()]
+    assert not empty, f"sites sampling an empty grid cell: {empty}"

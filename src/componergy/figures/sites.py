@@ -14,7 +14,8 @@ from matplotlib.colors import Normalize
 from matplotlib.cm import ScalarMappable
 
 # Six locations spanning California's distinct climate zones.
-# Coordinates are approximate city/area centroids.
+# Coordinates are approximate city/area centroids; each is sampled at the
+# nearest grid cell that has data.
 REPRESENTATIVE_SITES = [
     ("Eureka (North Coast)", 40.80, -124.16),
     ("Sacramento (Sacramento Valley)", 38.58, -121.49),
@@ -36,6 +37,28 @@ import logging
 logging.getLogger("matplotlib.font_manager").setLevel(logging.ERROR)
 
 
+def nearest_valid_cell(ds: xr.Dataset, variables, lat: float, lon: float) -> tuple[float, float]:
+    """(lat, lon) of the grid cell nearest the coordinate, in degrees, where every variable has data."""
+    has_data = None
+    for var in variables:
+        cell_ok = ds[var].notnull().any(dim="time")
+        has_data = cell_ok if has_data is None else (has_data & cell_ok)
+    has_data = has_data.transpose("lat", "lon")
+    nearest = has_data.sel(lat=lat, lon=lon, method="nearest")
+    if bool(nearest):
+        return float(nearest["lat"]), float(nearest["lon"])
+
+    has_data = has_data.values
+    if not has_data.any():
+        raise ValueError(f"no grid cell has data for all of {list(variables)}")
+
+    grid_lat, grid_lon = np.meshgrid(ds["lat"].values, ds["lon"].values, indexing="ij")
+    dist = np.hypot(grid_lat - lat, grid_lon - lon)
+    dist[~has_data] = np.inf
+    i, j = np.unravel_index(np.argmin(dist), dist.shape)
+    return float(ds["lat"].values[i]), float(ds["lon"].values[j])
+
+
 def extract_site_series(ds: xr.Dataset, var_names, sites=None) -> pd.DataFrame:
     """Long-format monthly series for each site, one column per named index."""
     if sites is None:
@@ -43,7 +66,8 @@ def extract_site_series(ds: xr.Dataset, var_names, sites=None) -> pd.DataFrame:
 
     frames = []
     for name, lat, lon in sites:
-        point = ds.sel(lat=lat, lon=lon, method="nearest")
+        cell_lat, cell_lon = nearest_valid_cell(ds, var_names.values(), lat, lon)
+        point = ds.sel(lat=cell_lat, lon=cell_lon, method="nearest")
         actual_lat = float(point["lat"].values)
         actual_lon = float(point["lon"].values)
 
@@ -187,8 +211,8 @@ def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m") -> None:
         "Site locations (requested vs nearest grid cell)": site_meta.to_string(index=False),
         "Index correlations per site": corr_df.to_string(index=False),
         "Note": (
-            "Sites are sampled with sel(method='nearest'), so each series "
-            "comes from the grid cell nearest the requested coordinate."
+            "Each series comes from the grid cell nearest the requested coordinate "
+            "(Euclidean distance in degrees) among cells where every plotted index has data."
         ),
     }
     write_figure_log(out_dir / "supplementary_sites", log_sections)

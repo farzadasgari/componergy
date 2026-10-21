@@ -1,9 +1,3 @@
-"""
-Sector fingerprint figure: a polar wheel showing each consumption
-sector's response to statewide climate events, ring thickness encoding
-magnitude and color encoding direction, one ring per event type.
-"""
-
 from __future__ import annotations
 
 import matplotlib
@@ -14,10 +8,6 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 import matplotlib.pyplot as plt
-from matplotlib.colors import Normalize
-from matplotlib.cm import ScalarMappable
-from matplotlib.gridspec import GridSpec
-import matplotlib.patheffects as pe
 
 from componergy.figures.trend_stats import compute_area_weights, compute_statewide_mean
 from componergy.figures.composite_stats import (
@@ -29,17 +19,11 @@ from componergy.analysis.regression import adjusted_composite_table
 from componergy.figures.composite_outputs import write_composite_inference, INFERENCE_NOTE
 
 Q_ALPHA_FDR = 0.05
-Q_ALPHA_FDR_MARGINAL = 0.10
 
-SECTOR_ABBREV = {
-    "Residential": "Residential",
-    "Commercial": "Commercial",
-    "Industrial": "Industrial",
-    "Ag With Water Pump": "AgPump",
-    "TCU": "TCU",
-    "Mining": "Mining",
-    "Streetlighting": "SL",
-}
+# Event masks are mutually exclusive in the composites, so Heatwave/Drought are heat-only/drought-only.
+EVENT_LABELS = {"Heatwave": "Heat-only", "Drought": "Drought-only", "Compound": "Compound"}
+EVENT_COLORS = {"Heatwave": "crimson", "Drought": "deepskyblue", "Compound": "purple"}
+EVENT_OFFSET = 0.24
 SECTOR_ORDER = ["Residential", "Commercial", "Industrial", "Ag With Water Pump", "TCU", "Mining", "Streetlighting"]
 
 plt.rcParams.update({
@@ -120,128 +104,67 @@ def compute_sector_composites(data: dict, trend: str = "linear") -> pd.DataFrame
     return adj.rename(columns={"Source": "Sector"})
 
 
-def build_sector_wheel_figure(comp: pd.DataFrame, sectors_order, events_order=("Heatwave", "Drought", "Compound")):
-    """Polar wheel: one angular wedge per sector, one concentric ring per event."""
-    mat_g = comp.pivot(index="Sector", columns="Event", values="Delta_GWh").reindex(index=sectors_order,
-                                                                                    columns=events_order)
-    mat_z = comp.pivot(index="Sector", columns="Event", values="Delta_z").reindex(index=sectors_order,
-                                                                                  columns=events_order)
-    mat_q = comp.pivot(index="Sector", columns="Event", values="q_value").reindex(index=sectors_order,
-                                                                                  columns=events_order)
+def sector_effect_intervals(comp: pd.DataFrame) -> pd.DataFrame:
+    """Delta% of the fitted baseline with its 95% interval, rescaled from the shift-randomization CI."""
+    out = comp[["Event", "Sector", "Delta_pct", "q_value"]].copy()
+    lo = 100.0 * comp["CI_lo_native"] / comp["Baseline_mean"]
+    hi = 100.0 * comp["CI_hi_native"] / comp["Baseline_mean"]
+    out["CI_lo_pct"] = np.fmin(lo, hi)
+    out["CI_hi_pct"] = np.fmax(lo, hi)
+    return out
 
-    abs_g = np.abs(mat_g.values)
-    gmax = float(np.nanpercentile(abs_g[np.isfinite(abs_g)], 95)) if np.isfinite(abs_g).any() else 1.0
-    gmax = max(1e-6, gmax)
 
-    vals_z = mat_z.values
-    vmax_z = float(np.nanpercentile(np.abs(vals_z[np.isfinite(vals_z)]), 90)) if np.isfinite(vals_z).any() else 1.0
-    vmax_z = max(0.5, vmax_z)
+def build_sector_effects_figure(comp: pd.DataFrame, sectors_order, events_order=("Heatwave", "Drought", "Compound")):
+    """Dot-and-whisker plot: one row per sector, one offset marker per event type, 95% intervals."""
+    eff = sector_effect_intervals(comp)
+    n_ev = len(events_order)
+    offsets = {ev: (k - (n_ev - 1) / 2) * EVENT_OFFSET for k, ev in enumerate(events_order)}
 
-    cmap_obj = plt.get_cmap("RdBu_r")
-    normz = Normalize(vmin=-vmax_z, vmax=vmax_z)
-
-    n_sec = len(sectors_order)
-    theta = np.linspace(0, 2 * np.pi, n_sec, endpoint=False)
-    width = (2 * np.pi / n_sec) * 0.88
-
-    ring_gap, ring_thick_max, ring_base = 0.12, 0.55, 0.80
-    ring_start = {
-        "Heatwave": ring_base,
-        "Drought": ring_base + (ring_thick_max + ring_gap),
-        "Compound": ring_base + 2 * (ring_thick_max + ring_gap),
-    }
-
-    fig = plt.figure(figsize=(13.8, 9.0))
-    gs = GridSpec(nrows=1, ncols=2, width_ratios=[1.22, 0.24], figure=fig)
-    ax = fig.add_subplot(gs[0, 0], projection="polar")
-    ax_leg = fig.add_subplot(gs[0, 1])
-    ax_leg.axis("off")
-
-    ax.set_theta_direction(-1)
-    ax.set_theta_offset(np.pi / 2)
-    ax.set_yticklabels([])
-    ax.set_xticklabels([])
-    ax.grid(alpha=0.12, linewidth=0.8)
-    ax.spines["polar"].set_visible(False)
+    fig, ax = plt.subplots(figsize=(11.0, 0.95 * len(sectors_order) + 1.6))
+    for i in range(len(sectors_order)):
+        if i % 2 == 0:
+            ax.axhspan(i - 0.5, i + 0.5, color="#f2f2f2", zorder=0, lw=0)
+    ax.axvline(0, color="black", lw=1.2, zorder=1)
 
     for ev in events_order:
-        base = ring_start[ev]
+        color = EVENT_COLORS[ev]
+        sub = eff[eff["Event"] == ev].set_index("Sector").reindex(sectors_order)
         for i, sec in enumerate(sectors_order):
-            dg, dz, q = mat_g.loc[sec, ev], mat_z.loc[sec, ev], mat_q.loc[sec, ev]
-            if pd.isna(dg) or pd.isna(dz):
+            r = sub.loc[sec]
+            if pd.isna(r["Delta_pct"]):
                 continue
+            y = i + offsets[ev]
+            ax.hlines(y, r["CI_lo_pct"], r["CI_hi_pct"], color=color, lw=1.8, zorder=2)
+            significant = pd.notna(r["q_value"]) and r["q_value"] < Q_ALPHA_FDR
+            ax.plot(r["Delta_pct"], y, marker="o", ms=9, mew=1.8, color=color,
+                    mfc=color if significant else "white", ls="none", zorder=3)
 
-            thick = (min(abs(dg) / gmax, 1.0) ** 0.85) * ring_thick_max
-            face = cmap_obj(normz(dz))
+    ax.set_yticks(range(len(sectors_order)))
+    ax.set_yticklabels(sectors_order)
+    ax.set_ylim(len(sectors_order) - 0.5, -0.5)
+    ax.set_xlabel("$\\Delta$% of fitted baseline (95% interval)")
+    ax.tick_params(axis="y", length=0)
+    for side in ("top", "right", "left"):
+        ax.spines[side].set_visible(False)
+    ax.grid(axis="x", alpha=0.25, lw=0.8)
+    ax.set_axisbelow(True)
 
-            if pd.notna(q) and q < Q_ALPHA_FDR:
-                ec, lw = "black", 1.4
-            elif pd.notna(q) and q < Q_ALPHA_FDR_MARGINAL:
-                ec, lw = "#444444", 1.1
-            else:
-                ec, lw = "none", 0.0
+    from matplotlib.lines import Line2D
+    handles = [Line2D([], [], color=EVENT_COLORS[ev], marker="o", ms=9, mew=1.8, lw=1.8, label=EVENT_LABELS[ev])
+               for ev in events_order]
+    handles += [Line2D([], [], color="#444444", marker="o", ms=9, mew=1.8, ls="none", label="q < 0.05"),
+                Line2D([], [], color="#444444", mfc="white", marker="o", ms=9, mew=1.8, ls="none",
+                       label="q $\\geq$ 0.05")]
+    ax.legend(handles=handles, loc="upper center", bbox_to_anchor=(0.5, -0.12), ncol=5, frameon=False,
+              handlelength=1.6, columnspacing=1.2)
 
-            ax.bar(theta[i], thick, width=width, bottom=base, color=face,
-                   edgecolor=ec, linewidth=lw, align="edge", alpha=0.97)
-
-    r_outer_ring = ring_start["Compound"] + ring_thick_max
-    outer = r_outer_ring + 0.06
-    ax.set_ylim(0, outer + 0.10)
-
-    for i, sec in enumerate(sectors_order):
-        lab = SECTOR_ABBREV.get(sec, str(sec)[:7])
-        ang = theta[i] + width / 2
-        ha = "right" if 90 < np.degrees(ang) < 270 else "left"
-        ax.text(ang, outer, lab, fontsize=14, fontweight="bold", ha=ha, va="center", clip_on=False)
-
-    for ev in events_order:
-        ax.text(np.deg2rad(2), ring_start[ev] + ring_thick_max * 0.55, ev, fontsize=16,
-                ha="left", va="center", color="white",
-                path_effects=[pe.withStroke(linewidth=2, foreground="black")])
-
-    totals = comp.groupby("Event")["Delta_GWh"].sum().reindex(events_order)
-    center_txt = "Total $\\Delta$GWh vs normal\n" + "\n".join([f"{ev}: {totals[ev]:+.1f}" for ev in events_order])
-    ax.text(0.5, 0.5, center_txt, transform=ax.transAxes, ha="center", va="center", fontsize=14)
-
-    ref = np.nanpercentile(abs_g[np.isfinite(abs_g)], [50, 80, 95]) if np.isfinite(abs_g).any() else [1, 2, 3]
-    ref = np.unique(np.round(ref, 1))
-    ax_leg.text(0.02, 0.97, "Contribution magnitude", transform=ax_leg.transAxes, fontsize=14, va="top")
-
-    y = 0.88
-    for r in ref[:3]:
-        thick = (min(r / gmax, 1.0) ** 0.85) * ring_thick_max
-        ax_leg.add_patch(plt.Rectangle((0.06, y - 0.018), 0.25, 0.036, transform=ax_leg.transAxes,
-                                       facecolor="#dddddd", edgecolor="#333333", linewidth=1.0))
-        ax_leg.add_patch(plt.Rectangle((0.06, y - 0.018), 0.25, 0.036 * (thick / ring_thick_max),
-                                       transform=ax_leg.transAxes, facecolor="#777777", edgecolor="none"))
-        ax_leg.text(0.34, y, f"|$\\Delta$GWh| $\\approx$ {r:.1f}", transform=ax_leg.transAxes, va="center", fontsize=14)
-        y -= 0.075
-
-    y -= 0.03
-    ax_leg.text(0.02, y, "Significance (FDR-corrected)", transform=ax_leg.transAxes, fontsize=14, va="top")
-    y -= 0.09
-    ax_leg.add_patch(plt.Rectangle((0.06, y - 0.018), 0.10, 0.036, transform=ax_leg.transAxes,
-                                   facecolor="white", edgecolor="black", linewidth=1.4))
-    ax_leg.text(0.20, y, "q < 0.05", transform=ax_leg.transAxes, va="center", fontsize=13)
-    y -= 0.075
-    ax_leg.add_patch(plt.Rectangle((0.06, y - 0.018), 0.10, 0.036, transform=ax_leg.transAxes,
-                                   facecolor="white", edgecolor="#444444", linewidth=1.1))
-    ax_leg.text(0.20, y, "0.05 $\\leq$ q < 0.10", transform=ax_leg.transAxes, va="center", fontsize=13)
-
-    sm = ScalarMappable(norm=normz, cmap="RdBu_r")
-    sm.set_array([])
-    cax = ax_leg.inset_axes([0.08, 0.03, 0.18, 0.20])
-    cbar = fig.colorbar(sm, cax=cax, orientation="vertical")
-    cbar.set_label("$\\Delta z$ sector anomaly", labelpad=8, fontsize=16)
-    cbar.outline.set_linewidth(0.8)
-    cbar.ax.tick_params(width=0.8, length=3, labelsize=14)
-
-    fig.subplots_adjust(left=0.03, right=0.97, top=0.97, bottom=0.05, wspace=0.02)
+    fig.tight_layout()
     return fig
 
 
 def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m", baseline: str = "full_record") -> None:
-    """Build the sector wheel figure, its composite CSV, and the log/json.
+    """
+    Build the sector effects figure, its composite CSV, and the log/json.
 
     Requires COUNTY_CONSUMPTION_XLSX to already exist locally (restricted
     CEC data).
@@ -265,7 +188,7 @@ def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m", baseline: str
     comp = compute_sector_composites(data)
 
     print("saving figure...")
-    fig = build_sector_wheel_figure(comp, data["sectors_order"])
+    fig = build_sector_effects_figure(comp, data["sectors_order"])
     fig.savefig(out_dir / "figure_05_sector_fingerprint.jpg", bbox_inches="tight")
     plt.close(fig)
 
@@ -286,8 +209,9 @@ def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m", baseline: str
         "Sector effects (FDR-corrected)": comp.to_string(index=False),
         **inference["log_sections"],
         "Note": (
-                INFERENCE_NOTE + " Ring outline uses q across all sector x event tests "
-                                 "(7 sectors x 3 events = 21)."
+                INFERENCE_NOTE + " Filled markers use q < 0.05 across all sector x event tests "
+                                 "(7 sectors x 3 events = 21); whiskers are 95% intervals from the "
+                                 "shift-randomization SE, rescaled to % of the fitted baseline."
         ),
     }
     write_figure_log(out_dir / "figure_05_sector_fingerprint", log_sections)
