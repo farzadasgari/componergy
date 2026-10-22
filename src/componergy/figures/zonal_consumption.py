@@ -28,14 +28,15 @@ from componergy.figures.labels import region_abbrev, region_label_table, format_
 from componergy.analysis.events import build_event_masks
 from componergy.analysis.regression import adjusted_composite_table
 from componergy.figures.composite_outputs import write_composite_inference, INFERENCE_NOTE
+from componergy.figures.print_style import SERIF_FONTS
 
 Q_ALPHA_FDR = 0.05
 Q_ALPHA_FDR_MARGINAL = 0.10
-TREND = "linear"  # trend term of every adjusted estimate in this figure
+TREND = "linear"
 
 plt.rcParams.update({
     "font.family": "serif",
-    "font.serif": ["Cambria"],
+    "font.serif": SERIF_FONTS,
     "mathtext.fontset": "dejavuserif",
     "font.size": 16,
     "axes.labelsize": 16,
@@ -65,7 +66,7 @@ def prepare_zonal_data(indices_ds: xr.Dataset, consumption_long_df: pd.DataFrame
     sti = zscore(compute_statewide_mean(indices_ds["sti"], weights).to_series())
     sapei = zscore(compute_statewide_mean(indices_ds[sapei_var], weights).to_series())
     scdhi = zscore(compute_statewide_mean(indices_ds[scdhi_var], weights).to_series())
-    sti_full, sapei_full, scdhi_full = sti, sapei, scdhi  # untrimmed record: the event baseline
+    sti_full, sapei_full, scdhi_full = sti, sapei, scdhi
 
     start = max(electricity_raw.index.min(), sti.index.min(), sapei.index.min(), scdhi.index.min())
     end = min(electricity_raw.index.max(), sti.index.max(), sapei.index.max(), scdhi.index.max())
@@ -102,6 +103,9 @@ def compute_zonal_composites(data: dict, trend: str = TREND) -> pd.DataFrame:
     return adj.rename(columns={"Source": "Region"})
 
 
+LABEL_SHIFT_PT = {"SC": -20, "SI": -10, "NC": -10}
+
+
 def text_color_for_bg(value, norm, cmap_obj, light_thresh=0.55):
     if value is None or (isinstance(value, float) and np.isnan(value)):
         return "black"
@@ -131,9 +135,11 @@ def plot_event_choropleth(ax, regions_plot, event_name, comp, state_outline, cma
             continue
         tcol = text_color_for_bg(r["Delta_pct"], norm, cmap_obj, light_thresh=0.55)
         stroke_col = "black" if tcol == "white" else "white"
-        ax.text(r["centroid"].x, r["centroid"].y, r["abbr"], ha="center", va="center",
-                fontsize=14, fontweight="bold", color=tcol, alpha=0.98,
-                path_effects=[pe.withStroke(linewidth=1.6, foreground=stroke_col), pe.Normal()])
+        dx = LABEL_SHIFT_PT.get(r["abbr"], 0)
+        ax.annotate(r["abbr"], (r["centroid"].x, r["centroid"].y), xytext=(dx, 0), textcoords="offset points",
+                    ha="center", va="center",
+                    fontsize=17, fontweight="bold", color=tcol, alpha=0.98,
+                    path_effects=[pe.withStroke(linewidth=1.6, foreground=stroke_col), pe.Normal()])
 
     ax.set_title(event_name, pad=6)
     ax.set_axis_off()
@@ -202,10 +208,13 @@ def build_zonal_figure(comp: pd.DataFrame, regions_gdf, county_boundary_dissolve
     vmax_pct = max(5.0, float(vmax_pct))
 
     fig = plt.figure(figsize=(14.8, 10.2))
-    gs = GridSpec(nrows=2, ncols=4, figure=fig, height_ratios=[1.0, 1.35], width_ratios=[1, 1, 1, 0.10])
+    gs = GridSpec(nrows=2, ncols=5, figure=fig, height_ratios=[1.0, 1.35],
+                  width_ratios=[0.35, 1, 1, 1, 0.10])
 
-    map_axes = [fig.add_subplot(gs[0, i]) for i in range(3)]
-    cax_map = fig.add_subplot(gs[0, 3])
+    ax_leg = fig.add_subplot(gs[0, 0])
+    ax_leg.set_axis_off()
+    map_axes = [fig.add_subplot(gs[0, i + 1]) for i in range(3)]
+    cax_map = fig.add_subplot(gs[0, 4])
 
     cmap_map_obj = plt.get_cmap("RdBu_r")
     norm_map = Normalize(vmin=-vmax_pct, vmax=vmax_pct)
@@ -231,17 +240,12 @@ def build_zonal_figure(comp: pd.DataFrame, regions_gdf, county_boundary_dissolve
     handles = []
     for v in legend_vals:
         s = size_min + (np.abs(v) / max_abs) ** 1.35 * (size_max - size_min)
-        handles.append(ax_bub.scatter([], [], s=s, c="none", edgecolors="#333333", linewidths=1.0))
-    ax_bub.legend(handles, [f"|$\\Delta z$| = {v:.2f}" for v in legend_vals], title="Effect size",
-                  frameon=False, loc="upper left", bbox_to_anchor=(0.01, 0.99),
+        handles.append(ax_leg.scatter([], [], s=s, c="none", edgecolors="#333333", linewidths=1.0))
+    ax_leg.legend(handles, [f"|$\\Delta z$| = {v:.2f}" for v in legend_vals], title="Effect size",
+                  frameon=False, loc="center left", bbox_to_anchor=(-1.25, 0.5),
                   labelspacing=1.6, handletextpad=0.8, borderaxespad=0.2)
 
     fig.tight_layout(rect=[0.0, 0.035, 0.98, 0.98])
-    fig.text(0.5, 0.008,
-             "Heavy outline / bold bubble edge: q < 0.05; light: 0.05 <= q < 0.10 "
-             "(Benjamini-Hochberg across all region x event tests). Effects are season- and trend-adjusted "
-             "(month effects + trend); significance by calendar-shift randomization.",
-             ha="center", va="bottom", fontsize=9, color="#333333")
     return fig
 
 

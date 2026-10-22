@@ -31,24 +31,25 @@ from componergy.analysis.regression import (
 from componergy.analysis.demand_crosscheck import compare_demand_sources
 from componergy.analysis.system_boundary import validate_system_boundary, compute_import_fraction
 from componergy.figures.composite_outputs import write_composite_inference, INFERENCE_NOTE
+from componergy.figures.print_style import SERIF_FONTS, EVENT_STYLE
 
 SMOOTH_MONTHS = 3
-TREND = "linear"  # trend term of every adjusted estimate in this figure
+TREND = "linear"
 RISK_Q = 0.90
 N_BOOT = 5000
 BOOT_SEED = 42
 EPS = 1e-9
 
-C_HEAT = "crimson"
-C_DROUGHT = "deepskyblue"
-C_COMP = "purple"
+C_HEAT = EVENT_STYLE["Heatwave"]["color"]
+C_DROUGHT = EVENT_STYLE["Drought"]["color"]
+C_COMP = EVENT_STYLE["Compound"]["color"]
 C_IMB = "#222222"
 C_GEN = "#d95f02"
 C_DEM = "#1f78b4"
 
 plt.rcParams.update({
     "font.family": "serif",
-    "font.serif": ["Cambria"],
+    "font.serif": SERIF_FONTS,
     "mathtext.fontset": "dejavuserif",
     "font.size": 16,
     "axes.labelsize": 16,
@@ -75,7 +76,7 @@ def prepare_imbalance_data(indices_ds: xr.Dataset, generation_df: pd.DataFrame, 
     sti = zscore(compute_statewide_mean(indices_ds["sti"], weights).to_series())
     sapei = zscore(compute_statewide_mean(indices_ds[sapei_var], weights).to_series())
     scdhi = zscore(compute_statewide_mean(indices_ds[scdhi_var], weights).to_series())
-    sti_full, sapei_full, scdhi_full = sti, sapei, scdhi  # untrimmed AND unsmoothed: build_event_masks smooths once
+    sti_full, sapei_full, scdhi_full = sti, sapei, scdhi
 
     common = gen_gwh.index.intersection(dem_gwh.index).intersection(sti.index).intersection(sapei.index).intersection(
         scdhi.index)
@@ -156,7 +157,7 @@ def compute_imbalance_composites(data: dict, risk_q=RISK_Q, n_boot=N_BOOT, seed=
     """Season- and trend-adjusted event effect on the imbalance, plus RAF, per event."""
     imb_gwh, normal = data["imb_gwh"], data["normal"]
     imb_adj = data.get("imb_adj")
-    if imb_adj is None:  # derive it rather than depend on the caller having precomputed it
+    if imb_adj is None:
         imb_adj, _ = normal_baseline_anomalies(imb_gwh, normal, trend=trend)
 
     adj = adjusted_composite_table(imb_gwh.to_frame("Imbalance"), data["event_masks"], normal, trend=trend)
@@ -235,6 +236,8 @@ def plot_delta_bar_panel(ax, comp: pd.DataFrame, order=("Heatwave", "Drought", "
     x = np.arange(len(order))
 
     ax.bar(x, vals, color=cols, alpha=0.90, width=0.70, edgecolor="black", linewidth=1.4)
+    for patch, e in zip(ax.patches, order):
+        patch.set_hatch(EVENT_STYLE[e]["hatch"])
     ax.axhline(0, color="k", lw=1.0, alpha=0.45)
     ax.set_xticks(x)
     ax.set_xticklabels(order, rotation=0)
@@ -265,9 +268,8 @@ def plot_distribution_panel(ax, data, comp: pd.DataFrame, order=("Heatwave", "Dr
     if np.isfinite(thr_risk):
         ax.axvline(thr_risk, color="k", lw=1.0, alpha=0.55)
 
-    ax.set_xlabel("Imbalance anomaly (GWh, vs normal months of the same calendar month)")
     ax.set_ylabel("Probability density")
-    ax.legend(frameon=False, ncol=1, loc="upper left", bbox_to_anchor=(0.02, 0.98))
+    ax.legend(frameon=False, ncol=1, loc="upper left", bbox_to_anchor=(0.05, 1.1))
     style_axis(ax)
 
 
@@ -388,7 +390,6 @@ def main(sapei_var: str = "sapei_3m", scdhi_var: str = "scdhi_3m", baseline: str
     inference = write_composite_inference(data["imb_gwh"].to_frame("Imbalance"), data["event_masks"],
                                           data["normal"], out_dir, "figure_06", label="Metric", trend=TREND)
 
-    # The OTHER demand source, if present: same analysis, so the choice of source is measured.
     alt_comp, alt_period = None, None
     if sources[alt_name] is not None:
         alt_data = prepare_imbalance_data(indices_ds, generation_df, sources[alt_name].to_frame("total_sales"),

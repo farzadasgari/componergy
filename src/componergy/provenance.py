@@ -14,6 +14,7 @@ PACKAGES = ("numpy", "pandas", "xarray", "scipy", "matplotlib", "geopandas", "re
             "rioxarray", "dask", "statsmodels", "joblib", "cartopy", "shapely", "pyproj")
 SEEDS = {"bootstrap_raf": 42, "superadditivity": 42, "lag_scan_randomization": 42,
          "relative_importance_bootstrap": 42, "return_period_bootstrap": 42, "copula_selection": 0}
+NON_STATISTIC_DIRS = ("previews",)  # derived images, left out of directory fingerprints
 HASH_LIMIT_BYTES = 500 * 1024 * 1024
 
 
@@ -25,19 +26,21 @@ def sha256_file(path, chunk: int = 1 << 20) -> str:
     return h.hexdigest()
 
 
-def directory_fingerprint(path, pattern: str = "*") -> dict:
-    files = sorted(p for p in Path(path).rglob(pattern) if p.is_file())
+def directory_fingerprint(path, pattern: str = "*", exclude: tuple = ()) -> dict:
+    """`exclude` names top-level sub-folders of `path` left out of the fingerprint."""
+    skip = [Path(path) / e for e in exclude]
+    files = sorted(p for p in Path(path).rglob(pattern) if p.is_file() and not any(s in p.parents for s in skip))
     listing = "\n".join(f"{p.relative_to(path)}:{p.stat().st_size}" for p in files)
     return {"n_files": len(files), "total_bytes": int(sum(p.stat().st_size for p in files)),
             "listing_sha256": hashlib.sha256(listing.encode()).hexdigest()}
 
 
-def describe_path(path) -> dict:
+def describe_path(path, exclude: tuple = ()) -> dict:
     p = Path(path)
     if not p.exists():
         return {"path": str(p), "exists": False}
     if p.is_dir():
-        return {"path": str(p), "exists": True, "kind": "directory", **directory_fingerprint(p)}
+        return {"path": str(p), "exists": True, "kind": "directory", **directory_fingerprint(p, exclude=exclude)}
     st = p.stat()
     out = {"path": str(p), "exists": True, "kind": "file", "size_bytes": int(st.st_size),
            "modified_utc": datetime.fromtimestamp(st.st_mtime, tz=timezone.utc).isoformat(timespec="seconds")}
@@ -76,7 +79,7 @@ def build_manifest(inputs: dict, outputs: dict, root, seeds: dict | None = None,
         "packages": package_versions(),
         "seeds": SEEDS if seeds is None else seeds,
         "inputs": {k: describe_path(v) for k, v in inputs.items()},
-        "outputs": {k: describe_path(v) for k, v in outputs.items()},
+        "outputs": {k: describe_path(v, exclude=NON_STATISTIC_DIRS) for k, v in outputs.items()},
         **(extra or {}),
     }
 

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+SERIF_FONTS = ["Cambria", "Caladea", "DejaVu Serif"]
+
 SOURCE_STYLE = {
     "Fossil": {"color": "#d55e00", "linestyle": "-", "marker": "o", "hatch": "//"},
     "Hydro": {"color": "#0072b2", "linestyle": "--", "marker": "s", "hatch": "\\\\"},

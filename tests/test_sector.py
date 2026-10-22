@@ -107,3 +107,43 @@ def test_prepare_sector_data_heatwave_and_drought_are_mutually_exclusive():
     data = prepare_sector_data(indices_ds, long_df)
     overlap = (data["event_masks"]["Heatwave"] & data["event_masks"]["Drought"]).sum()
     assert overlap == 0
+
+
+def _wheel_frame():
+    rows = []
+    for ev, base in (("Heatwave", 1.0), ("Drought", -1.0), ("Compound", 2.0)):
+        for k, sec in enumerate(["Residential", "Commercial", "Industrial"]):
+            rows.append({"Event": ev, "Sector": sec, "Delta_GWh": base * (k + 1) * 10.0, "Delta_z": base * 0.2 * (k + 1),
+                         "q_value": 0.01 if (ev, k) == ("Compound", 2) else 0.5,
+                         "p_exact": 0.03 if (ev, k) == ("Drought", 0) else 0.4})
+    return pd.DataFrame(rows)
+
+
+def test_draw_sector_wheel_wedges_follow_table():
+    import matplotlib.pyplot as plt
+    from matplotlib.patches import Rectangle
+    from componergy.figures.sector import draw_sector_wheel, wedge_thickness, RING_BASE
+
+    comp = _wheel_frame()
+    fig = plt.figure()
+    ax = fig.add_subplot(projection="polar")
+    sc = draw_sector_wheel(ax, comp, ["Residential", "Commercial", "Industrial"])
+    rects = [p for p in ax.patches if isinstance(p, Rectangle)]
+    assert len(rects) == 9
+    assert min(p.get_y() for p in rects) == RING_BASE
+    heights = sorted(p.get_height() for p in rects)
+    expected = sorted(wedge_thickness(g, sc["gmax"]) for g in comp["Delta_GWh"])
+    assert np.allclose(heights, expected, rtol=1e-12, atol=0)
+    solid = [p for p in rects if p.get_linewidth() > 0 and p.get_linestyle() == "-"]
+    dashed = [p for p in rects if p.get_linewidth() > 0 and p.get_linestyle() == "--"]
+    assert len(solid) == 1 and len(dashed) == 1
+    assert sum(p.get_linewidth() == 0 for p in rects) == 7
+    plt.close(fig)
+
+
+def test_wedge_outline_ignores_marginal_q():
+    from componergy.figures.sector import wedge_outline
+    assert wedge_outline(0.04, 0.001)[1] == "-"
+    assert wedge_outline(0.07, 0.04)[1] == "--"
+    assert wedge_outline(0.07, 0.06)[2] == 0.0
+    assert wedge_outline(0.08, float("nan"))[2] == 0.0

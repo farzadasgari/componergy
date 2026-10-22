@@ -14,6 +14,7 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 import matplotlib.pyplot as plt
+from matplotlib.patches import Patch
 
 from componergy.analysis.regions import build_county_to_region_map, compute_regional_mean
 from componergy.figures.composite_stats import (
@@ -23,19 +24,20 @@ from componergy.figures.composite_stats import (
 from componergy.analysis.lag_scan import best_lag_randomization
 from componergy.analysis.relative_importance import lmg_table, incremental_r2_block_permutation
 from componergy.figures.stats_log import write_figure_log
+from componergy.figures.print_style import EVENT_STYLE, SERIF_FONTS
 
 SMOOTH_MONTHS = 3
 LAGS = range(-6, 7)
-DRIVER_COLORS = {"STI": "crimson", "SAPEI": "deepskyblue", "SCDHI": "purple"}
+DRIVER_STYLE = {"STI": EVENT_STYLE["Heatwave"], "SAPEI": EVENT_STYLE["Drought"], "SCDHI": EVENT_STYLE["Compound"]}
 
 plt.rcParams.update({
     "font.family": "serif",
-    "font.serif": ["Cambria"],
+    "font.serif": SERIF_FONTS,
     "mathtext.fontset": "dejavuserif",
     "font.size": 16,
-    "axes.labelsize": 14,
-    "xtick.labelsize": 14,
-    "ytick.labelsize": 14,
+    "axes.labelsize": 16,
+    "xtick.labelsize": 16,
+    "ytick.labelsize": 16,
     "legend.fontsize": 16,
     "axes.linewidth": 1.2,
     "savefig.dpi": 600,
@@ -77,7 +79,7 @@ def _series_for(data: dict, name: str, adjusted: bool) -> pd.DataFrame:
     key = f"{name}_adj" if adjusted else f"{name}_z"
     if key in data:
         return data[key]
-    if adjusted and f"{name}_z" in data:  # a caller that only built the legacy frames
+    if adjusted and f"{name}_z" in data:
         return data[f"{name}_z"].apply(adjust_series, axis=0)
     raise KeyError(key)
 
@@ -142,8 +144,8 @@ def plot_heatmap(ax, data, regions_order, row_label, vlim=2.5, cmap="viridis"):
 
 def build_heatmap_figure(data):
     regions_order = data["regions_order"]
-    fig, axes = plt.subplots(nrows=4, ncols=1, figsize=(13, 1.1 * len(regions_order) + 6), sharex=True)
-    fig.subplots_adjust(left=0.16, right=0.83, top=0.96, bottom=0.06, hspace=0.15)
+    fig, axes = plt.subplots(nrows=4, ncols=1, figsize=(11, 4 * 0.24 * len(regions_order) + 1.8), sharex=True)
+    fig.subplots_adjust(left=0.2, right=0.86, top=0.97, bottom=0.07, hspace=0.12)
 
     im0 = plot_heatmap(axes[0], data["sti_z"], regions_order, "STI")
     plot_heatmap(axes[1], data["sapei_z"], regions_order, "SAPEI")
@@ -160,8 +162,8 @@ def build_heatmap_figure(data):
         ax.set_xticks(tick_idx)
         ax.set_xticklabels(tick_labels)
 
-    cbar = fig.colorbar(im0, ax=axes, orientation="vertical", fraction=0.05, pad=0.03, shrink=0.9)
-    cbar.set_label("Standardized anomaly (z-score)", labelpad=14)
+    cbar = fig.colorbar(im0, ax=axes, orientation="vertical", fraction=0.04, pad=0.07, shrink=0.6, aspect=22)
+    cbar.set_label("Standardized anomaly (z-score)", labelpad=18)
 
     return fig
 
@@ -207,18 +209,22 @@ def plot_slope_bars(ax, summary, regions_order, alpha_fdr=0.05):
         vals = sub["slope"].to_numpy(dtype=float)
         sig = (sub["q_value"] < alpha_fdr).to_numpy()
 
-        bars = ax.bar(x + (j - 1) * width, vals, width=width, label=drv, color=DRIVER_COLORS[drv])
-        for bar, is_sig in zip(bars, sig):
-            if not is_sig:
-                bar.set_alpha(0.35)
+        style = DRIVER_STYLE[drv]
+        bars = ax.bar(x + (j - 1) * width, vals, width=width, label=drv, color=style["color"],
+                      hatch=style["hatch"], edgecolor="black", linewidth=1)
 
-    ax.axhline(0, linewidth=1.0, color="#444444", alpha=0.6)
+    ax.axhline(0, color="k", lw=0.9, alpha=0.5)
     ax.set_xticks(x)
     ax.set_xticklabels(regions_order, rotation=90, ha="center")
     ax.set_ylabel("Electricity response per unit driver z-score")
-    ax.legend(frameon=False, ncol=3, loc="upper left", bbox_to_anchor=(0.0, 1.22), borderaxespad=0.0)
+
+    handles = [Patch(facecolor=DRIVER_STYLE[d]["color"], hatch=DRIVER_STYLE[d]["hatch"],
+                     edgecolor="black", linewidth=1, label=d) for d in drivers]
+    ax.legend(handles=handles, frameon=False, ncol=4, loc="upper left", bbox_to_anchor=(0.0, 1.22),
+              borderaxespad=0.0)
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
+    ax.grid(False)
 
 
 def compute_incremental_r2_by_region(data, adjusted: bool = True, n_perm: int = 1999):

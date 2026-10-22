@@ -51,6 +51,7 @@ STAGES = (
     Stage("supplementary", "run_supplementary_figures", "S1-S7", needs=("INDICES_FILE",)),
     Stage("review", "run_review_analyses", "review-response analyses + study-period table", needs=("INDICES_FILE",)),
     Stage("manifest", "make_run_manifest", "checksums, versions, seeds"),
+    Stage("previews", "make_figure_previews", "100 dpi JPEG previews of every figure (optional, not a statistic)"),
 )
 STAGE_NAMES = tuple(s.name for s in STAGES)
 

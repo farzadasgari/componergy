@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
 from componergy.figures.trend_stats import compute_area_weights, compute_statewide_mean, compute_linear_trend_with_ci
-from componergy.figures.print_style import SOURCE_STYLE, EVENT_STYLE
+from componergy.figures.print_style import SOURCE_STYLE, EVENT_STYLE, SERIF_FONTS
 from componergy.figures.composite_stats import (
     compute_composite_table, zscore, deseasonalize_monthly,
     remove_linear_trend, benjamini_hochberg_fdr,
@@ -26,13 +26,13 @@ from componergy.figures.composite_outputs import write_composite_inference, INFE
 from componergy.paths import INDICES_FILE, GENERATION_MONTHLY_FILE, FIGURES_DIR
 
 SMOOTH_MONTHS = 3
-TREND = "quadratic"  # trend term of every adjusted estimate in this figure
+TREND = "quadratic"
 LAGS = range(-6, 7)
 SOURCE_COLUMNS = ["Fossil", "Hydro", "Solar", "Wind", "Nuclear", "Other Renewable"]
 
 plt.rcParams.update({
     "font.family": "serif",
-    "font.serif": ["Cambria"],
+    "font.serif": SERIF_FONTS,
     "mathtext.fontset": "dejavuserif",
     "font.size": 17,
     "axes.labelsize": 17,
@@ -70,7 +70,7 @@ def prepare_data(indices_ds: xr.Dataset, generation_df: pd.DataFrame, sapei_var=
     sti = zscore(compute_statewide_mean(indices_ds["sti"], weights).to_series())
     sapei = zscore(compute_statewide_mean(indices_ds[sapei_var], weights).to_series())
     scdhi = zscore(compute_statewide_mean(indices_ds[scdhi_var], weights).to_series())
-    sti_full, sapei_full, scdhi_full = sti, sapei, scdhi  # untrimmed record: the event baseline
+    sti_full, sapei_full, scdhi_full = sti, sapei, scdhi
 
     mix_pct = generation_df[SOURCE_COLUMNS].div(generation_df["Total"], axis=0) * 100.0
     mix_pct_sm = mix_pct.rolling(smooth_months, center=True, min_periods=1).mean()
@@ -83,7 +83,6 @@ def prepare_data(indices_ds: xr.Dataset, generation_df: pd.DataFrame, sapei_var=
     mix_z_local = mix_pct_sm.apply(deseasonalize_monthly, axis=0).apply(zscore, axis=0)
     mix_z_detrended = mix_pct_sm.apply(remove_linear_trend, axis=0).apply(zscore, axis=0)
 
-    # One shared event definition for every composite figure (see analysis.events.build_event_masks).
     event_masks, normal, event_meta, event_flags = build_event_masks(
         sti_full, sapei_full, scdhi_full, window_index=common,
         smooth_months=smooth_months, baseline=baseline, return_flags=True,
@@ -127,7 +126,7 @@ def plot_mix_timeseries(ax, data):
     shade_compound_months(ax, data["compound_months"])
     style_timeseries_axis(ax)
 
-    ax.legend(ncol=2, frameon=False, loc="upper left", bbox_to_anchor=(0.0, 1.34),
+    ax.legend(ncol=3, frameon=False, loc="upper left", bbox_to_anchor=(0.0, 1.34),
               borderaxespad=0.0, handlelength=2.6, columnspacing=1.2)
 
 
@@ -163,7 +162,7 @@ def plot_mix_composite_bars(ax, comp_table):
 
     ax.axhline(0, color="k", lw=0.9, alpha=0.5)
     ax.set_xticks(x)
-    ax.set_xticklabels(order_src, rotation=40, ha="right")
+    ax.set_xticklabels(order_src, rotation=90, ha="center")
     ax.set_ylabel("Generation share anomaly ($\\Delta z$)")
     style_bar_axis(ax)
 

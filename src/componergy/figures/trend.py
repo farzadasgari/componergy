@@ -25,6 +25,7 @@ from componergy.figures.stats_log import write_figure_log
 from componergy.figures.composite_stats import apply_fdr_to_grid
 from componergy.analysis.events import classify_heatwave, classify_drought, classify_compound
 from componergy.paths import INDICES_FILE, FIGURES_DIR
+from componergy.figures.print_style import SERIF_FONTS
 
 PC = ccrs.PlateCarree()
 SMOOTH_MONTHS = 3
@@ -37,7 +38,7 @@ C_FOOT = "#8a8a8a"
 
 plt.rcParams.update({
     "font.family": "serif",
-    "font.serif": ["Cambria"],
+    "font.serif": SERIF_FONTS,
     "mathtext.fontset": "dejavuserif",
     "font.size": 18,
     "axes.labelsize": 18,
@@ -236,13 +237,13 @@ def build_figure_01(indices_ds: xr.Dataset, sapei_var: str = "sapei_3m", scdhi_v
     vmin_scdhi, vmax_scdhi = sym_limits_robust(scdhi_slope)
 
     axD = fig.add_subplot(gs[0, 2], projection=PC)
-    plot_trend_map(axD, sti_slope, sti_q, vmin_sti, vmax_sti, "STI trend per decade", "D", extent, boundary)
+    plot_trend_map(axD, sti_slope, sti_q, vmin_sti, vmax_sti, "Trend per decade", "D", extent, boundary)
 
     axE = fig.add_subplot(gs[1, 2], projection=PC)
-    plot_trend_map(axE, sapei_slope, sapei_q, vmin_sapei, vmax_sapei, "SAPEI trend per decade", "E", extent, boundary)
+    plot_trend_map(axE, sapei_slope, sapei_q, vmin_sapei, vmax_sapei, "Trend per decade", "E", extent, boundary)
 
     axF = fig.add_subplot(gs[2, 2], projection=PC)
-    plot_trend_map(axF, scdhi_slope, scdhi_q, vmin_scdhi, vmax_scdhi, "SCDHI trend per decade", "F", extent, boundary)
+    plot_trend_map(axF, scdhi_slope, scdhi_q, vmin_scdhi, vmax_scdhi, "Trend per decade", "F", extent, boundary)
 
     annual_years = {}
     for name, var, annual in [("sti", "sti", sti_annual), ("sapei", sapei_var, sapei_annual),
@@ -271,11 +272,11 @@ def build_figure_01(indices_ds: xr.Dataset, sapei_var: str = "sapei_3m", scdhi_v
         "SCDHI statewide signal": {"mean": float(scdhi_z.mean()), "std": float(scdhi_z.std()),
                                    "n_months": int(scdhi_z.notna().sum())},
         "Heatwave footprint (STI > 90th pct)": {"mean_fraction": float(sti_foot.mean()),
-                                                 "max_fraction": float(sti_foot.max())},
+                                                "max_fraction": float(sti_foot.max())},
         "Drought footprint (SAPEI < 10th pct)": {"mean_fraction": float(sapei_foot.mean()),
-                                                  "max_fraction": float(sapei_foot.max())},
+                                                 "max_fraction": float(sapei_foot.max())},
         "Compound footprint (SCDHI < 10th pct)": {"mean_fraction": float(scdhi_foot.mean()),
-                                                   "max_fraction": float(scdhi_foot.max())},
+                                                  "max_fraction": float(scdhi_foot.max())},
         "Annual trend years (complete calendar years only)": annual_years,
         "STI trend map": {
             "mean_slope_per_decade": float(np.nanmean(sti_slope.values)),

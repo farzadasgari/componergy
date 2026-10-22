@@ -13,6 +13,8 @@ import pandas as pd
 import xarray as xr
 import matplotlib.pyplot as plt
 
+from componergy.figures.print_style import SERIF_FONTS
+
 S1_SECTORS = {
     "Residential": "Residential",
     "Commercial": "Commercial",
@@ -24,8 +26,12 @@ DEMAND_HIGH_Q = 0.90
 
 plt.rcParams.update({
     "font.family": "serif",
-    "font.serif": ["Cambria"],
+    "font.serif": SERIF_FONTS,
     "mathtext.fontset": "dejavuserif",
+    "font.size": 20,
+    "axes.labelsize": 22,
+    "xtick.labelsize": 20,
+    "ytick.labelsize": 20,
     "savefig.dpi": 600,
 })
 
@@ -93,7 +99,7 @@ def compute_cooccurrence_frequency(regional_scdhi: pd.DataFrame, region_sector_g
     return pd.DataFrame(rows)
 
 
-def plot_cooccurrence_heatmap(freq_df: pd.DataFrame, sectors=None, figsize=(11, 8)):
+def plot_cooccurrence_heatmap(freq_df: pd.DataFrame, sectors=None, figsize=(14, 10)):
     """Region x sector heatmap with the frequency printed in each cell."""
     if sectors is None:
         sectors = S1_SECTORS
@@ -106,26 +112,26 @@ def plot_cooccurrence_heatmap(freq_df: pd.DataFrame, sectors=None, figsize=(11, 
     im = ax.imshow(mat.values, cmap="YlOrRd", vmin=0.0, aspect="auto")
 
     ax.set_xticks(np.arange(len(sector_order)))
-    ax.set_xticklabels(sector_order, fontsize=13)
+    ax.set_xticklabels(sector_order)
     ax.set_yticks(np.arange(len(mat.index)))
-    ax.set_yticklabels(mat.index, fontsize=13)
+    ax.set_yticklabels(mat.index)
 
     vmax = np.nanmax(mat.values) if np.isfinite(mat.values).any() else 1.0
     for i in range(mat.shape[0]):
         for j in range(mat.shape[1]):
             val = mat.values[i, j]
             if not np.isfinite(val):
-                ax.text(j, i, "n/a", ha="center", va="center", fontsize=11, color="#777777")
+                ax.text(j, i, "n/a", ha="center", va="center", fontsize=18, color="#777777")
                 continue
             color = "white" if val > 0.6 * vmax else "black"
-            ax.text(j, i, f"{val:.2f}", ha="center", va="center", fontsize=12, color=color)
+            ax.text(j, i, f"{val:.2f}", ha="center", va="center", fontsize=18, color=color)
 
     cbar = fig.colorbar(im, ax=ax, shrink=0.85, pad=0.02)
-    cbar.set_label("CDHE co-occurrence frequency", fontsize=14)
-    cbar.ax.tick_params(labelsize=12)
+    cbar.set_label("CDHE co-occurrence frequency")
+    cbar.ax.tick_params(labelsize=18)
 
-    ax.set_xlabel("Electricity demand sector", fontsize=15)
-    ax.set_ylabel("Climate region", fontsize=15)
+    ax.set_xlabel("Electricity demand sector")
+    ax.set_ylabel("Climate region")
     return fig
 
 
@@ -154,7 +160,6 @@ def main(scdhi_var: str = "scdhi_3m") -> None:
     region_sector_gwh = aggregate_consumption_to_region_sector(consumption_long_df, county_region_map)
 
     common = regional_scdhi.index.intersection(region_sector_gwh.index)
-    # regional_scdhi is deliberately NOT trimmed: event thresholds use the full climate record
     region_sector_gwh = region_sector_gwh.loc[common]
 
     print("computing co-occurrence frequencies...")

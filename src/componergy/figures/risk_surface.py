@@ -38,13 +38,14 @@ from componergy.analysis.risk_sensitivity import (
     build_risk_variants, compare_risk_variants, double_calm_share,
 )
 from componergy.analysis.event_validation import validate_against_known_events, summarize_validation
+from componergy.figures.print_style import SERIF_FONTS
 
 SMOOTH_MONTHS = 3
 ALPHA_SIG = 0.05
 
 plt.rcParams.update({
     "font.family": "serif",
-    "font.serif": ["Cambria"],
+    "font.serif": SERIF_FONTS,
     "mathtext.fontset": "dejavuserif",
     "font.size": 18,
     "axes.labelsize": 20,

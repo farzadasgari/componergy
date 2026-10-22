@@ -13,6 +13,8 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize
 from matplotlib.cm import ScalarMappable
 
+from componergy.figures.print_style import SERIF_FONTS
+
 # Six locations spanning California's distinct climate zones.
 # Coordinates are approximate city/area centroids; each is sampled at the
 # nearest grid cell that has data.
@@ -27,7 +29,13 @@ REPRESENTATIVE_SITES = [
 
 plt.rcParams.update({
     "font.family": "serif",
-    "font.serif": ["Cambria"],
+    "font.serif": SERIF_FONTS,
+    "font.size": 20,
+    "axes.labelsize": 22,
+    "axes.titlesize": 22,
+    "xtick.labelsize": 20,
+    "ytick.labelsize": 20,
+    "legend.fontsize": 20,
     "mathtext.fontset": "dejavuserif",
     "savefig.dpi": 600,
 })
@@ -82,7 +90,7 @@ def extract_site_series(ds: xr.Dataset, var_names, sites=None) -> pd.DataFrame:
     return pd.concat(frames, ignore_index=True)
 
 
-def plot_site_timeseries(site_df: pd.DataFrame, sites=None, figsize=(16, 18)):
+def plot_site_timeseries(site_df: pd.DataFrame, sites=None, figsize=(14, 16)):
     """Figure S6: stacked per-site monthly time series of STI, SAPEI and SCDHI."""
     if sites is None:
         sites = REPRESENTATIVE_SITES
@@ -101,18 +109,17 @@ def plot_site_timeseries(site_df: pd.DataFrame, sites=None, figsize=(16, 18)):
                 ax.plot(sub["Date"], sub[label], lw=1.5, alpha=0.9,
                         color=colors[label], label=label)
         ax.axhline(0, color="k", lw=0.9, alpha=0.35, zorder=0)
-        ax.set_ylabel("Index value", fontsize=14)
-        ax.set_title(name, fontsize=15, pad=4)
+        ax.set_ylabel("Index value")
+        ax.set_title(name, pad=4)
         ax.spines["top"].set_visible(False)
         ax.spines["right"].set_visible(False)
-        ax.tick_params(labelsize=12)
 
-    axes[0].legend(frameon=False, ncol=3, fontsize=13, loc="upper left")
-    axes[-1].set_xlabel("Time (year)", fontsize=15)
+    axes[0].legend(frameon=False, ncol=3, loc="upper left", bbox_to_anchor=(0, 1.12))
+    axes[-1].set_xlabel("Time (year)")
     return fig
 
 
-def plot_site_scatter(site_df: pd.DataFrame, sites=None, figsize=(16, 11)):
+def plot_site_scatter(site_df: pd.DataFrame, sites=None, figsize=(20, 13)):
     """Figure S7: per-site STI vs SAPEI scatter, SCDHI shown by colour and marker size."""
     if sites is None:
         sites = REPRESENTATIVE_SITES
@@ -130,7 +137,7 @@ def plot_site_scatter(site_df: pd.DataFrame, sites=None, figsize=(16, 11)):
     fig, axes = plt.subplots(nrows=n_rows, ncols=n_cols, figsize=figsize, constrained_layout=True)
     axes = np.atleast_1d(axes).ravel()
 
-    for ax, name in zip(axes, names):
+    for i, (ax, name) in enumerate(zip(axes, names)):
         sub = site_df[site_df["Site"] == name]
         sti, sapei, scdhi = sub["STI"].values, sub["SAPEI"].values, sub["SCDHI"].values
         sizes = 18 + 160 * (np.abs(scdhi) / vmax).clip(0, 1) ** 1.3
@@ -139,12 +146,13 @@ def plot_site_scatter(site_df: pd.DataFrame, sites=None, figsize=(16, 11)):
                    alpha=0.72, edgecolors="none")
         ax.axvline(0, color="k", lw=0.9, alpha=0.35, zorder=0)
         ax.axhline(0, color="k", lw=0.9, alpha=0.35, zorder=0)
-        ax.set_title(name, fontsize=14, pad=4)
-        ax.set_xlabel("STI (heat)", fontsize=13)
-        ax.set_ylabel("SAPEI (drought)", fontsize=13)
+        ax.set_title(name, pad=4)
+        if i + n_cols >= len(names):
+            ax.set_xlabel("STI (heat)")
+        if i % n_cols == 0:
+            ax.set_ylabel("SAPEI (drought)")
         ax.spines["top"].set_visible(False)
         ax.spines["right"].set_visible(False)
-        ax.tick_params(labelsize=11)
 
     for ax in axes[len(names):]:
         ax.set_visible(False)
@@ -152,8 +160,8 @@ def plot_site_scatter(site_df: pd.DataFrame, sites=None, figsize=(16, 11)):
     sm = ScalarMappable(norm=norm, cmap=cmap)
     sm.set_array([])
     cbar = fig.colorbar(sm, ax=axes.tolist(), orientation="vertical", shrink=0.85, pad=0.02)
-    cbar.set_label("SCDHI (compound intensity)", fontsize=14)
-    cbar.ax.tick_params(labelsize=12)
+    cbar.set_label("SCDHI (compound intensity)")
+    cbar.ax.tick_params(labelsize=18)
     return fig
 
 
