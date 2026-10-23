@@ -15,6 +15,7 @@ class Stage:
     accepts_baseline: bool = False
     accepts_demand_source: bool = False
     extra: tuple = field(default_factory=tuple)
+    optional: bool = False  # runs only when named in --only / --from / --to
 
 
 STAGES = (
@@ -48,6 +49,9 @@ STAGES = (
           accepts_baseline=True),
     Stage("robustness", "run_robustness", "compound effect + amplification over baseline x smoothing",
           needs=("INDICES_FILE", "GENERATION_MONTHLY_FILE", "COUNTY_CONSUMPTION_XLSX")),
+    Stage("review-v8", "run_review_v8", "review v8: p-value calibration, compound specificity, portfolio robustness "
+          "(optional, slow)", needs=("INDICES_FILE", "GENERATION_MONTHLY_FILE", "COUNTY_CONSUMPTION_XLSX"),
+          optional=True),
     Stage("supplementary", "run_supplementary_figures", "S1-S7", needs=("INDICES_FILE",)),
     Stage("review", "run_review_analyses", "review-response analyses + study-period table", needs=("INDICES_FILE",)),
     Stage("manifest", "make_run_manifest", "checksums, versions, seeds"),
@@ -69,7 +73,9 @@ def plan(only=None, start=None, end=None, skip_missing=False, baseline=None, dem
                 raise ValueError(f"unknown stage {v!r} for --{label}; choose from {names}")
     lo = names.index(start) if start else 0
     hi = names.index(end) if end else len(names) - 1
-    selected = [s for s in STAGES[lo:hi + 1] if (not only or s.name in only)]
+    requested = set(only or []) | {v for v in (start, end) if v}
+    selected = [s for s in STAGES[lo:hi + 1]
+                if (not only or s.name in only) and (not s.optional or s.name in requested)]
 
     out = []
     for s in selected:

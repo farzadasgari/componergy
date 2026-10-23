@@ -80,8 +80,24 @@ def test_plan_rejects_an_unknown_stage():
 
 
 def test_robustness_stage_runs_after_figure_07_and_before_supplementary():
-    names = list(STAGE_NAMES)
+    names = [s.name for s in STAGES if not s.optional]
     assert names.index("figure-07") + 1 == names.index("robustness") == names.index("supplementary") - 1
     p = plan(start="figure-07", end="supplementary", baseline="window", exists=lambda n: True)
     assert [s["stage"] for s in p] == ["figure-07", "robustness", "supplementary"]
     assert "--baseline" not in p[1]["command"]  # it runs both baselines itself
+
+
+def test_review_v8_is_an_optional_stage_after_robustness_that_needs_its_inputs():
+    names = list(STAGE_NAMES)
+    assert names.index("review-v8") == names.index("robustness") + 1
+    default = [s["stage"] for s in plan(exists=lambda n: True)]
+    assert "review-v8" not in default
+    assert [s["stage"] for s in plan(start="figure-07", end="supplementary", exists=lambda n: True)] == \
+        ["figure-07", "robustness", "supplementary"]
+    assert [s["stage"] for s in plan(only=["review-v8"], exists=lambda n: True)] == ["review-v8"]
+    assert [s["stage"] for s in plan(start="robustness", end="review-v8", exists=lambda n: True)] == \
+        ["robustness", "review-v8"]
+    blocked = plan(only=["review-v8"], exists=lambda n: n != "COUNTY_CONSUMPTION_XLSX")[0]
+    assert blocked["status"].startswith("BLOCKED") and "COUNTY_CONSUMPTION_XLSX" in blocked["status"]
+    listed = plan(only=["review-v8"], exists=lambda n: False)
+    assert listed[0]["stage"] == "review-v8" and listed[0]["status"].startswith("BLOCKED")
