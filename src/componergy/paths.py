@@ -30,6 +30,9 @@ INDICES_FILE = PROCESSED_DATA_DIR / "california_monthly_indices.nc"
 # Output directory for generated figures
 FIGURES_DIR = ROOT / "figures"
 
+# Review-v8 analyses (inference calibration, compound specificity, portfolio robustness)
+REVIEW_V8_DIR = FIGURES_DIR / "review_v8"
+
 # Raw EIA-923 (multi-sheet, all states)
 RAW_DATA_ELECTRICITY_DIR = RAW_DATA_DIR / "electricity"
 EIA_GENERATION_RAW_FILE = RAW_DATA_ELECTRICITY_DIR / "generation_monthly.xlsx"
