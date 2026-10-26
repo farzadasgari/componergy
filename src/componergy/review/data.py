@@ -1,5 +1,5 @@
 # src/componergy/review/data.py
-"""Inputs and outcome series for the review-v8 analyses, built with the figures' own prepare_* functions."""
+"""Inputs and outcome series for the review analyses, built with the figures' own prepare_* functions."""
 
 from __future__ import annotations
 

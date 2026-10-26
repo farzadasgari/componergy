@@ -1,10 +1,10 @@
-# scripts/run_review_v8.py
+# scripts/run_review.py
 """
-Review v8: calibration of the p-values (B3), is the effect compound-specific (B1), portfolio robustness (B2).
+Review: calibration of the p-values (B3), is the effect compound-specific (B1), portfolio robustness (B2).
 
-    python -m scripts.run_review_v8 --part {b1,b2,b3,all} [--quick] [--n-jobs N]
+    python -m scripts.run_review --part {b1,b2,b3,all} [--quick] [--n-jobs N]
 
-Adds files under figures/review_v8/ only (--quick: figures/review_v8/quick/). Nothing the published figures or
+Adds files under figures/review/ only (--quick: figures/review/quick/). Nothing the published figures or
 robustness tables are built from is touched; a SHA-256 freeze check before and after proves it.
 """
 
@@ -54,7 +54,7 @@ def main() -> int:
     from componergy.review import data as D
     from componergy.review import freeze, nullsim, report
 
-    root_out = paths.REVIEW_V8_DIR
+    root_out = paths.REVIEW_DIR
     out = root_out / "quick" if args.quick else root_out
     for sub in ("b1", "b2", "b3"):
         (out / sub).mkdir(parents=True, exist_ok=True)
@@ -69,7 +69,7 @@ def main() -> int:
         cfg = cfg.quick()
     print(f"config: {cfg}")
 
-    meta_path = out / "review_v8.json"
+    meta_path = out / "review.json"
     meta = json.loads(meta_path.read_text()) if meta_path.exists() else {}
     dropped = meta.get("Bootstrap draws dropped", {})
 
@@ -192,7 +192,7 @@ def main() -> int:
         "rank-deficient bootstrap draws dropped": dropped,
         "command": " ".join(sys.argv),
     }
-    write_figure_log(out / "review_v8", meta)
+    write_figure_log(out / "review", meta)
     report.build_report(out, meta)
     print(f"wrote {out}; changed published files: {len(d['changed'])}")
     return 0 if not d["changed"] else 1

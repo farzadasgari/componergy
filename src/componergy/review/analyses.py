@@ -1,5 +1,5 @@
 # src/componergy/review/analyses.py
-"""The B1, B2 and B3 analysis tables of review v8. Each function returns DataFrames; the script writes them."""
+"""The B1, B2 and B3 analysis tables of review. Each function returns DataFrames; the script writes them."""
 
 from __future__ import annotations
 

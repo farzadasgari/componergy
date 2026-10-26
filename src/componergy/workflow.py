@@ -49,7 +49,7 @@ STAGES = (
           accepts_baseline=True),
     Stage("robustness", "run_robustness", "compound effect + amplification over baseline x smoothing",
           needs=("INDICES_FILE", "GENERATION_MONTHLY_FILE", "COUNTY_CONSUMPTION_XLSX")),
-    Stage("review-v8", "run_review_v8", "review v8: p-value calibration, compound specificity, portfolio robustness "
+    Stage("review-plan", "run_review", "review: p-value calibration, compound specificity, portfolio robustness "
           "(optional, slow)", needs=("INDICES_FILE", "GENERATION_MONTHLY_FILE", "COUNTY_CONSUMPTION_XLSX"),
           optional=True),
     Stage("supplementary", "run_supplementary_figures", "S1-S7", needs=("INDICES_FILE",)),
