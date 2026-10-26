@@ -7,27 +7,28 @@
 [![GitHub stars](https://img.shields.io/github/stars/farzadasgari/componergy?style=flat-square)](https://github.com/farzadasgari/componergy/stargazers)
 [![GitHub issues](https://img.shields.io/github/issues/farzadasgari/componergy?style=flat-square)](https://github.com/farzadasgari/componergy/issues)
 [![GitHub license](https://img.shields.io/github/license/farzadasgari/componergy?style=flat-square)](https://github.com/farzadasgari/componergy/blob/main/LICENSE)
-[![DOI](https://img.shields.io/badge/DOI-Pending-blue?style=flat-square)](#)
 
 </div>
 
-Componergy is an open-source research framework for analyzing the impacts of compound drought–heat extremes on electricity systems.
+Componergy is an open-source research framework for analyzing the impacts of compound drought–heat extremes on
+electricity systems.
 > **Manuscript status:** Under peer review.
 
 ## License
 
 This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for details.
 
-
 ## Contact
+
 For any inquiries, please contact:
+
 - khufarzadasgari@gmail.com
 - std_farzad.asgari@khu.ac.ir
-
 
 ## Links
 
 ### Farzad Asgari
+
 <div align="center">
 
 [![github](https://img.shields.io/badge/GitHub-6e5494?style=for-the-badge&logo=github&logoColor=white)](https://github.com/farzadasgari)
