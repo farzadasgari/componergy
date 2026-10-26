@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "componergy: code and analysis-plan workflow for California compound drought–heat electricity analysis"
+version: 1.0.0
+authors:
+  - family-names: Asgari
+    given-names: Farzad
+  - family-names: Mohajeri
+    given-names: Seyed Hossein
+  - family-names: Nikoo
+    given-names: Mohammad Reza
+  - family-names: Šimůnek
+    given-names: Jiří
+repository-code: "https://github.com/farzadasgari/componergy"
+license: Apache-2.0
